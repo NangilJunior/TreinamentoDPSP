@@ -361,7 +361,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-[#2e3344] relative size-full" data-name="Desktop - 1">
+    <div className="bg-[#2e3344] relative min-h-screen w-full" data-name="Desktop - 1">
       <Home
         matricula={matricula}
         senha={senha}

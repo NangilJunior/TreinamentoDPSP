@@ -409,7 +409,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="bg-white content-stretch flex isolate items-center relative size-full" data-name="Manutenção de Lojas">
+    <div className="bg-white content-stretch flex isolate items-center relative h-screen w-full" data-name="Manutenção de Lojas">
       <Frame2
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}

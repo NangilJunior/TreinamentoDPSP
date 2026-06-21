@@ -13,6 +13,9 @@ import SangriaFlow from "./SangriaFlow";
 import Home4 from "../../imports/Home-4/index";
 import Home6 from "../../imports/Home-6/index";
 import ValorRetiradaScreen from "./ValorRetiradaScreen";
+import ComprovanteScreen from "./ComprovanteScreen";
+import imgEntradaSaida from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
+import imgConsultaProduto from "../../imports/ManutencaoDeLojas/6566e1aba8cfe14364d9bb9f0c3fa7712c053726.png";
 
 interface FuncionalidadeContent {
   titulo: string;
@@ -39,6 +42,22 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
     conteudo: "A Pausa do Sistema permite interromper temporariamente as operações do PDV para realizar manutenções, contagens de caixa ou resolver situações específicas sem encerrar completamente o sistema. É importante para a gestão eficiente do ponto de venda."
   }
 };
+
+// Sugestões exibidas na tela de conclusão (estilo "próximos vídeos")
+const proximosTreinamentos = [
+  {
+    slug: "entrada-saida-operador",
+    titulo: "Entrada/Saída de Operador",
+    descricao: "Controle e rastreabilidade das operações: registre o início e o fim de cada turno no terminal.",
+    imagem: imgEntradaSaida,
+  },
+  {
+    slug: "consulta-produto-offline",
+    titulo: "Consulta de Produto Offline",
+    descricao: "Consulte informações de produtos mesmo sem conexão com o servidor central.",
+    imagem: imgConsultaProduto,
+  },
+];
 
 function Frame5() {
   return (
@@ -117,6 +136,7 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
 }
 
 function PDVSimulator() {
+  const navigate = useNavigate();
   const [isTrainingMode, setIsTrainingMode] = useState(false);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [keyboardReady, setKeyboardReady] = useState(false);
@@ -152,6 +172,20 @@ function PDVSimulator() {
       audioRef.current.currentTime = 0;
       audioRef.current = null;
     }
+  };
+
+  const exitTraining = () => {
+    stopAudio();
+    setShowKeyboard(false);
+    setShowTutorial(false);
+    setTutorialStep(0);
+    setIsTrainingMode(false);
+    setIsFirstAccess(true);
+  };
+
+  const goToTraining = (slug: string) => {
+    exitTraining();
+    navigate(`/funcionalidade/${slug}`);
   };
 
   const playWelcomeAudio = () => {
@@ -709,7 +743,7 @@ function PDVSimulator() {
       {/* Comprovante / Encerramento - step 9 */}
       {isTrainingMode && tutorialStep === 9 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <Home6 />
+          <ComprovanteScreen valorCents={100000} saldoAnteriorCents={125000} />
         </div>
       )}
 
@@ -786,13 +820,7 @@ function PDVSimulator() {
 
       {/* Close Button */}
       <button
-        onClick={() => {
-          setShowKeyboard(false);
-          setShowTutorial(false);
-          setTutorialStep(0);
-          setIsTrainingMode(false);
-          setIsFirstAccess(true);
-        }}
+        onClick={exitTraining}
         className="absolute top-[20px] right-[20px] w-[48px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors group z-[60]"
       >
         <svg className="w-[24px] h-[24px]" viewBox="0 0 24 24" fill="none">
@@ -809,7 +837,7 @@ function PDVSimulator() {
         {/* Banner Ação do Gerente - abaixo do PDV */}
         {tutorialStep === 4 && (
           <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
@@ -903,7 +931,7 @@ function PDVSimulator() {
               <Home6 />
             </div>
             <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
@@ -936,13 +964,37 @@ function PDVSimulator() {
           </div>
         </>)}
 
+        {/* Banner de conclusão - step 9 (comprovante) */}
+        {tutorialStep === 9 && (
+          <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
+            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
+              <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
+              <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[2px]">
+                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Parabéns!
+                </p>
+                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  A sangria de caixa foi realizada e concluída com sucesso.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         {/* Navegação do tutorial - plataforma de treinamentos */}
-        <div className={`absolute bottom-[-56px] left-0 right-0 z-30 flex justify-between transition-opacity duration-700 ease-in-out ${(showTutorial || tutorialStep > 0) && tutorialStep !== 3 && tutorialStep !== 4 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-30 flex justify-between transition-opacity duration-700 ease-in-out ${(showTutorial || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             onClick={() => {
               if (tutorialStep === 2) setTutorialStep(1);
+              else if (tutorialStep === 3) { setTutorialStep(2); setShowKeyboard(false); }
               else if (tutorialStep === 5) setTutorialStep(3);
               else if (tutorialStep === 6) setTutorialStep(5);
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
@@ -958,13 +1010,14 @@ function PDVSimulator() {
             <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Anterior</span>
           </button>
 
-          {/* Botão Próximo - steps 0 e 1 apenas */}
+          {/* Botão Próximo - steps 0, 1 e 9 */}
           <button
             onClick={() => {
               if (showTutorial) { stopAudio(); setTutorialStep(1); setShowTutorial(false); }
               else if (tutorialStep === 1) setTutorialStep(2);
+              else if (tutorialStep === 9) setTutorialStep(10);
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showTutorial || tutorialStep === 1) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showTutorial || tutorialStep === 1 || tutorialStep === 9) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Próximo</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -984,7 +1037,7 @@ function PDVSimulator() {
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
           isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? 'animate-pulse-subtle' : ''
-        } ${tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        } ${tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
@@ -1075,10 +1128,84 @@ function PDVSimulator() {
           } : undefined}
           highlightKey1={tutorialStep === 5 || (tutorialStep === 7 && valorRetirada === 0)}
           onKey1Press={tutorialStep === 5 ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey0={tutorialStep === 7 && valorRetirada < 100000}
+          highlightKey0={tutorialStep === 7 && valorRetirada > 0 && valorRetirada < 100000}
           onKey0Press={undefined}
         />
       </div>
+
+      {/* Step 10 - Conclusão do treinamento (estilo "fim de vídeo") */}
+      {tutorialStep === 10 && (
+        <div
+          className="absolute inset-0 z-[80] flex items-center justify-center p-[40px] pb-[110px] overflow-y-auto"
+          style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(4px)' }}
+        >
+          <div className="flex flex-col items-center gap-[44px] max-w-[920px] w-full">
+            {/* Cabeçalho - parabéns */}
+            <div className="flex flex-col items-center gap-[20px] text-center">
+              <div className="flex items-center justify-center w-[96px] h-[96px] rounded-full bg-[#06AC73]/15 border border-[#06AC73]/40">
+                <svg width="52" height="52" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#37d39b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[12px] items-center">
+                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[40px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Treinamento concluído!
+                </p>
+                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">Sangria de Caixa</span>. Agora você está pronto para realizar essa operação no PDV.
+                </p>
+              </div>
+            </div>
+
+            {/* Sugestões de próximos treinamentos */}
+            <div className="w-full flex flex-col gap-[20px]">
+              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[18px] text-white/90 text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                Continue aprendendo
+              </p>
+              <div className="grid grid-cols-2 gap-[24px]">
+                {proximosTreinamentos.map((s) => (
+                  <button
+                    key={s.slug}
+                    onClick={() => goToTraining(s.slug)}
+                    className="group flex gap-[20px] items-center p-[16px] rounded-[14px] bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-left cursor-pointer"
+                  >
+                    <div className="relative w-[160px] h-[100px] rounded-[10px] overflow-hidden shrink-0">
+                      <img src={s.imagem} alt="" className="absolute inset-0 size-full object-cover" />
+                      <div className="absolute inset-0 bg-[rgba(51,50,67,0.45)] group-hover:bg-[rgba(51,50,67,0.3)] transition-colors" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-[44px] h-[44px] rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                          <svg className="w-[18px] h-[18px] ml-[3px]" viewBox="0 0 24 24" fill="none">
+                            <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-[6px] flex-1 min-w-0">
+                      <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[17px] text-white leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        {s.titulo}
+                      </p>
+                      <p className="font-['Nunito_Sans:Regular',sans-serif] text-[13px] text-white/60 leading-relaxed line-clamp-2" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        {s.descricao}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Botão Fechar - inferior centralizado, estilo plataforma */}
+          <button
+            onClick={exitTraining}
+            className="absolute bottom-[40px] left-1/2 -translate-x-1/2 flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all cursor-pointer"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Fechar</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -1121,7 +1248,7 @@ export default function FuncionalidadePage() {
   }
 
   return (
-    <div className="bg-white content-stretch flex isolate items-center relative size-full" data-name="Funcionalidade">
+    <div className="bg-white content-stretch flex isolate items-center relative h-screen w-full" data-name="Funcionalidade">
       <div className="content-stretch flex flex-[1_0_0] flex-col h-full items-start min-w-px overflow-clip relative z-[1]">
         <Frame2 />
         <ContentHeader titulo={content.titulo} onBack={handleBack} />

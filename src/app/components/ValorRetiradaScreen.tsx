@@ -1,10 +1,10 @@
 import svgH5 from "../../imports/Home-5/svg-bveu4s30mg";
 
-function formatCurrency(cents: number): string {
+export function formatCurrency(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function PDVHeader() {
+export function PDVHeader() {
   return (
     <>
       <div className="bg-white flex items-center justify-between px-[20px] py-[20px] shrink-0 w-full">
