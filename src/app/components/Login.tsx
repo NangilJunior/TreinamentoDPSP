@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import imgImage3 from "../../imports/Desktop1/5dad878508fbae62144168c791d21d1da82445a7.png";
 import imgTreino1 from "../../imports/Desktop1/a6674fa2eff44835094f341db4e84915eee0d916.png";
 import Frame19675 from "../../imports/Frame19675/Frame19675.tsx";
+import { useFitScale } from "./ScaleToFit";
 
 // SVG Paths for Login component
 const svgPaths = {
@@ -324,8 +325,10 @@ function Frame1({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, 
 }
 
 function Home({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, isValid, error }: LoginFormProps) {
+  // Escala o card fixo (1280×800) para caber proporcionalmente em telas menores.
+  const scale = useFitScale(1280, 800, { paddingX: 24, paddingY: 24 });
   return (
-    <div className="-translate-x-1/2 -translate-y-1/2 absolute bg-white h-[800px] left-1/2 top-1/2 overflow-clip rounded-[20px] shadow-[0px_4px_127.2px_0px_rgba(0,0,0,0.25)] w-[1280px]" data-name="Home">
+    <div className="absolute bg-white h-[800px] left-1/2 top-1/2 overflow-clip rounded-[20px] shadow-[0px_4px_127.2px_0px_rgba(0,0,0,0.25)] w-[1280px]" data-name="Home" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
       <Frame1
         matricula={matricula}
         senha={senha}

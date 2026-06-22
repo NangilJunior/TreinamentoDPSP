@@ -14,6 +14,7 @@ import Home4 from "../../imports/Home-4/index";
 import Home6 from "../../imports/Home-6/index";
 import ValorRetiradaScreen from "./ValorRetiradaScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
+import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import imgEntradaSaida from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
 import imgConsultaProduto from "../../imports/ManutencaoDeLojas/6566e1aba8cfe14364d9bb9f0c3fa7712c053726.png";
 
@@ -138,6 +139,10 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
 function PDVSimulator() {
   const navigate = useNavigate();
   const [isTrainingMode, setIsTrainingMode] = useState(false);
+  // Escala o PDV em tela cheia (1280×800) durante o treinamento para caber em
+  // resoluções menores. A folga vertical (paddingY) garante espaço para o card
+  // de tutorial que aparece abaixo do PDV.
+  const trainingScale = useFitScale(1280, 800, { paddingX: 32, paddingY: 90 });
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [keyboardReady, setKeyboardReady] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -297,7 +302,7 @@ function PDVSimulator() {
   }, [isTrainingMode]);
 
   const pdvContent = (
-    <div className={`bg-white relative flex flex-col ${isTrainingMode ? "w-[1280px] h-[800px] overflow-y-auto" : "w-full max-w-[1280px] mx-auto overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
+    <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? "h-[800px] overflow-y-auto" : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
       {/* Header */}
       <div className="bg-white flex items-center justify-between p-[20px] border-b border-[#bdbdbd]">
         <div className="h-[40px] w-[160px] relative">
@@ -785,32 +790,35 @@ function PDVSimulator() {
 
   if (!isTrainingMode) {
     return (
-      <div className="relative">
-        {pdvContent}
+      <ScaleToFit designWidth={1280}>
+        {/* PDV + máscara dentro do mesmo wrapper escalado → sempre alinhados */}
+        <div className="relative w-[1280px]">
+          {pdvContent}
 
-        {/* Play Overlay */}
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-[20px] cursor-pointer group hover:bg-black/70 transition-colors" onClick={() => {
-          setShowKeyboard(false);
-          setTutorialStep(0);
-          setIsTrainingMode(true);
-          playWelcomeAudio();
-          // Mostrar tutorial com delay para o fade-in
-          setTimeout(() => {
-            setShowTutorial(true);
-          }, 300);
-        }}>
-          <div className="flex flex-col items-center gap-[16px]">
-            <div className="w-[80px] h-[80px] bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-              <svg className="w-[32px] h-[32px] ml-[4px]" viewBox="0 0 24 24" fill="none">
-                <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
-              </svg>
+          {/* Play Overlay */}
+          <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-[20px] cursor-pointer group hover:bg-black/70 transition-colors" onClick={() => {
+            setShowKeyboard(false);
+            setTutorialStep(0);
+            setIsTrainingMode(true);
+            playWelcomeAudio();
+            // Mostrar tutorial com delay para o fade-in
+            setTimeout(() => {
+              setShowTutorial(true);
+            }, 300);
+          }}>
+            <div className="flex flex-col items-center gap-[16px]">
+              <div className="w-[80px] h-[80px] bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-[32px] h-[32px] ml-[4px]" viewBox="0 0 24 24" fill="none">
+                  <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
+                </svg>
+              </div>
+              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                Iniciar Treinamento
+              </p>
             </div>
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-              Iniciar Treinamento
-            </p>
           </div>
         </div>
-      </div>
+      </ScaleToFit>
     );
   }
 
@@ -828,8 +836,8 @@ function PDVSimulator() {
         </svg>
       </button>
 
-      {/* PDV - Centralizado verticalmente */}
-      <div className="absolute top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+      {/* PDV - Centralizado verticalmente (escalado para caber em telas menores) */}
+      <div className="absolute top-[42%] left-1/2 z-10" style={{ transform: `translate(-50%, -50%) scale(${trainingScale})` }}>
 
 
         {pdvContent}
@@ -927,7 +935,7 @@ function PDVSimulator() {
         {/* Step 8 - Gaveta Aberta / Retirada */}
         {tutorialStep === 8 && (
           <>
-            <div className="fade-in-delay absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+            <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
               <Home6 />
             </div>
             <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
@@ -1144,7 +1152,7 @@ function PDVSimulator() {
       {/* Step 10 - Conclusão do treinamento (estilo "fim de vídeo") */}
       {tutorialStep === 10 && (
         <div
-          className="fade-in-delay absolute inset-0 z-[80] flex items-center justify-center p-[40px] pb-[110px] overflow-y-auto"
+          className="absolute inset-0 z-[80] flex items-center justify-center p-[40px] pb-[110px] overflow-y-auto"
           style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(4px)' }}
         >
           <div className="flex flex-col items-center gap-[44px] max-w-[920px] w-full">
