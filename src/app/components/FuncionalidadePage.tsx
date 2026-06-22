@@ -1228,7 +1228,7 @@ function PDVSimulator() {
 
 function ContentBody({ conteudo, hasPDV }: { conteudo: string; hasPDV?: boolean }) {
   return (
-    <div className="bg-white flex-[1_0_0] min-h-px relative w-full" data-name="Table">
+    <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
       <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[48px]">
         <div className="prose max-w-none mb-[48px]">
           <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
