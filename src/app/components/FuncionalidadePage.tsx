@@ -693,7 +693,7 @@ function PDVSimulator() {
       {/* Footer na base do PDV */}
       <div className={`transition-all duration-500 ${isTrainingMode && tutorialStep === 1 ? 'relative z-10 ring-2 ring-[#F59E0B] shadow-[0_0_24px_4px_rgba(245,158,11,0.35)]' : ''}`}>
         {isTrainingMode && tutorialStep === 1 && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[560px] pointer-events-none">
+          <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[560px] pointer-events-none">
             <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
               Quando o valor em caixa atingir o limite configurado para a unidade, o PDV exibirá um aviso discreto ao operador solicitando a realização da Sangria de Caixa. A mensagem foi projetada para informar a necessidade da operação sem evidenciar que o caixa está com elevado volume de numerário.
             </div>
@@ -716,7 +716,7 @@ function PDVSimulator() {
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
           <Home4 />
           {/* Faixa explicativa - posicionada abaixo da tabela */}
-          <div className="absolute bottom-[112px] left-0 right-0 px-[32px]">
+          <div className="fade-in-delay absolute bottom-[112px] left-0 right-0 px-[32px]">
             <div className="bg-[rgba(15,15,15,0.88)] flex gap-[20px] items-center px-[28px] py-[18px] rounded-[10px] w-full border border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.4)]" style={{ backdropFilter: 'blur(8px)' }}>
               <div className="shrink-0">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -756,10 +756,10 @@ function PDVSimulator() {
       {isTrainingMode && tutorialStep === 3 && (
         <>
           {/* Backdrop escuro com blur */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
+          <div className="fade-in-delay absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
 
           {/* Tooltip acima do modal */}
-          <div className="absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
+          <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
             <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
               Será exibido um modal informando que a realização da Sangria de Caixa requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
             </div>
@@ -770,7 +770,7 @@ function PDVSimulator() {
 
           {/* Modal bottom sheet */}
           <div
-            className="absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)]"
+            className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)]"
             onClick={(e) => {
               const text = (e.target as HTMLElement).closest('[data-name="Button"]')?.querySelector('p')?.textContent?.trim();
               if (text === "Volta") setTutorialStep(2);
@@ -836,7 +836,7 @@ function PDVSimulator() {
 
         {/* Banner Ação do Gerente - abaixo do PDV */}
         {tutorialStep === 4 && (
-          <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
+          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -868,7 +868,7 @@ function PDVSimulator() {
 
         {/* Step 2 - Informativo Sangria */}
         {tutorialStep === 2 && (
-          <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
             <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
               {/* Ícone */}
               <div className="flex items-start pt-[4px] shrink-0">
@@ -905,8 +905,8 @@ function PDVSimulator() {
 
         {/* Step 7 - Tooltip Valor da Retirada */}
         {tutorialStep === 7 && (
-          <div className="absolute pointer-events-none z-[45]" style={{ top: '185px', left: '128px', right: '128px' }}>
-            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+          <div className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '185px', left: '128px', right: '128px' }}>
+            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8 border-b-0" style={{ backdropFilter: 'blur(10px)' }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
                 <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
                 <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
@@ -927,10 +927,10 @@ function PDVSimulator() {
         {/* Step 8 - Gaveta Aberta / Retirada */}
         {tutorialStep === 8 && (
           <>
-            <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+            <div className="fade-in-delay absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
               <Home6 />
             </div>
-            <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
+            <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -966,7 +966,7 @@ function PDVSimulator() {
 
         {/* Banner de conclusão - step 9 (comprovante) */}
         {tutorialStep === 9 && (
-          <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
+          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -1065,6 +1065,14 @@ function PDVSimulator() {
             box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
           }
         }
+        .fade-in-delay {
+          animation: fade-in-delay 2s ease-in-out forwards;
+        }
+        @keyframes fade-in-delay {
+          0% { opacity: 0; }
+          70% { opacity: 0; }
+          100% { opacity: 1; }
+        }
       `}</style>
 
       {/* Virtual Keyboard - Posicionado embaixo com animação */}
@@ -1136,7 +1144,7 @@ function PDVSimulator() {
       {/* Step 10 - Conclusão do treinamento (estilo "fim de vídeo") */}
       {tutorialStep === 10 && (
         <div
-          className="absolute inset-0 z-[80] flex items-center justify-center p-[40px] pb-[110px] overflow-y-auto"
+          className="fade-in-delay absolute inset-0 z-[80] flex items-center justify-center p-[40px] pb-[110px] overflow-y-auto"
           style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(4px)' }}
         >
           <div className="flex flex-col items-center gap-[44px] max-w-[920px] w-full">

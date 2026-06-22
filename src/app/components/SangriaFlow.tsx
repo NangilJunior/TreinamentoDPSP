@@ -257,30 +257,49 @@ function SelectionScreen() {
   return (
     <div className="relative h-full w-full flex flex-col">
       <PDVHeader />
+      <style>{`
+        @keyframes fade-in-delay {
+          0% { opacity: 0; }
+          70% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        .fade-in-delay {
+          animation: fade-in-delay 2s ease-in-out forwards;
+        }
+      `}</style>
       <div className="bg-white flex-1 flex items-center justify-center pb-[112px]">
         <div className="flex gap-[18px] items-center">
           {/* Realizar Sangria */}
-          <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
-            <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
-            <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
-              <p className="leading-[16px]">1</p>
+          <div className="relative">
+            {/* Tooltip */}
+            <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none whitespace-nowrap flex flex-col items-center">
+              <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                Para realizar a <span className="font-bold">Sangria de Caixa</span>, pressione a tecla <span className="font-bold">[1]</span> no teclado do PDV.
+              </div>
+              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
             </div>
-            <div className="flex h-full items-center justify-center shrink-0">
-              <div className="overflow-clip relative shrink-0 size-[24px]">
-                <div className="absolute inset-[21.88%_5.21%_5.21%_5.21%]">
-                  <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 17.5">
-                    <path d={svgH3.p12d7c480} fill="#ED403D" />
-                    <path d={svgH3.p3f07f800} fill="#ED403D" />
-                    <path d={svgH3.pbcc5600} fill="#ED403D" />
-                    <path d={svgH3.p3777440} fill="#ED403D" />
-                    <path d={svgH3.p26f80100} fill="#ED403D" />
-                    <path d={svgH3.pde21300} fill="#ED403D" />
-                  </svg>
+            <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
+              <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
+              <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
+                <p className="leading-[16px]">1</p>
+              </div>
+              <div className="flex h-full items-center justify-center shrink-0">
+                <div className="overflow-clip relative shrink-0 size-[24px]">
+                  <div className="absolute inset-[21.88%_5.21%_5.21%_5.21%]">
+                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 17.5">
+                      <path d={svgH3.p12d7c480} fill="#ED403D" />
+                      <path d={svgH3.p3f07f800} fill="#ED403D" />
+                      <path d={svgH3.pbcc5600} fill="#ED403D" />
+                      <path d={svgH3.p3777440} fill="#ED403D" />
+                      <path d={svgH3.p26f80100} fill="#ED403D" />
+                      <path d={svgH3.pde21300} fill="#ED403D" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans:Medium',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-              <p className="leading-[1.2]">Realizar Sangria</p>
+              <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans:Medium',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+                <p className="leading-[1.2]">Realizar Sangria</p>
+              </div>
             </div>
           </div>
           {/* Consultar Suprimento */}
