@@ -230,123 +230,77 @@ function Frame17() {
   );
 }
 
-function Frame5() {
+// Motivos da sangria. O índice selecionado é controlado por prop (navegável
+// pelas teclas V/K = ↑/↓ no fluxo de treinamento).
+export const MOTIVOS_SANGRIA = [
+  { label: "Remessa Urna", value: "R$ 100,00" },
+  { label: "Remessa Fundo de Troco", value: "R$ 250,00" },
+  { label: "Quebra de Caixa", value: "R$ 396,96" },
+  { label: "Remessa Urna Cheque", value: "R$ 0,00" },
+];
+
+function MotivoRow({ label, value, index, selectedIndex }: { label: string; value: string; index: number; selectedIndex: number }) {
+  const selected = index === selectedIndex;
+  // Linha selecionada em azul; demais mantêm o zebrado original (ímpares cinza).
+  const bg = selected ? "bg-[#e4f6ff]" : index % 2 === 1 ? "bg-[#f5f5f5]" : "";
   return (
     <div className="content-stretch flex items-start relative shrink-0 w-full">
-      <div className="bg-[#e4f6ff] flex-[1_0_0] min-w-px relative" data-name="Basic Table Cell">
+      <div className={`${bg} flex-[1_0_0] min-w-px relative transition-colors`} data-name="Basic Table Cell">
         <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
         <div className="flex flex-row items-center size-full">
           <div className="content-stretch flex items-center px-[8px] py-[16px] relative size-full">
-            <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">Remessa Urna</p>
+            <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">{label}</p>
           </div>
         </div>
       </div>
-      <div className="bg-[#e4f6ff] content-stretch flex items-center px-[8px] py-[16px] relative shrink-0" data-name="Basic Table Cell">
+      <div className={`${bg} content-stretch flex items-center px-[8px] py-[16px] relative shrink-0 transition-colors`} data-name="Basic Table Cell">
         <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">R$ 100,00</p>
+        <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">{value}</p>
       </div>
     </div>
   );
 }
 
-function Frame6() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-full">
-      <div className="bg-[#f5f5f5] flex-[1_0_0] min-w-px relative" data-name="Basic Table Cell">
-        <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <div className="flex flex-row items-center size-full">
-          <div className="content-stretch flex items-center px-[8px] py-[16px] relative size-full">
-            <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">Remessa Fundo de Troco</p>
-          </div>
-        </div>
-      </div>
-      <div className="bg-[#f5f5f5] content-stretch flex items-center px-[8px] py-[16px] relative shrink-0" data-name="Basic Table Cell">
-        <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">R$ 250,00</p>
-      </div>
-    </div>
-  );
-}
-
-function Frame7() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-full">
-      <div className="flex-[1_0_0] min-w-px relative" data-name="Basic Table Cell">
-        <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <div className="flex flex-row items-center size-full">
-          <div className="content-stretch flex items-center px-[8px] py-[16px] relative size-full">
-            <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">Quebra de Caixa</p>
-          </div>
-        </div>
-      </div>
-      <div className="content-stretch flex items-center px-[8px] py-[16px] relative shrink-0" data-name="Basic Table Cell">
-        <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">R$ 396,96</p>
-      </div>
-    </div>
-  );
-}
-
-function Frame8() {
-  return (
-    <div className="content-stretch flex items-start relative shrink-0 w-full">
-      <div className="bg-[#f5f5f5] flex-[1_0_0] min-w-px relative" data-name="Basic Table Cell">
-        <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <div className="flex flex-row items-center size-full">
-          <div className="content-stretch flex items-center px-[8px] py-[16px] relative size-full">
-            <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">Remessa Urna Cheque</p>
-          </div>
-        </div>
-      </div>
-      <div className="bg-[#f5f5f5] content-stretch flex items-center px-[8px] py-[16px] relative shrink-0" data-name="Basic Table Cell">
-        <div aria-hidden className="absolute border-[#e5e5e5] border-b border-solid inset-[0_0_-0.5px_0] pointer-events-none" />
-        <p className="[word-break:break-word] font-['Geist:Regular',sans-serif] font-normal leading-[24px] relative shrink-0 text-[#0a0a0a] text-[16px] whitespace-nowrap">R$ 0,00</p>
-      </div>
-    </div>
-  );
-}
-
-function Frame9() {
+function Frame9({ selectedIndex }: { selectedIndex: number }) {
   return (
     <div className="flex-[1_0_0] min-w-px relative rounded-[20px]">
       <div aria-hidden className="absolute border border-[#e5e5e5] border-solid inset-0 pointer-events-none rounded-[20px]" />
       <div className="content-stretch flex flex-col items-start p-[20px] relative size-full">
-        <Frame5 />
-        <Frame6 />
-        <Frame7 />
-        <Frame8 />
+        {MOTIVOS_SANGRIA.map((m, i) => (
+          <MotivoRow key={m.label} label={m.label} value={m.value} index={i} selectedIndex={selectedIndex} />
+        ))}
       </div>
     </div>
   );
 }
 
-function Frame21() {
+function Frame21({ selectedIndex }: { selectedIndex: number }) {
   return (
     <div className="relative shrink-0 w-full">
       <div className="flex flex-row items-center justify-center size-full">
         <div className="content-stretch flex items-center justify-center px-[128px] relative size-full">
-          <Frame9 />
+          <Frame9 selectedIndex={selectedIndex} />
         </div>
       </div>
     </div>
   );
 }
 
-function Frame13() {
+function Frame13({ selectedIndex }: { selectedIndex: number }) {
   return (
     <div className="bg-white flex-[1_0_0] h-full min-w-px relative">
       <div className="content-stretch flex flex-col gap-[32px] items-start p-[20px] relative size-full">
         <Frame17 />
-        <Frame21 />
+        <Frame21 selectedIndex={selectedIndex} />
       </div>
     </div>
   );
 }
 
-function Frame15() {
+function Frame15({ selectedIndex }: { selectedIndex: number }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] items-start min-h-px relative w-[1280px]">
-      <Frame13 />
+      <Frame13 selectedIndex={selectedIndex} />
     </div>
   );
 }
@@ -390,7 +344,7 @@ function Frame22() {
   );
 }
 
-function Frame14() {
+function Frame14({ selectedIndex }: { selectedIndex: number }) {
   return (
     <div className="absolute content-stretch flex flex-col h-[800px] items-start left-0 top-0 w-[1280px]">
       <div className="bg-white content-stretch flex items-center justify-between p-[20px] relative shrink-0 w-[1280px]" data-name="Header">
@@ -457,16 +411,16 @@ function Frame14() {
       </div>
       <Frame16 />
       <Frame19 />
-      <Frame15 />
+      <Frame15 selectedIndex={selectedIndex} />
       <Frame22 />
     </div>
   );
 }
 
-export default function Home() {
+export default function Home({ selectedIndex = 0 }: { selectedIndex?: number }) {
   return (
     <div className="bg-white overflow-clip relative rounded-[20px] size-full" data-name="Home">
-      <Frame14 />
+      <Frame14 selectedIndex={selectedIndex} />
     </div>
   );
 }

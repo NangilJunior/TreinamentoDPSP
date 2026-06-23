@@ -10,7 +10,7 @@ import Inicio from "../../imports/Inicio/Inicio";
 import Frame19557 from "../../imports/Frame19557/Frame19557";
 import Frame19591 from "../../imports/Frame19591/index";
 import SangriaFlow from "./SangriaFlow";
-import Home4 from "../../imports/Home-4/index";
+import Home4, { MOTIVOS_SANGRIA } from "../../imports/Home-4/index";
 import Home6 from "../../imports/Home-6/index";
 import ValorRetiradaScreen from "./ValorRetiradaScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
@@ -154,6 +154,7 @@ function PDVSimulator() {
   const [subtotal, setSubtotal] = useState(0);
   const [activeInput, setActiveInput] = useState<"cpf" | "sku" | null>(null);
   const [valorRetirada, setValorRetirada] = useState(0);
+  const [motivoIndex, setMotivoIndex] = useState(0);
   const cpfInputRef = useRef<HTMLInputElement>(null);
   const skuInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -186,6 +187,7 @@ function PDVSimulator() {
     setTutorialStep(0);
     setIsTrainingMode(false);
     setIsFirstAccess(true);
+    setMotivoIndex(0);
   };
 
   const goToTraining = (slug: string) => {
@@ -300,6 +302,24 @@ function PDVSimulator() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTrainingMode]);
+
+  // Navegação dos motivos da sangria (step 6) pelas teclas V (↑) e K (↓),
+  // que correspondem às setas de cima/baixo do teclado do PDV.
+  useEffect(() => {
+    if (!isTrainingMode || tutorialStep !== 6) return;
+    const onNav = (e: KeyboardEvent) => {
+      const k = e.key.toLowerCase();
+      if (k === "v" || e.key === "ArrowUp") {
+        e.preventDefault();
+        setMotivoIndex((i) => Math.max(0, i - 1));
+      } else if (k === "k" || e.key === "ArrowDown") {
+        e.preventDefault();
+        setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
+      }
+    };
+    window.addEventListener("keydown", onNav);
+    return () => window.removeEventListener("keydown", onNav);
+  }, [isTrainingMode, tutorialStep]);
 
   const pdvContent = (
     <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? "h-[800px] overflow-y-auto" : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
@@ -719,7 +739,7 @@ function PDVSimulator() {
       {/* Motivos Sangria - step 6 */}
       {isTrainingMode && tutorialStep === 6 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <Home4 />
+          <Home4 selectedIndex={motivoIndex} />
           {/* Faixa explicativa - posicionada abaixo da tabela */}
           <div className="fade-in-delay absolute bottom-[112px] left-0 right-0 px-[32px]">
             <div className="bg-[rgba(15,15,15,0.88)] flex gap-[20px] items-center px-[28px] py-[18px] rounded-[10px] w-full border border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.4)]" style={{ backdropFilter: 'blur(8px)' }}>
@@ -731,7 +751,8 @@ function PDVSimulator() {
               </div>
               <p className="font-['Nunito_Sans:Regular',sans-serif] text-[14px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Para realizar a sangria, o usuário pode selecionar o tipo de sangria que deseja executar. Nessa tela, a opção{" "}
-                <span className="font-bold text-white">"Remessa Urna"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nas sangrias de caixa.
+                <span className="font-bold text-white">"Remessa Urna"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nas sangrias de caixa. Use as teclas{" "}
+                <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo.
               </p>
             </div>
           </div>
