@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
 import svgPaths from "../../imports/ManutencaoDeLojas-1/svg-ygln4qhrvj";
@@ -303,23 +303,14 @@ function PDVSimulator() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTrainingMode]);
 
-  // Navegação dos motivos da sangria (step 6) pelas teclas V (↑) e K (↓),
-  // que correspondem às setas de cima/baixo do teclado do PDV.
-  useEffect(() => {
-    if (!isTrainingMode || tutorialStep !== 6) return;
-    const onNav = (e: KeyboardEvent) => {
-      const k = e.key.toLowerCase();
-      if (k === "v" || e.key === "ArrowUp") {
-        e.preventDefault();
-        setMotivoIndex((i) => Math.max(0, i - 1));
-      } else if (k === "k" || e.key === "ArrowDown") {
-        e.preventDefault();
-        setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
-      }
-    };
-    window.addEventListener("keydown", onNav);
-    return () => window.removeEventListener("keydown", onNav);
-  }, [isTrainingMode, tutorialStep]);
+  // Navegação dos motivos da sangria (step 6) pelas teclas V (↑) e K (↓)
+  // do teclado virtual do PDV.
+  const handleVPress = useCallback(() => {
+    setMotivoIndex((i) => Math.max(0, i - 1));
+  }, []);
+  const handleKPress = useCallback(() => {
+    setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
+  }, []);
 
   const pdvContent = (
     <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? "h-[800px] overflow-y-auto" : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
@@ -1167,6 +1158,10 @@ function PDVSimulator() {
           onKey1Press={tutorialStep === 5 ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
           highlightKey0={tutorialStep === 7 && valorRetirada > 0 && valorRetirada < 100000}
           onKey0Press={undefined}
+          highlightV={tutorialStep === 6}
+          onVPress={tutorialStep === 6 ? handleVPress : undefined}
+          highlightK={tutorialStep === 6}
+          onKPress={tutorialStep === 6 ? handleKPress : undefined}
         />
       </div>
 
