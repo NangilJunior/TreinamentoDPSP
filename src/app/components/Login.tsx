@@ -109,7 +109,7 @@ function Frame8() {
   return (
     <div className="content-stretch flex items-center relative shrink-0 w-full">
       <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        Matrícula
+        Usuário
       </p>
     </div>
   );
@@ -118,14 +118,8 @@ function Frame8() {
 function Frame18({ value, onChange, onKeyPress }: { value: string; onChange: (value: string) => void; onKeyPress?: (e: React.KeyboardEvent) => void }) {
   return (
     <div className="content-stretch flex gap-[18px] items-start justify-center relative shrink-0 w-full">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Medium',sans-serif] font-medium justify-center leading-[0] relative self-stretch shrink-0 text-[20px] text-black text-center w-[9px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        <p className="leading-[1.2]">F</p>
-      </div>
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Medium',sans-serif] font-medium justify-center leading-[0] relative self-stretch shrink-0 text-[20px] text-black text-center w-[9px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        <p className="leading-[1.2]">-</p>
-      </div>
       <div className="content-stretch flex flex-[1_0_0] h-[72px] items-start min-w-px relative">
-        <div className="bg-white flex-[1_0_0] h-full min-h-[40px] min-w-px relative rounded-br-[8px] rounded-tr-[8px]" data-name="Input">
+        <div className="bg-white flex-[1_0_0] h-full min-h-[40px] min-w-px relative rounded-[8px]" data-name="Input">
           <div className="flex flex-row items-center min-h-[inherit] overflow-clip rounded-[inherit] size-full">
             <div className="content-stretch flex gap-[12px] items-center min-h-[inherit] px-[16px] py-[9.5px] relative size-full">
               <input
@@ -133,12 +127,13 @@ function Frame18({ value, onChange, onKeyPress }: { value: string; onChange: (va
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 onKeyPress={onKeyPress}
-                className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Geist:Regular',sans-serif] font-normal leading-[20px] text-[#0a0a0a] text-[14px]"
+                disabled
+                className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Geist:Regular',sans-serif] font-normal leading-[20px] text-[#0a0a0a] text-[14px] cursor-not-allowed"
                 placeholder=""
               />
             </div>
           </div>
-          <div aria-hidden="true" className="absolute border border-[#a3a3a3] border-solid inset-0 pointer-events-none rounded-br-[8px] rounded-tr-[8px] shadow-[0px_0px_0px_3px_#d4d4d4]" />
+          <div aria-hidden="true" className="absolute border border-[#e5e5e5] border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
         </div>
       </div>
     </div>
@@ -343,7 +338,7 @@ function Home({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, is
 }
 
 export default function Login() {
-  const [matricula, setMatricula] = useState("");
+  const [matricula, setMatricula] = useState("Treinamento");
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -353,7 +348,7 @@ export default function Login() {
   const handleSubmit = () => {
     if (isValid) {
       // Valida as credenciais
-      if (matricula === "00003" && senha === "abc123") {
+      if (matricula === "Treinamento" && senha === "abc123") {
         console.log("Login bem-sucedido!");
         navigate("/dashboard");
       } else {

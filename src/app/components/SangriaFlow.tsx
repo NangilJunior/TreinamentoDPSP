@@ -195,8 +195,7 @@ function MatriculaScreen({ typedText, entraState }: { typedText: string; entraSt
               Matrícula Gerencial
             </p>
           </div>
-          <div className="flex gap-[10px] items-center w-full">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap shrink-0" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>F -</p>
+          <div className="flex items-center w-full">
             <div className="flex-1 h-[72px]">
               <div className="bg-white rounded-[8px] h-full relative flex items-center px-[16px] border border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
                 {typedText ? (

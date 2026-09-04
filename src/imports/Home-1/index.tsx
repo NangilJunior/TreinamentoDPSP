@@ -222,7 +222,6 @@ function Frame10() {
 function Frame13() {
   return (
     <div className="content-stretch flex gap-[10px] items-center relative shrink-0 w-full">
-      <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>{`F - `}</p>
       <Frame10 />
     </div>
   );
