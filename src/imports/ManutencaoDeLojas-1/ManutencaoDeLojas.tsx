@@ -72,10 +72,10 @@ function Frame5() {
 function Frame3() {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col items-start leading-[1.2] relative shrink-0 text-[#0a0a0a] w-[137px]">
-      <p className="font-['Nunito_Sans:SemiBold',sans-serif] font-semibold relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-semibold relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         Cláudio Souza
       </p>
-      <p className="font-['Nunito_Sans:Regular',sans-serif] font-normal relative shrink-0 text-[10.24px] w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[10.24px] w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         claudio.souza@itlean.com.br
       </p>
     </div>
@@ -91,7 +91,7 @@ function Frame2() {
           <div className="content-stretch flex gap-[16px] items-center relative shrink-0" data-name="Button DropDown Profile">
             <div className="overflow-clip relative shrink-0 size-[40px]" data-name="Avatar">
               <div className="absolute bg-[#f5f5f5] left-0 rounded-[9999px] size-[40px] top-0" data-name="Background" />
-              <div className="-translate-x-1/2 -translate-y-1/2 [word-break:break-word] absolute flex flex-col font-['Geist:Semibold',sans-serif] justify-center leading-[0] left-[20px] not-italic size-[40px] text-[#0a0a0a] text-[14px] text-center top-[20px]">
+              <div className="-translate-x-1/2 -translate-y-1/2 [word-break:break-word] absolute flex flex-col font-['Geist',sans-serif] justify-center leading-[0] left-[20px] not-italic size-[40px] text-[#0a0a0a] text-[14px] text-center top-[20px]">
                 <p className="leading-[20px]">CS</p>
               </div>
             </div>
@@ -106,7 +106,7 @@ function Frame2() {
 function Frame4() {
   return (
     <div className="content-stretch flex flex-col items-center relative shrink-0">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#383838] text-[31.248px] text-center whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#383838] text-[31.248px] text-center whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">Sangria de caixa</p>
       </div>
     </div>
@@ -130,13 +130,13 @@ function Frame() {
                 </svg>
               </div>
             </div>
-            <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
+            <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
               <p className="leading-[20px]">Voltar</p>
             </div>
           </div>
           <Frame4 />
           <div className="content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0" data-name="Button">
-            <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#fafafa] text-[14px] text-center whitespace-nowrap">
+            <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#fafafa] text-[14px] text-center whitespace-nowrap">
               <p className="leading-[20px]">Label</p>
             </div>
           </div>

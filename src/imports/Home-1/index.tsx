@@ -8,7 +8,7 @@ function Frame2() {
           <circle cx="4.5" cy="4.5" fill="var(--fill-0, #06AC73)" id="Ellipse 2" r="4.5" />
         </svg>
       </div>
-      <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         PDV 57* Loja 0573
       </p>
     </div>
@@ -18,10 +18,10 @@ function Frame2() {
 function Frame5() {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[3px] items-start leading-[1.2] relative shrink-0 text-[#404040] w-[137px]">
-      <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         João Silva
       </p>
-      <p className="font-['Nunito_Sans:Regular',sans-serif] font-normal relative shrink-0 text-[12.8px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[12.8px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         Operador • Mat. 12345
       </p>
     </div>
@@ -121,10 +121,10 @@ function Frame7() {
 function Frame6() {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[2px] items-start leading-[1.2] relative shrink-0 text-[#404040] w-[86px]">
-      <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[16px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         31/MAR/26
       </p>
-      <p className="font-['Nunito_Sans:Regular',sans-serif] font-normal relative shrink-0 text-[12.8px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[12.8px] w-full" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         10:17:03
       </p>
     </div>
@@ -169,7 +169,7 @@ function Frame16() {
           </svg>
         </div>
       </div>
-      <p className="[word-break:break-word] font-['Geist:Medium',sans-serif] font-medium leading-[20px] relative shrink-0 text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
+      <p className="[word-break:break-word] font-['Geist',sans-serif] font-medium leading-[20px] relative shrink-0 text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
     </div>
   );
 }
@@ -187,7 +187,7 @@ function Frame15() {
 function Frame14() {
   return (
     <div className="content-stretch flex items-center relative shrink-0 w-full">
-      <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         Matrícula Gerencial
       </p>
     </div>
@@ -197,7 +197,7 @@ function Frame14() {
 function Al() {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-px items-center min-w-px relative" data-name="AL">
-      <p className="[word-break:break-word] font-['Nunito_Sans:Medium',sans-serif] font-medium leading-[1.2] relative shrink-0 text-[#737373] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-medium leading-[1.2] relative shrink-0 text-[#737373] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         Matrícula Gerencial
       </p>
     </div>
@@ -278,7 +278,7 @@ function Frame9() {
               <circle cx="4.5" cy="4.5" fill="var(--fill-0, #06AC73)" id="Ellipse 2" r="4.5" />
             </svg>
           </div>
-          <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+          <p className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
             Caixa Disponível
           </p>
         </div>
@@ -292,7 +292,7 @@ function Frame9() {
         <div className="content-stretch flex gap-[16px] items-center px-[18px] py-[12px] relative shrink-0" data-name="Button DropDown Profile">
           <div className="overflow-clip relative shrink-0 size-[40px]" data-name="Avatar">
             <div className="absolute bg-[#f5f5f5] left-0 rounded-[9999px] size-[40px] top-0" data-name="Background" />
-            <div className="-translate-x-1/2 -translate-y-1/2 [word-break:break-word] absolute flex flex-col font-['Geist:Semibold',sans-serif] justify-center leading-[0] left-[20px] not-italic size-[40px] text-[#0a0a0a] text-[14px] text-center top-[20px]">
+            <div className="-translate-x-1/2 -translate-y-1/2 [word-break:break-word] absolute flex flex-col font-['Geist',sans-serif] justify-center leading-[0] left-[20px] not-italic size-[40px] text-[#0a0a0a] text-[14px] text-center top-[20px]">
               <p className="leading-[20px]">JS</p>
             </div>
           </div>
@@ -337,7 +337,7 @@ function Frame17() {
             </svg>
           </div>
         </div>
-        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
           <p className="leading-[1.2]">Voltar</p>
         </div>
       </div>
@@ -353,7 +353,7 @@ function Frame17() {
             </svg>
           </div>
         </div>
-        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#3b3b3b] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#3b3b3b] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
           <p className="leading-[1.2]">Entra</p>
         </div>
       </div>

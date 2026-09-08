@@ -21,10 +21,10 @@ function Frame4() {
 function Frame() {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-[1_0_0] flex-col gap-[10px] items-start justify-center leading-[1.2] min-w-px py-[4px] relative text-[#7e7e7e]">
-      <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold relative shrink-0 text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         Sangria / Suprimento
       </p>
-      <p className="font-['Nunito_Sans:Regular',sans-serif] font-normal min-w-full relative shrink-0 text-[16px] w-[min-content]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal min-w-full relative shrink-0 text-[16px] w-[min-content]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
         Para realizar a sangria ou suprimento será necessária a autorização do gerente. Pressione [ENTRA] para confirmar ou [VOLTA] para cancelar.
       </p>
     </div>
@@ -55,7 +55,7 @@ function Frame1() {
             </svg>
           </div>
         </div>
-        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
           <p className="leading-[1.2]">Volta</p>
         </div>
       </div>
@@ -71,7 +71,7 @@ function Frame1() {
             </svg>
           </div>
         </div>
-        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[20px] text-center text-white whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+        <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[20px] text-center text-white whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
           <p className="leading-[1.2]">Entra</p>
         </div>
       </div>

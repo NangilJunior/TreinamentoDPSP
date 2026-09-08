@@ -5,14 +5,6 @@ import imgTreino1 from "../../imports/Desktop1/a6674fa2eff44835094f341db4e84915e
 import Frame19675 from "../../imports/Frame19675/Frame19675.tsx";
 import { useFitScale } from "./ScaleToFit";
 
-// SVG Paths for Login component
-const svgPaths = {
-  // Button icon paths
-  p2010def2: "M9.25315 9.25315C9.44841 9.05789 9.76492 9.05789 9.96018 9.25315L12.8534 12.1464C13.0487 12.3416 13.0487 12.6581 12.8534 12.8534C12.6581 13.0487 12.3416 13.0487 12.1464 12.8534L9.25315 9.96018C9.05789 9.76492 9.05789 9.44841 9.25315 9.25315Z",
-  p2ef5a800: "M10.6667 5.83333C10.6667 3.16396 8.50271 1 5.83333 1C3.16396 1 1 3.16396 1 5.83333C1 8.50271 3.16396 10.6667 5.83333 10.6667C8.50271 10.6667 10.6667 8.50271 10.6667 5.83333ZM11.6667 5.83333C11.6667 9.05499 9.05499 11.6667 5.83333 11.6667C2.61167 11.6667 0 9.05499 0 5.83333C0 2.61167 2.61167 0 5.83333 0C9.05499 0 11.6667 2.61167 11.6667 5.83333Z",
-  p1d703980: "M5.83333 6.5C5.83333 6.13181 6.13181 5.83333 6.5 5.83333C6.86819 5.83333 7.16667 6.13181 7.16667 6.5V9.16667C7.16667 9.53486 6.86819 9.83333 6.5 9.83333C6.13181 9.83333 5.83333 9.53486 5.83333 9.16667V6.5Z",
-};
-
 function Frame15() {
   return (
     <div className="h-[817px] overflow-clip relative shrink-0 w-[646px]">
@@ -88,18 +80,18 @@ interface LoginFormProps {
   onMatriculaChange: (value: string) => void;
   onSenhaChange: (value: string) => void;
   onSubmit: () => void;
-  isValid: boolean;
   error?: string;
+  passwordError?: string;
 }
 
 function Frame10() {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[8px] items-center leading-[0] relative shrink-0 text-center">
-      <div className="flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[#383838] text-[31.248px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center relative shrink-0 text-[#383838] text-[31.248px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">Centro de Treinamentos</p>
       </div>
-      <div className="flex flex-col font-['Nunito_Sans:Regular',sans-serif] font-normal justify-center relative shrink-0 text-[#6c6c6c] text-[16px] w-[287px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        <p className="leading-[1.2]">Entre com suas credenciais para acessar</p>
+      <div className="flex flex-col font-['Nunito_Sans',sans-serif] font-normal justify-center relative shrink-0 text-[#6c6c6c] text-[20px] w-[440px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+        <p className="leading-[1.2]">Informe suas credenciais para acessar</p>
       </div>
     </div>
   );
@@ -108,7 +100,7 @@ function Frame10() {
 function Frame8() {
   return (
     <div className="content-stretch flex items-center relative shrink-0 w-full">
-      <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         Usuário
       </p>
     </div>
@@ -119,7 +111,7 @@ function Frame18({ value, onChange, onKeyPress }: { value: string; onChange: (va
   return (
     <div className="content-stretch flex gap-[18px] items-start justify-center relative shrink-0 w-full">
       <div className="content-stretch flex flex-[1_0_0] h-[72px] items-start min-w-px relative">
-        <div className="bg-white flex-[1_0_0] h-full min-h-[40px] min-w-px relative rounded-[8px]" data-name="Input">
+        <div className="bg-[#f3f3f5] flex-[1_0_0] h-full min-h-[40px] min-w-px relative rounded-[8px]" data-name="Input">
           <div className="flex flex-row items-center min-h-[inherit] overflow-clip rounded-[inherit] size-full">
             <div className="content-stretch flex gap-[12px] items-center min-h-[inherit] px-[16px] py-[9.5px] relative size-full">
               <input
@@ -128,7 +120,7 @@ function Frame18({ value, onChange, onKeyPress }: { value: string; onChange: (va
                 onChange={(e) => onChange(e.target.value)}
                 onKeyPress={onKeyPress}
                 disabled
-                className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Geist:Regular',sans-serif] font-normal leading-[20px] text-[#0a0a0a] text-[14px] cursor-not-allowed"
+                className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Nunito_Sans',sans-serif] font-normal leading-[130%] text-[#737373] text-[20px] cursor-not-allowed"
                 placeholder=""
               />
             </div>
@@ -152,7 +144,7 @@ function Frame6({ value, onChange, onKeyPress }: { value: string; onChange: (val
 function Frame9() {
   return (
     <div className="content-stretch flex items-center relative shrink-0 w-full">
-      <p className="[word-break:break-word] font-['Nunito_Sans:Bold',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-bold leading-[1.2] relative shrink-0 text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         Senha
       </p>
     </div>
@@ -172,7 +164,7 @@ function Frame7({ value, onChange, onKeyPress }: { value: string; onChange: (val
                 onChange={(e) => onChange(e.target.value)}
                 onKeyPress={onKeyPress}
                 placeholder="Digite sua senha"
-                className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Nunito_Sans:Medium',sans-serif] font-medium leading-[1.2] text-[20px] placeholder:text-[#737373]"
+                className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Nunito_Sans',sans-serif] font-medium leading-[130%] text-[20px] placeholder:text-[#737373]"
                 style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}
               />
             </div>
@@ -184,18 +176,25 @@ function Frame7({ value, onChange, onKeyPress }: { value: string; onChange: (val
   );
 }
 
-function Frame17({ value, onChange, onKeyPress }: { value: string; onChange: (value: string) => void; onKeyPress?: (e: React.KeyboardEvent) => void }) {
+function Frame17({ value, onChange, onKeyPress, error }: { value: string; onChange: (value: string) => void; onKeyPress?: (e: React.KeyboardEvent) => void; error?: string }) {
   return (
     <div className="content-stretch flex flex-col gap-[18px] items-start relative shrink-0 w-full">
       <Frame9 />
       <Frame7 value={value} onChange={onChange} onKeyPress={onKeyPress} />
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-[8px] p-[16px] w-full">
+          <p className="font-['Nunito_Sans',sans-serif] font-medium text-[14px] text-red-600 text-center">
+            {error}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-function Frame16({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, isValid, error }: LoginFormProps) {
+function Frame16({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, error, passwordError }: LoginFormProps) {
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && isValid) {
+    if (e.key === 'Enter') {
       onSubmit();
     }
   };
@@ -203,39 +202,23 @@ function Frame16({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit,
   return (
     <div className="content-stretch flex flex-col gap-[24px] items-start relative shrink-0 w-full">
       <Frame6 value={matricula} onChange={onMatriculaChange} onKeyPress={handleKeyPress} />
-      <Frame17 value={senha} onChange={onSenhaChange} onKeyPress={handleKeyPress} />
+      <Frame17 value={senha} onChange={onSenhaChange} onKeyPress={handleKeyPress} error={passwordError} />
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-[8px] p-[16px] w-full">
-          <p className="font-['Nunito_Sans:Medium',sans-serif] font-medium text-[14px] text-red-600 text-center">
+          <p className="font-['Nunito_Sans',sans-serif] font-medium text-[14px] text-red-600 text-center">
             {error}
           </p>
         </div>
       )}
       <button
         onClick={onSubmit}
-        disabled={!isValid}
-        className={`h-[72px] min-h-[40px] relative rounded-[8px] shrink-0 w-full transition-all ${
-          isValid
-            ? 'bg-[#2258E6] hover:bg-[#1a47b8] cursor-pointer'
-            : 'bg-[#cfcfcf] opacity-50 cursor-not-allowed'
-        }`}
+        className="h-[72px] min-h-[40px] relative rounded-[8px] shrink-0 w-full transition-all bg-[#2258E6] hover:bg-[#1a47b8] cursor-pointer"
         data-name="Button"
       >
         <div className="flex flex-row items-center justify-center min-h-[inherit] size-full">
           <div className="content-stretch flex gap-[8px] items-center justify-center min-h-[inherit] px-[24px] py-[10px] relative size-full">
-            <div className="overflow-clip relative shrink-0 size-[16px]" data-name="Left icon">
-              <div className="absolute inset-[9.38%]" data-name="Vector">
-                <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
-                  <g id="Vector">
-                    <path d={svgPaths.p2010def2} fill={isValid ? "#FFFFFF" : "var(--fill-0, #3B3B3B)"} />
-                    <path d={svgPaths.p2ef5a800} fill={isValid ? "#FFFFFF" : "var(--fill-0, #3B3B3B)"} />
-                    <path d={svgPaths.p1d703980} fill={isValid ? "#FFFFFF" : "var(--fill-0, #3B3B3B)"} />
-                  </g>
-                </svg>
-              </div>
-            </div>
-            <div className={`[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[20px] text-center whitespace-nowrap ${isValid ? 'text-white' : 'text-[#3b3b3b]'}`} style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-              <p className="leading-[1.2]">Entra</p>
+            <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[20px] text-center text-white whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="leading-[1.2]">Entrar</p>
             </div>
           </div>
         </div>
@@ -244,7 +227,7 @@ function Frame16({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit,
   );
 }
 
-function LoginFormContent({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, isValid, error }: LoginFormProps) {
+function LoginFormContent({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, error, passwordError }: LoginFormProps) {
   return (
     <div className="bg-white flex-[1_0_0] min-h-px relative w-full">
       <div className="flex flex-col items-center size-full">
@@ -256,8 +239,8 @@ function LoginFormContent({ matricula, senha, onMatriculaChange, onSenhaChange, 
             onMatriculaChange={onMatriculaChange}
             onSenhaChange={onSenhaChange}
             onSubmit={onSubmit}
-            isValid={isValid}
             error={error}
+            passwordError={passwordError}
           />
         </div>
       </div>
@@ -283,7 +266,7 @@ function Frame13() {
   );
 }
 
-function Frame14({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, isValid, error }: LoginFormProps) {
+function Frame14({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, error, passwordError }: LoginFormProps) {
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col h-full items-start min-w-px relative">
       <Header />
@@ -294,15 +277,15 @@ function Frame14({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit,
         onMatriculaChange={onMatriculaChange}
         onSenhaChange={onSenhaChange}
         onSubmit={onSubmit}
-        isValid={isValid}
         error={error}
+        passwordError={passwordError}
       />
       <Frame13 />
     </div>
   );
 }
 
-function Frame1({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, isValid, error }: LoginFormProps) {
+function Frame1({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, error, passwordError }: LoginFormProps) {
   return (
     <div className="absolute content-stretch flex h-[800px] items-start left-0 top-0 w-[1280px]">
       <Frame15 />
@@ -312,14 +295,14 @@ function Frame1({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, 
         onMatriculaChange={onMatriculaChange}
         onSenhaChange={onSenhaChange}
         onSubmit={onSubmit}
-        isValid={isValid}
         error={error}
+        passwordError={passwordError}
       />
     </div>
   );
 }
 
-function Home({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, isValid, error }: LoginFormProps) {
+function Home({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, error, passwordError }: LoginFormProps) {
   // Escala o card fixo (1280×800) para caber proporcionalmente em telas menores.
   const scale = useFitScale(1280, 800, { paddingX: 24, paddingY: 24 });
   return (
@@ -330,8 +313,8 @@ function Home({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, is
         onMatriculaChange={onMatriculaChange}
         onSenhaChange={onSenhaChange}
         onSubmit={onSubmit}
-        isValid={isValid}
         error={error}
+        passwordError={passwordError}
       />
     </div>
   );
@@ -341,20 +324,32 @@ export default function Login() {
   const [matricula, setMatricula] = useState("Treinamento");
   const [senha, setSenha] = useState("");
   const [error, setError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  const isValid = matricula.trim().length > 0 && senha.trim().length > 0;
-
   const handleSubmit = () => {
-    if (isValid) {
-      // Valida as credenciais
-      if (matricula === "Treinamento" && senha === "abc123") {
-        console.log("Login bem-sucedido!");
-        navigate("/dashboard");
-      } else {
-        setError("Credenciais inválidas. Tente novamente.");
-        setTimeout(() => setError(""), 3000);
-      }
+    if (!senha.trim()) {
+      setError("");
+      setPasswordError("Informe sua senha antes de prosseguir.");
+      return;
+    }
+    setPasswordError("");
+    // Valida as credenciais
+    if (matricula === "Treinamento" && senha === "abc123") {
+      console.log("Login bem-sucedido!");
+      navigate("/dashboard");
+    } else {
+      setError("Credenciais inválidas. Tente novamente.");
+    }
+  };
+
+  const handleSenhaChange = (value: string) => {
+    setSenha(value);
+    if (passwordError) {
+      setPasswordError("");
+    }
+    if (error) {
+      setError("");
     }
   };
 
@@ -364,10 +359,10 @@ export default function Login() {
         matricula={matricula}
         senha={senha}
         onMatriculaChange={setMatricula}
-        onSenhaChange={setSenha}
+        onSenhaChange={handleSenhaChange}
         onSubmit={handleSubmit}
-        isValid={isValid}
         error={error}
+        passwordError={passwordError}
       />
     </div>
   );

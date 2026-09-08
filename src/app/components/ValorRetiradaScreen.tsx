@@ -17,22 +17,22 @@ export function PDVHeader() {
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[8px] items-center px-[8px] py-[6px]">
           <div className="size-[9px] rounded-full bg-[#06AC73] shrink-0" />
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>PDV 57* Loja 0573</p>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>PDV 57* Loja 0573</p>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[8px] items-center px-[8px] py-[6px]">
           <div className="size-[9px] rounded-full bg-[#06AC73] shrink-0" />
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Caixa Disponível</p>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Caixa Disponível</p>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[16px] items-center px-[18px] py-[12px]">
           <div className="overflow-clip relative shrink-0 size-[40px]">
             <div className="absolute bg-[#f5f5f5] rounded-full inset-0" />
-            <div className="absolute inset-0 flex items-center justify-center font-['Geist:Semibold',sans-serif] text-[#0a0a0a] text-[14px]">JS</div>
+            <div className="absolute inset-0 flex items-center justify-center font-['Geist',sans-serif] text-[#0a0a0a] text-[14px]">JS</div>
           </div>
           <div className="flex flex-col gap-[3px] w-[137px]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>João Silva</p>
-            <p className="font-['Nunito_Sans:Regular',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Operador • Mat. 12345</p>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>João Silva</p>
+            <p className="font-['Nunito_Sans',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Operador • Mat. 12345</p>
           </div>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
@@ -88,8 +88,8 @@ export function PDVHeader() {
             </div>
           </div>
           <div className="flex flex-col gap-[2px]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>31/MAR/26</p>
-            <p className="font-['Nunito_Sans:Regular',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>10:17:03</p>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>31/MAR/26</p>
+            <p className="font-['Nunito_Sans',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>10:17:03</p>
           </div>
         </div>
       </div>
@@ -104,7 +104,7 @@ export function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist:Medium',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
           <div className="h-[10px] relative shrink-0 w-[7px]">
             <div className="absolute inset-[-5%_-7.14%]">
               <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
@@ -112,7 +112,7 @@ export function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist:Medium',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">REALIZAR SANGRIA</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">REALIZAR SANGRIA</p>
           <div className="h-[10px] relative shrink-0 w-[7px]">
             <div className="absolute inset-[-5%_-7.14%]">
               <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
@@ -120,7 +120,7 @@ export function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist:Medium',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SANGRIA</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SANGRIA</p>
         </div>
       </div>
     </>
@@ -153,7 +153,7 @@ export default function ValorRetiradaScreen({ valorCents }: { valorCents: number
                     </div>
                   </div>
                 </div>
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#7e7e7e] text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Sangria</p>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#7e7e7e] text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Sangria</p>
               </div>
             </div>
           </div>
@@ -163,15 +163,15 @@ export default function ValorRetiradaScreen({ valorCents }: { valorCents: number
             <div className="flex flex-col gap-[18px] items-start px-[128px]">
               {/* Value input */}
               <div className="flex flex-col gap-[18px] items-start w-full">
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Valor da retirada</p>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Valor da retirada</p>
                 <div className="h-[72px] w-full">
                   <div className="bg-white rounded-[8px] h-full relative flex items-center px-[16px] border border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
                     {showValue ? (
-                      <p className="font-['Nunito_Sans:Medium',sans-serif] font-medium text-[#0a0a0a] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+                      <p className="font-['Nunito_Sans',sans-serif] font-medium text-[#0a0a0a] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                         R$ {formatCurrency(valorCents)}
                       </p>
                     ) : (
-                      <p className="font-['Nunito_Sans:Medium',sans-serif] font-medium text-[#737373] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+                      <p className="font-['Nunito_Sans',sans-serif] font-medium text-[#737373] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                         R$ 0,00
                       </p>
                     )}
@@ -182,10 +182,10 @@ export default function ValorRetiradaScreen({ valorCents }: { valorCents: number
               {/* Saldo disponível */}
               <div className="bg-white relative rounded-[6px] w-full border border-[#e8e8e8]">
                 <div className="flex flex-col items-center justify-center px-[40px] py-[20px] gap-[8px]">
-                  <p className="font-['Geist:Medium',sans-serif] font-medium text-[#4d4d4d] text-[12px] tracking-[3px] whitespace-nowrap">SALDO DISPONÍVEL EM CAIXA</p>
+                  <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[12px] tracking-[3px] whitespace-nowrap">SALDO DISPONÍVEL EM CAIXA</p>
                   <div className="flex items-end gap-[12px]">
-                    <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[14px] mb-[4px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>R$</p>
-                    <p className="font-['Nunito_Sans:ExtraBold',sans-serif] font-extrabold text-[#404040] text-[36px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>1.250,00</p>
+                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[14px] mb-[4px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>R$</p>
+                    <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#404040] text-[36px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>1.250,00</p>
                   </div>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function ValorRetiradaScreen({ valorCents }: { valorCents: number
               </svg>
             </div>
           </div>
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Volta</p>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Volta</p>
         </div>
 
         {/* Confirmar */}
@@ -245,7 +245,7 @@ export default function ValorRetiradaScreen({ valorCents }: { valorCents: number
               </svg>
             </div>
           </div>
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-center whitespace-nowrap"
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap"
             style={{ color: isValidValue ? 'white' : '#3b3b3b', fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
             Confirmar
           </p>

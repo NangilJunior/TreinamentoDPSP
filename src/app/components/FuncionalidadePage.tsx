@@ -90,7 +90,7 @@ function Frame2() {
 function Frame4({ titulo }: { titulo: string }) {
   return (
     <div className="content-stretch flex flex-col items-center relative shrink-0">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#383838] text-[31.248px] text-center whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#383838] text-[31.248px] text-center whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">{titulo}</p>
       </div>
     </div>
@@ -120,7 +120,7 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
                     </svg>
                   </div>
                 </div>
-                <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
+                <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
                   <p className="leading-[20px]">Voltar</p>
                 </div>
               </button>
@@ -333,7 +333,7 @@ function PDVSimulator() {
               <circle cx="4.5" cy="4.5" fill="#06AC73" r="4.5" />
             </svg>
           </div>
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[16px] text-[#787878]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#787878]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
             PDV 57* Loja 0573
           </p>
         </div>
@@ -344,7 +344,7 @@ function PDVSimulator() {
               <circle cx="4.5" cy="4.5" fill="#06AC73" r="4.5" />
             </svg>
           </div>
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[16px] text-[#787878]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#787878]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
             Caixa Disponível
           </p>
         </div>
@@ -352,15 +352,15 @@ function PDVSimulator() {
         <div className="flex gap-[16px] items-center px-[18px] py-[12px]">
           <div className="overflow-clip relative size-[40px]">
             <div className="absolute bg-[#f5f5f5] left-0 rounded-full size-[40px] top-0" />
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-['Geist:Semibold',sans-serif] text-[#0a0a0a] text-[14px]">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-['Geist',sans-serif] text-[#0a0a0a] text-[14px]">
               <p>JS</p>
             </div>
           </div>
           <div className="flex flex-col gap-[3px] text-[#404040]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               João Silva
             </p>
-            <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12.8px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+            <p className="font-['Nunito_Sans',sans-serif] text-[12.8px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               Operador • Mat. 12345
             </p>
           </div>
@@ -451,10 +451,10 @@ function PDVSimulator() {
             </div>
           </div>
           <div className="flex flex-col gap-[2px] text-[#404040]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               31/MAR/26
             </p>
-            <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12.8px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+            <p className="font-['Nunito_Sans',sans-serif] text-[12.8px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               10:17:03
             </p>
           </div>
@@ -477,17 +477,17 @@ function PDVSimulator() {
                   </svg>
                 </div>
               </div>
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Identificação do Cliente
               </p>
             </div>
 
             <div className="bg-[#f5f5f5] flex rounded-[12px]">
               <div className="bg-[#2258e6] flex gap-[8px] items-center justify-center px-[32px] py-[16px] rounded-[10px] w-[256px] shadow-sm">
-                <p className="font-['Geist:Medium',sans-serif] font-medium text-[14px] text-white">Com identificação</p>
+                <p className="font-['Geist',sans-serif] font-medium text-[14px] text-white">Com identificação</p>
               </div>
               <div className="flex gap-[8px] items-center justify-center px-[32px] py-[14px] w-[256px]">
-                <p className="font-['Geist:Medium',sans-serif] font-medium text-[14px] text-[#0a0a0a]">Sem Identificação</p>
+                <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">Sem Identificação</p>
               </div>
             </div>
 
@@ -499,7 +499,7 @@ function PDVSimulator() {
                 onChange={(e) => setCpf(e.target.value)}
                 onFocus={() => setActiveInput("cpf")}
                 placeholder="|Digite o CPF do cliente ou aperte [Volta] para seguir sem identificação"
-                className="flex-1 bg-white h-[48px] rounded-[8px] px-[16px] border border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4] font-['Geist:Regular',sans-serif] text-[14px] text-[#787878] focus:outline-none focus:border-[#2258e6]"
+                className="flex-1 bg-white h-[48px] rounded-[8px] px-[16px] border border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4] font-['Geist',sans-serif] text-[14px] text-[#787878] focus:outline-none focus:border-[#2258e6]"
               />
               <button className="bg-[#171717] opacity-50 flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[48px] rounded-[8px]">
                 <div className="overflow-clip relative shrink-0 size-[16px]">
@@ -512,7 +512,7 @@ function PDVSimulator() {
                     </svg>
                   </div>
                 </div>
-                <p className="font-['Geist:Medium',sans-serif] font-medium text-[14px] text-[#fafafa]">Buscar</p>
+                <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#fafafa]">Buscar</p>
                 <div className="overflow-clip relative shrink-0 size-[16px]">
                   <div className="absolute inset-[9.38%]">
                     <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
@@ -553,7 +553,7 @@ function PDVSimulator() {
                   </svg>
                 </div>
               </div>
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Entrada de Produtos
               </p>
             </div>
@@ -566,7 +566,7 @@ function PDVSimulator() {
               onKeyDown={handleAddProduct}
               onFocus={() => setActiveInput("sku")}
               placeholder="SKU do produto - Escaneie o código do produto ou digite"
-              className="bg-white h-[56px] rounded-[8px] px-[16px] border border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4] font-['Geist:Regular',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none focus:border-[#2258e6]"
+              className="bg-white h-[56px] rounded-[8px] px-[16px] border border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4] font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none focus:border-[#2258e6]"
             />
           </div>
 
@@ -586,7 +586,7 @@ function PDVSimulator() {
                   </svg>
                 </div>
               </div>
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Itens da Venda
               </p>
             </div>
@@ -598,7 +598,7 @@ function PDVSimulator() {
           <div className="bg-white flex-1 min-h-[200px]">
             {items.length === 0 ? (
               <div className="flex items-center justify-center h-full p-[20px]">
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Nenhum produto adicionado
                 </p>
               </div>
@@ -608,18 +608,18 @@ function PDVSimulator() {
                   {items.map((item, idx) => (
                     <div key={idx} className="flex justify-between items-center p-[12px] bg-[#f6f6f6] rounded-[8px]">
                       <div className="flex-1">
-                        <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[14px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        <p className="font-['Nunito_Sans',sans-serif] font-bold text-[14px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                           {item.name}
                         </p>
-                        <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12px] text-[#787878]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-[#787878]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                           SKU: {item.sku}
                         </p>
                       </div>
                       <div className="flex gap-[16px] items-center">
-                        <p className="font-['Nunito_Sans:Regular',sans-serif] text-[14px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        <p className="font-['Nunito_Sans',sans-serif] text-[14px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                           Qtd: {item.qty}
                         </p>
-                        <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                           R$ {(item.price * item.qty).toFixed(2)}
                         </p>
                       </div>
@@ -651,16 +651,16 @@ function PDVSimulator() {
                   </svg>
                 </div>
               </div>
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Resumo da Venda
               </p>
             </div>
 
             <div className="flex justify-between">
-              <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Subtotal:
               </p>
-              <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 R$ {subtotal.toFixed(2)}
               </p>
             </div>
@@ -668,10 +668,10 @@ function PDVSimulator() {
             <div className="h-px bg-[#bdbdbd]" />
 
             <div className="flex justify-between">
-              <p className="font-['Nunito_Sans:ExtraBold',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Total:
               </p>
-              <p className="font-['Nunito_Sans:ExtraBold',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 R$ {subtotal.toFixed(2)}
               </p>
             </div>
@@ -693,11 +693,11 @@ function PDVSimulator() {
                   </svg>
                 </div>
               </div>
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Totalizar Venda
               </p>
               <div className="bg-[rgba(255,255,255,0.2)] px-[8px] py-[4px] rounded-[4px]">
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   SUB TOTAL
                 </p>
               </div>
@@ -740,7 +740,7 @@ function PDVSimulator() {
                   <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
-              <p className="font-['Nunito_Sans:Regular',sans-serif] text-[14px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[14px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Para realizar a sangria, o usuário pode selecionar o tipo de sangria que deseja executar. Nessa tela, a opção{" "}
                 <span className="font-bold text-white">"Remessa Urna"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nas sangrias de caixa. Use as teclas{" "}
                 <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo.
@@ -824,7 +824,7 @@ function PDVSimulator() {
                   <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
                 </svg>
               </div>
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Iniciar Treinamento
               </p>
             </div>
@@ -866,16 +866,16 @@ function PDVSimulator() {
                 </svg>
               </div>
               <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Ação do Gerente
                 </p>
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Esta operação requer a presença e autenticação do gerente responsável pela loja.
                 </p>
               </div>
               <div className="shrink-0 ml-auto flex items-center gap-[7px] rounded-full px-[14px] py-[7px] bg-white/10 border border-white/20">
                 <div className="w-[6px] h-[6px] rounded-full bg-white animate-pulse" />
-                <span className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[11px] text-white uppercase tracking-widest">Aguardando</span>
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[11px] text-white uppercase tracking-widest">Aguardando</span>
               </div>
             </div>
           </div>
@@ -899,10 +899,10 @@ function PDVSimulator() {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Iniciando a Sangria de Caixa
                 </p>
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para iniciar o processo de Sangria de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.
                 </p>
               </div>
@@ -910,14 +910,14 @@ function PDVSimulator() {
               <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
                 <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
                 <div className="flex flex-col items-start w-full gap-[4px]">
-                  <div className="font-['Chivo_Mono:Medium',sans-serif] font-medium text-[14px] text-white leading-[16px]">V</div>
+                  <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">V</div>
                   <div className="flex items-center justify-center w-full">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                       <path d="M12 5v14M5 12l7-7 7 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>
-                <div className="font-['Geist:Bold',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">SANGRIA</div>
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">SANGRIA</div>
               </div>
             </div>
           </div>
@@ -931,7 +931,7 @@ function PDVSimulator() {
                 <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
                 <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <p className="font-['Nunito_Sans:Regular',sans-serif] text-[13px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[13px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Informe o valor que será retirado. Neste exemplo, será realizada uma sangria no valor de{" "}
                 <span className="font-bold text-white">R$ 1.000,00</span>. Digite utilizando o teclado virtual e pressione{" "}
                 <span className="font-bold text-white">[Entra]</span> para continuar.
@@ -960,10 +960,10 @@ function PDVSimulator() {
                 </svg>
               </div>
               <div className="flex flex-col gap-[2px] flex-1">
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Gaveta Aberta
                 </p>
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Nesta etapa, a gaveta do caixa ser&aacute; aberta. Retire o valor indicado e, para prosseguir, feche a gaveta.
                 </p>
               </div>
@@ -978,7 +978,7 @@ function PDVSimulator() {
                 <svg className="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none">
                   <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <span className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest whitespace-nowrap">Fechar Gaveta</span>
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest whitespace-nowrap">Fechar Gaveta</span>
               </button>
             </div>
           </div>
@@ -996,10 +996,10 @@ function PDVSimulator() {
                 </svg>
               </div>
               <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Parabéns!
                 </p>
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   A sangria de caixa foi realizada e concluída com sucesso.
                 </p>
               </div>
@@ -1071,7 +1071,7 @@ function PDVSimulator() {
           <line x1="6" y1="14" x2="8" y2="14" stroke="white" strokeWidth="2" strokeLinecap="round" />
           <line x1="10" y1="14" x2="16" y2="14" stroke="white" strokeWidth="2" strokeLinecap="round" />
         </svg>
-        <span className="font-['Geist:Medium',sans-serif] font-medium text-[14px] text-white">
+        <span className="font-['Geist',sans-serif] font-medium text-[14px] text-white">
           {showKeyboard ? "Ocultar Teclado" : "Exibir Teclado"}
         </span>
       </button>
@@ -1180,10 +1180,10 @@ function PDVSimulator() {
                 </svg>
               </div>
               <div className="flex flex-col gap-[12px] items-center">
-                <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[40px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[40px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Treinamento concluído!
                 </p>
-                <p className="font-['Nunito_Sans:Regular',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">Sangria de Caixa</span>. Agora você está pronto para realizar essa operação no PDV.
                 </p>
               </div>
@@ -1191,7 +1191,7 @@ function PDVSimulator() {
 
             {/* Sugestões de próximos treinamentos */}
             <div className="w-full flex flex-col gap-[20px]">
-              <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[18px] text-white/90 text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white/90 text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Continue aprendendo
               </p>
               <div className="grid grid-cols-2 gap-[24px]">
@@ -1213,10 +1213,10 @@ function PDVSimulator() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-[6px] flex-1 min-w-0">
-                      <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[17px] text-white leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[17px] text-white leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                         {s.titulo}
                       </p>
-                      <p className="font-['Nunito_Sans:Regular',sans-serif] text-[13px] text-white/60 leading-relaxed line-clamp-2" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      <p className="font-['Nunito_Sans',sans-serif] text-[13px] text-white/60 leading-relaxed line-clamp-2" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                         {s.descricao}
                       </p>
                     </div>
@@ -1247,13 +1247,13 @@ function ContentBody({ conteudo, hasPDV }: { conteudo: string; hasPDV?: boolean 
     <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
       <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[48px]">
         <div className="prose max-w-none mb-[48px]">
-          <p className="font-['Nunito_Sans:Regular',sans-serif] text-[16px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+          <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
             {conteudo}
           </p>
         </div>
         {hasPDV && (
           <div className="mt-[48px]">
-            <h2 className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[24px] text-[#383838] mb-[24px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+            <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[24px] text-[#383838] mb-[24px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               Simulador PDV - Prática de Treinamento
             </h2>
             <PDVSimulator />

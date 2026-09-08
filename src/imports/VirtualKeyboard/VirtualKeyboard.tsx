@@ -31,10 +31,10 @@ function Frame() {
   return (
     <div className="bg-[#52586d] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#5f6478] active:bg-[#454a5c] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">Q</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">PAUSA</p>
         </div>
       </div>
@@ -46,10 +46,10 @@ function Frame6() {
   return (
     <div className="bg-[#efc120] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-[#454545]">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">H</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">CHEQUE</p>
         </div>
       </div>
@@ -70,10 +70,10 @@ function Frame1() {
   return (
     <div className="bg-[#52586d] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#5f6478] active:bg-[#454a5c] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">W</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">FUNÇÕES</p>
         </div>
       </div>
@@ -85,10 +85,10 @@ function Frame5() {
   return (
     <div className="bg-[#a656eb] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#b571ef] active:bg-[#9440d9] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">Y</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">VOUNCHER</p>
         </div>
       </div>
@@ -100,10 +100,10 @@ function Frame4() {
   return (
     <div className="bg-[#f07121] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f38943] active:bg-[#d96412] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">E</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">FITA DETALHE</p>
         </div>
       </div>
@@ -115,10 +115,10 @@ function Frame8() {
   return (
     <div className="bg-[#f07121] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f38943] active:bg-[#d96412] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">R</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">CONVÊNIO</p>
         </div>
       </div>
@@ -130,10 +130,10 @@ function Frame9() {
   return (
     <div className="bg-[#f07121] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f38943] active:bg-[#d96412] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">T</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">PBM</p>
         </div>
       </div>
@@ -145,10 +145,10 @@ function Frame10() {
   return (
     <div className="bg-[#efc120] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-[#454545]">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">J</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">CARTÃO POS</p>
         </div>
       </div>
@@ -173,10 +173,10 @@ function Frame12() {
   return (
     <div className="bg-[#52586d] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#5f6478] active:bg-[#454a5c] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[22px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">S</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">TROCAR SENHA</p>
         </div>
       </div>
@@ -188,10 +188,10 @@ function Frame13() {
   return (
     <div className="bg-[#a656eb] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#b571ef] active:bg-[#9440d9] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">U</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">DDG</p>
         </div>
       </div>
@@ -203,10 +203,10 @@ function Frame14() {
   return (
     <div className="bg-[#f07121] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f38943] active:bg-[#d96412] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">D</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">RECARGA</p>
         </div>
       </div>
@@ -218,10 +218,10 @@ function Frame15() {
   return (
     <div className="bg-[#f07121] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f38943] active:bg-[#d96412] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">F</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">DELIVERY</p>
         </div>
       </div>
@@ -233,10 +233,10 @@ function Frame16() {
   return (
     <div className="bg-[#f07121] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f38943] active:bg-[#d96412] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[22px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">G</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[8px] mb-[12px]">RESGATE</p>
           <p className="leading-[8px]">PERDIDOS</p>
         </div>
@@ -249,10 +249,10 @@ function Frame17() {
   return (
     <div className="bg-[#efc120] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-[#454545]">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">N</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">DÉBITO</p>
         </div>
       </div>
@@ -277,10 +277,10 @@ function Frame19() {
   return (
     <div className="bg-[#ea494c] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#ee6568] active:bg-[#d93134] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">A</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">TROCA</p>
         </div>
       </div>
@@ -292,10 +292,10 @@ function Frame20() {
   return (
     <div className="bg-[#2ebb62] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#4fc878] active:bg-[#1fa751] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[22px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">X</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[8px] mb-[12px]">ENTRADA</p>
           <p className="leading-[8px]">OPERADOR</p>
         </div>
@@ -308,10 +308,10 @@ function Frame21() {
   return (
     <div className="bg-[#2ebb62] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#4fc878] active:bg-[#1fa751] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">C</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">CARGA BASE</p>
         </div>
       </div>
@@ -339,7 +339,7 @@ function Frame24() {
 function Frame23() {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0 w-full">
-      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
+      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
         <p className="leading-[16px]">V</p>
       </div>
       <Frame24 />
@@ -357,7 +357,7 @@ function Frame22({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
     >
       <div className="content-stretch flex flex-col gap-[4px] items-start p-[10px] relative size-full">
         <Frame23 />
-        <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+        <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
           <p className="leading-[16px]">SANGRIA</p>
         </div>
       </div>
@@ -369,10 +369,10 @@ function Frame25() {
   return (
     <div className="bg-[#2ebb62] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#4fc878] active:bg-[#1fa751] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[22px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">B</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[8px] mb-[12px]">SAÍDA</p>
           <p className="leading-[8px]">OPERADOR</p>
         </div>
@@ -385,10 +385,10 @@ function Frame26() {
   return (
     <div className="bg-[#efc120] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-[#454545]">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">M</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">CRÉDITO</p>
         </div>
       </div>
@@ -414,10 +414,10 @@ function Frame28() {
   return (
     <div className="bg-[#ea494c] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#ee6568] active:bg-[#d93134] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">Z</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[16px]">CANCELAR</p>
         </div>
       </div>
@@ -429,10 +429,10 @@ function Frame29() {
   return (
     <div className="bg-[#2ebb62] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#4fc878] active:bg-[#1fa751] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[22px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">O</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[8px] mb-[12px]">ABRIR</p>
           <p className="leading-[8px]">GAVETA</p>
         </div>
@@ -444,7 +444,7 @@ function Frame29() {
 function Frame31() {
   return (
     <div className="content-stretch flex flex-col items-start relative shrink-0">
-      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
+      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
         <p className="leading-[16px]">P</p>
       </div>
     </div>
@@ -472,7 +472,7 @@ function Frame32() {
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] h-full items-center justify-center min-w-px relative">
       <Frame33 />
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
         <p className="leading-[16px]">LEITURA X</p>
       </div>
     </div>
@@ -493,7 +493,7 @@ function Frame30() {
 function Frame35() {
   return (
     <div className="content-stretch flex flex-col items-start mr-[-5px] relative shrink-0">
-      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
+      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
         <p className="leading-[16px]">K</p>
       </div>
     </div>
@@ -521,7 +521,7 @@ function Frame36() {
   return (
     <div className="content-stretch flex flex-col gap-[4px] h-full items-center justify-center relative shrink-0 w-[113px]">
       <Frame37 />
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
         <p className="leading-[16px]">FECHAMENTO</p>
       </div>
     </div>
@@ -544,7 +544,7 @@ function Frame34({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
 function Frame39() {
   return (
     <div className="content-stretch flex flex-col items-start mr-[-9px] relative shrink-0">
-      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
+      <div className="[word-break:break-word] flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[14px] text-white whitespace-nowrap">
         <p className="leading-[16px]">L</p>
       </div>
     </div>
@@ -572,7 +572,7 @@ function Frame40() {
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col gap-[4px] h-full items-center justify-end min-w-px relative">
       <Frame41 />
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold h-[33px] justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold h-[33px] justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
         <p className="leading-[8px] mb-[12px]">CONSULTA</p>
         <p className="leading-[8px]">ITEM</p>
       </div>
@@ -596,7 +596,7 @@ function Frame42() {
     <div className="bg-[#efc120] flex-[1_0_0] h-full min-w-px relative rounded-[8px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
       <div className="flex flex-col items-center justify-center size-full">
         <div className="content-stretch flex flex-col items-center justify-center p-[10px] relative size-full">
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold h-[45px] justify-center leading-[0] relative shrink-0 text-[#454545] text-[16px] text-center w-full">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold h-[45px] justify-center leading-[0] relative shrink-0 text-[#454545] text-[16px] text-center w-full">
             <p className="leading-[6px] mb-[12px]">SUPRIMENTO</p>
             <p className="leading-[6px]">DINHEIRO</p>
           </div>
@@ -623,10 +623,10 @@ function Frame44() {
   return (
     <div className="bg-[#ea494c] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#ee6568] active:bg-[#d93134] transition-colors">
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[22px] items-start leading-[0] p-[10px] relative size-full text-white">
-        <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+        <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">I</p>
         </div>
-        <div className="flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
+        <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
           <p className="leading-[8px] mb-[12px]">ESTORNO</p>
           <p className="leading-[8px]">PGTO</p>
         </div>
@@ -659,10 +659,10 @@ function Frame7({ highlightSangria, onSangriaPress, highlightV, onVPress, highli
 function Frame47() {
   return (
     <div className="[word-break:break-word] bg-white content-stretch flex flex-col gap-[22px] h-[123px] items-center leading-[0] px-[10px] py-[9px] relative rounded-[8px] shrink-0 text-[#2d2d2d] w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
+      <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
         <p className="leading-[16px]">MULTIPLICA</p>
       </div>
-      <div className="flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center relative shrink-0 text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center relative shrink-0 text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">*</p>
       </div>
     </div>
@@ -672,7 +672,7 @@ function Frame47() {
 function Frame48() {
   return (
     <div className="bg-[#8e99b0] content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#9ea8bc] active:bg-[#7d8a9f] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#323232] text-[16px] text-center w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#323232] text-[16px] text-center w-full">
         <p className="leading-[16px]">VOLTA</p>
       </div>
     </div>
@@ -682,7 +682,7 @@ function Frame48() {
 function Frame49() {
   return (
     <div className="bg-[#ef7121] content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f28943] active:bg-[#d96412] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
         <p className="leading-[16px]">SUB TOTAL</p>
       </div>
     </div>
@@ -702,7 +702,7 @@ function Frame46() {
 function Frame51() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">7</p>
       </div>
     </div>
@@ -712,7 +712,7 @@ function Frame51() {
 function Frame52() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">8</p>
       </div>
     </div>
@@ -722,7 +722,7 @@ function Frame52() {
 function Frame53() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">9</p>
       </div>
     </div>
@@ -732,7 +732,7 @@ function Frame53() {
 function Frame54() {
   return (
     <div className="bg-[#ea494c] content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#ee6568] active:bg-[#d93134] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
         <p className="leading-[16px]">ANULA</p>
       </div>
     </div>
@@ -753,7 +753,7 @@ function Frame50() {
 function Frame56() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">4</p>
       </div>
     </div>
@@ -763,7 +763,7 @@ function Frame56() {
 function Frame57() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">5</p>
       </div>
     </div>
@@ -773,7 +773,7 @@ function Frame57() {
 function Frame58() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">6</p>
       </div>
     </div>
@@ -783,7 +783,7 @@ function Frame58() {
 function Frame59() {
   return (
     <div className="bg-[#efc120] content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#454545] text-[16px] text-center w-full">
+      <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[#454545] text-[16px] text-center w-full">
         <p className="leading-[16px]">LIMPA</p>
       </div>
     </div>
@@ -804,7 +804,7 @@ function Frame55() {
 function Frame63({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
     <div onClick={onPress} className={highlighted ? "bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors key-highlighted-white z-[10]" : "bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors"}>
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">1</p>
       </div>
     </div>
@@ -814,7 +814,7 @@ function Frame63({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
 function Frame64() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">2</p>
       </div>
     </div>
@@ -824,7 +824,7 @@ function Frame64() {
 function Frame65() {
   return (
     <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">3</p>
       </div>
     </div>
@@ -844,7 +844,7 @@ function Frame62({ highlightKey1, onKey1Press }: { highlightKey1?: boolean; onKe
 function Frame68() {
   return (
     <div className="bg-[rgba(255,255,255,0.6)] content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[rgba(255,255,255,0.75)] active:bg-[rgba(255,255,255,0.45)] transition-colors">
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">00</p>
       </div>
     </div>
@@ -862,7 +862,7 @@ function Frame67() {
 function Frame70({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
     <div onClick={onPress} className={highlighted ? "bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors key-highlighted-white z-[10]" : "bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors"}>
-      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans:Black',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">0</p>
       </div>
     </div>
@@ -905,7 +905,7 @@ function Frame71({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
     >
       <div className="flex flex-col items-center justify-center size-full">
         <div className="content-stretch flex flex-col items-center justify-center p-[10px] relative size-full">
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Bold',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
             <p className="leading-[16px]">ENTRA</p>
           </div>
         </div>

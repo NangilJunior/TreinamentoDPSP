@@ -27,22 +27,22 @@ function PDVHeader() {
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[8px] items-center px-[8px] py-[6px]">
           <div className="size-[9px] rounded-full bg-[#06AC73] shrink-0" />
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>PDV 57* Loja 0573</p>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>PDV 57* Loja 0573</p>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[8px] items-center px-[8px] py-[6px]">
           <div className="size-[9px] rounded-full bg-[#06AC73] shrink-0" />
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Caixa Disponível</p>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Caixa Disponível</p>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[16px] items-center px-[18px] py-[12px]">
           <div className="overflow-clip relative shrink-0 size-[40px]">
             <div className="absolute bg-[#f5f5f5] rounded-full inset-0" />
-            <div className="absolute inset-0 flex items-center justify-center font-['Geist:Semibold',sans-serif] text-[#0a0a0a] text-[14px]">JS</div>
+            <div className="absolute inset-0 flex items-center justify-center font-['Geist',sans-serif] text-[#0a0a0a] text-[14px]">JS</div>
           </div>
           <div className="flex flex-col gap-[3px] w-[137px]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>João Silva</p>
-            <p className="font-['Nunito_Sans:Regular',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Operador • Mat. 12345</p>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>João Silva</p>
+            <p className="font-['Nunito_Sans',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Operador • Mat. 12345</p>
           </div>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
@@ -98,8 +98,8 @@ function PDVHeader() {
             </div>
           </div>
           <div className="flex flex-col gap-[2px]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>31/MAR/26</p>
-            <p className="font-['Nunito_Sans:Regular',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>10:17:03</p>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>31/MAR/26</p>
+            <p className="font-['Nunito_Sans',sans-serif] text-[#404040] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>10:17:03</p>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ function PDVHeader() {
                 </svg>
               </div>
             </div>
-            <p className="font-['Geist:Medium',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
+            <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ function VoltaButton() {
           </svg>
         </div>
       </div>
-      <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Voltar</p>
+      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Voltar</p>
     </div>
   );
 }
@@ -164,7 +164,7 @@ function EntraButton({ state }: { state: EntraState }) {
         </div>
       </div>
       <p
-        className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px] text-center whitespace-nowrap"
+        className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap"
         style={{ color: active ? "white" : "#3b3b3b", fontVariationSettings: '"YTLC" 500, "wdth" 100' }}
       >
         Entra
@@ -191,7 +191,7 @@ function MatriculaScreen({ typedText, entraState }: { typedText: string; entraSt
       <div className="bg-white flex-1 p-[20px]">
         <div className="h-[202px] w-full flex flex-col items-center justify-center px-[240px]">
           <div className="flex items-center w-full mb-[18px]">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
               Matrícula Gerencial
             </p>
           </div>
@@ -199,11 +199,11 @@ function MatriculaScreen({ typedText, entraState }: { typedText: string; entraSt
             <div className="flex-1 h-[72px]">
               <div className="bg-white rounded-[8px] h-full relative flex items-center px-[16px] border border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
                 {typedText ? (
-                  <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[20px] tracking-[6px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+                  <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px] tracking-[6px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                     {typedText}
                   </p>
                 ) : (
-                  <p className="font-['Nunito_Sans:Medium',sans-serif] font-medium text-[#737373] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+                  <p className="font-['Nunito_Sans',sans-serif] font-medium text-[#737373] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                     Matrícula Gerencial
                   </p>
                 )}
@@ -226,7 +226,7 @@ function SenhaScreen({ dotCount, entraState }: { dotCount: number; entraState: E
       <div className="bg-white flex-1 p-[20px]">
         <div className="w-full flex flex-col gap-[18px] items-center justify-center px-[240px] pt-[20px]">
           <div className="flex items-center w-full">
-            <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
               Senha Gerencial
             </p>
           </div>
@@ -237,7 +237,7 @@ function SenhaScreen({ dotCount, entraState }: { dotCount: number; entraState: E
                   {"●".repeat(dotCount)}
                 </p>
               ) : (
-                <p className="font-['Nunito_Sans:Medium',sans-serif] font-medium text-[#737373] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-medium text-[#737373] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                   Digite sua senha
                 </p>
               )}
@@ -279,7 +279,7 @@ function SelectionScreen() {
             </div>
             <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
               <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
-              <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
+              <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
                 <p className="leading-[16px]">1</p>
               </div>
               <div className="flex h-full items-center justify-center shrink-0">
@@ -296,7 +296,7 @@ function SelectionScreen() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans:Medium',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+              <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                 <p className="leading-[1.2]">Realizar Sangria</p>
               </div>
             </div>
@@ -304,7 +304,7 @@ function SelectionScreen() {
           {/* Consultar Suprimento */}
           <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
             <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
-            <div className="flex flex-col font-['Chivo_Mono:Medium',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
+            <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
               <p className="leading-[16px]">2</p>
             </div>
             <div className="flex h-full items-center justify-center shrink-0">
@@ -321,7 +321,7 @@ function SelectionScreen() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans:Medium',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+            <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
               <p className="leading-[1.2]">Consultar Suprimento de Caixa</p>
             </div>
           </div>

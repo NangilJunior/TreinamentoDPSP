@@ -97,10 +97,10 @@ function Frame3() {
 function Frame7() {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[8px] items-center leading-[0] relative shrink-0 text-center whitespace-nowrap">
-      <div className="flex flex-col font-['Nunito_Sans:Bold',sans-serif] font-bold justify-center relative shrink-0 text-[#383838] text-[31.248px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="flex flex-col font-['Nunito_Sans',sans-serif] font-bold justify-center relative shrink-0 text-[#383838] text-[31.248px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">Centro de Treinamentos</p>
       </div>
-      <div className="flex flex-col font-['Nunito_Sans:Regular',sans-serif] font-normal justify-center relative shrink-0 text-[#6c6c6c] text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <div className="flex flex-col font-['Nunito_Sans',sans-serif] font-normal justify-center relative shrink-0 text-[#6c6c6c] text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">O que você gostaria de aprender hoje?</p>
       </div>
     </div>
@@ -115,7 +115,7 @@ function Al({ value, onChange }: { value: string; onChange: (value: string) => v
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Busque a funcionalidade"
-        className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Geist:Regular',sans-serif] font-normal leading-[20px] text-[#0a0a0a] text-[14px] placeholder:text-[#737373]"
+        className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Geist',sans-serif] font-normal leading-[20px] text-[#0a0a0a] text-[14px] placeholder:text-[#737373]"
       />
     </div>
   );
@@ -187,7 +187,7 @@ function Frame5({ searchTerm, onSearchChange, onSearch }: { searchTerm: string; 
               </svg>
             </div>
           </div>
-          <span className="font-['Geist:Medium',sans-serif] font-medium text-[#fafafa] text-[14px] whitespace-nowrap">
+          <span className="font-['Geist',sans-serif] font-medium text-[#fafafa] text-[14px] whitespace-nowrap">
             Pesquisar
           </span>
         </div>
@@ -239,17 +239,17 @@ function FuncionalidadeCard({ funcionalidade, onClick }: { funcionalidade: Funci
         </div>
         <div className="absolute bg-[rgba(51,50,67,0.64)] inset-0 hover:bg-[rgba(51,50,67,0.5)] transition-colors" />
         <div className="absolute inset-0 flex items-center justify-center px-[24px]">
-          <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[24px] text-center text-white leading-[1.2] max-w-[200px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[24px] text-center text-white leading-[1.2] max-w-[200px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
             {funcionalidade.titulo}
           </p>
         </div>
       </div>
       <div className="[word-break:break-word] flex flex-col gap-[8px] items-start leading-[1.2] text-[#434343]">
-        <p className="font-['Nunito_Sans:Bold',sans-serif] font-bold text-[20px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+        <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
           {funcionalidade.titulo}
         </p>
         <p
-          className="font-['Nunito_Sans:Regular',sans-serif] font-normal text-[12.8px] line-clamp-3"
+          className="font-['Nunito_Sans',sans-serif] font-normal text-[12.8px] line-clamp-3"
           style={{
             fontVariationSettings: "'YTLC' 500, 'wdth' 100",
             display: '-webkit-box',
@@ -269,7 +269,7 @@ function Frame6({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFilt
   if (funcionalidadesFiltradas.length === 0) {
     return (
       <div className="flex items-center justify-center py-[80px] w-full col-span-12">
-        <p className="font-['Nunito_Sans:Regular',sans-serif] font-normal text-[16px] text-[#6c6c6c]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+        <p className="font-['Nunito_Sans',sans-serif] font-normal text-[16px] text-[#6c6c6c]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
           Nenhuma funcionalidade encontrada
         </p>
       </div>
@@ -292,7 +292,7 @@ function Example() {
     <div className="content-stretch flex gap-[8px] items-center relative shrink-0" data-name="Example">
       <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination">
         <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
             <p className="leading-[20px]">Anterior</p>
           </div>
         </div>
@@ -300,21 +300,21 @@ function Example() {
       <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Button">
         <div className="bg-[rgba(255,255,255,0.1)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0 w-[34px]" data-name="Button">
           <div aria-hidden="true" className="absolute border border-[#d4d4d4] border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
             <p className="leading-[20px]">1</p>
           </div>
         </div>
       </div>
       <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Button">
         <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0 w-[34px]" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
             <p className="leading-[20px]">2</p>
           </div>
         </div>
       </div>
       <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Button">
         <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0 w-[34px]" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
             <p className="leading-[20px]">3</p>
           </div>
         </div>
@@ -336,7 +336,7 @@ function Example() {
       </div>
       <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination">
         <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist:Medium',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
+          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
             <p className="leading-[20px]">Próximo</p>
           </div>
         </div>
