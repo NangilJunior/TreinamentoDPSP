@@ -811,9 +811,9 @@ function Frame63({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
   );
 }
 
-function Frame64() {
+function Frame64({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
+    <div onClick={onPress} className={highlighted ? "bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors key-highlighted-white z-[10]" : "bg-white content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors"}>
       <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-black justify-center leading-[0] relative shrink-0 text-[#2d2d2d] text-[39.056px] text-center w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         <p className="leading-[1.2]">2</p>
       </div>
@@ -831,11 +831,11 @@ function Frame65() {
   );
 }
 
-function Frame62({ highlightKey1, onKey1Press }: { highlightKey1?: boolean; onKey1Press?: () => void }) {
+function Frame62({ highlightKey1, onKey1Press, highlightKey2, onKey2Press }: { highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void }) {
   return (
     <div className="content-stretch flex gap-[10px] items-center relative shrink-0">
       <Frame63 highlighted={highlightKey1} onPress={onKey1Press} />
-      <Frame64 />
+      <Frame64 highlighted={highlightKey2} onPress={onKey2Press} />
       <Frame65 />
     </div>
   );
@@ -886,10 +886,10 @@ function Frame66({ highlightKey0, onKey0Press }: { highlightKey0?: boolean; onKe
   );
 }
 
-function Frame61({ highlightKey1, onKey1Press, highlightKey0, onKey0Press }: { highlightKey1?: boolean; onKey1Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void }) {
+function Frame61({ highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press }: { highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void }) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0">
-      <Frame62 highlightKey1={highlightKey1} onKey1Press={onKey1Press} />
+      <Frame62 highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} />
       <Frame66 highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
     </div>
   );
@@ -914,28 +914,28 @@ function Frame71({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
   );
 }
 
-function Frame60({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey0, onKey0Press }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void }) {
+function Frame60({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void }) {
   return (
     <div className="content-stretch flex gap-[10px] items-start relative shrink-0 w-[598px]">
-      <Frame61 highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
+      <Frame61 highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
       <Frame71 highlighted={highlightEntra} onPress={onEntraPress} />
     </div>
   );
 }
 
-function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey0, onKey0Press }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void }) {
+function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void }) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0">
       <Frame46 />
       <Frame50 />
       <Frame55 />
-      <Frame60 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
+      <Frame60 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
     </div>
   );
 }
 
-export default function VirtualKeyboard({ highlightSangria, onSangriaPress, highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey0, onKey0Press, highlightV, onVPress, highlightK, onKPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void }) {
-  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey0 || highlightV || highlightK;
+export default function VirtualKeyboard({ highlightSangria, onSangriaPress, highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press, highlightV, onVPress, highlightK, onKPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void }) {
+  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK;
   return (
     <>
       <style>{keyHighlightStyle}</style>
@@ -944,7 +944,7 @@ export default function VirtualKeyboard({ highlightSangria, onSangriaPress, high
           <div className="absolute inset-0 bg-black/50 rounded-[12px] z-[5] pointer-events-none" />
         )}
         <Frame7 highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} highlightK={highlightK} onKPress={onKPress} />
-        <Frame45 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
+        <Frame45 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
       </div>
     </>
   );

@@ -7,15 +7,13 @@ import imgImage5 from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c3682
 import imgImage6 from "../../imports/ManutencaoDeLojas/6566e1aba8cfe14364d9bb9f0c3fa7712c053726.png";
 import imgImage7 from "../../imports/ManutencaoDeLojas/95ee02e5d5e03c30315d82fd444278082f8dfea9.png";
 
+const imgCategoriaSecao = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
+
 // SVG Paths
 const svgPaths = {
   // Search icon paths
   p2d57a800: "M9.25315 9.25315C9.44841 9.05789 9.76492 9.05789 9.96018 9.25315L12.8534 12.1464C13.0487 12.3416 13.0487 12.6581 12.8534 12.8534C12.6581 13.0487 12.3416 13.0487 12.1464 12.8534L9.25315 9.96018C9.05789 9.76492 9.05789 9.44841 9.25315 9.25315Z",
   p1a257980: "M10.6667 5.83333C10.6667 3.16396 8.50271 1 5.83333 1C3.16396 1 1 3.16396 1 5.83333C1 8.50271 3.16396 10.6667 5.83333 10.6667C8.50271 10.6667 10.6667 8.50271 10.6667 5.83333ZM11.6667 5.83333C11.6667 9.05499 9.05499 11.6667 5.83333 11.6667C2.61167 11.6667 0 9.05499 0 5.83333C0 2.61167 2.61167 0 5.83333 0C9.05499 0 11.6667 2.61167 11.6667 5.83333Z",
-  // Pagination paths
-  p8c0fe00: "M0 0C0 -0.552285 0.447715 -1 1 -1C1.55228 -1 2 -0.552285 2 0C2 0.552285 1.55228 1 1 1C0.447715 1 0 0.552285 0 0Z",
-  p377ace00: "M4.83333 0C4.83333 -0.552285 5.28105 -1 5.83333 -1C6.38562 -1 6.83333 -0.552285 6.83333 0C6.83333 0.552285 6.38562 1 5.83333 1C5.28105 1 4.83333 0.552285 4.83333 0Z",
-  p35d3300: "M9.66667 0C9.66667 -0.552285 10.1144 -1 10.6667 -1C11.219 -1 11.6667 -0.552285 11.6667 0C11.6667 0.552285 11.219 1 10.6667 1C10.1144 1 9.66667 0.552285 9.66667 0Z",
 };
 
 interface ImageOffset {
@@ -42,6 +40,14 @@ const funcionalidades: Funcionalidade[] = [
     imagem: imgImage4,
     imageOffset: { left: "50%", top: "50%", width: "120%", height: "120%" },
     slug: "sangria-de-caixa"
+  },
+  {
+    id: 5,
+    titulo: "Suprimento de Caixa",
+    descricao: "O suprimento de caixa é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
+    imagem: imgImage4,
+    imageOffset: { left: "50%", top: "50%", width: "120%", height: "120%" },
+    slug: "suprimento-de-caixa"
   },
   {
     id: 2,
@@ -82,10 +88,10 @@ function Frame3() {
     <div className="relative shrink-0 w-full border-b border-gray-100">
       <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[20px]">
         <div className="grid grid-cols-12 gap-[32px] items-center">
-          <div className="col-span-6 flex items-center">
+          <div className="col-span-6 lg:col-span-8 flex items-center">
             <Frame8 />
           </div>
-          <div className="col-span-6 flex items-center justify-end">
+          <div className="col-span-6 lg:col-span-4 flex items-center justify-end">
             <ProfileMenu />
           </div>
         </div>
@@ -114,41 +120,44 @@ function Al({ value, onChange }: { value: string; onChange: (value: string) => v
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Busque a funcionalidade"
-        className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Geist',sans-serif] font-normal leading-[20px] text-[#0a0a0a] text-[14px] placeholder:text-[#737373]"
+        placeholder="Busque o treinamento"
+        className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Nunito_Sans',sans-serif] font-normal leading-[130%] text-[16px] placeholder:text-[#737373]"
+        style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}
       />
     </div>
   );
 }
 
-function Frame5({ searchTerm, onSearchChange, onSearch }: { searchTerm: string; onSearchChange: (value: string) => void; onSearch: () => void }) {
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      onSearch();
-    }
-  };
-
+function Frame5({ searchTerm, onSearchChange }: { searchTerm: string; onSearchChange: (value: string) => void }) {
   const handleClear = () => {
     onSearchChange("");
   };
 
   const hasValue = searchTerm.trim().length > 0;
-  const buttonBgColor = hasValue ? "bg-[#333243]" : "bg-[#9898a0]";
-  const buttonHoverColor = hasValue ? "hover:bg-[#252430]" : "hover:bg-[#7a7a82]";
 
   return (
     <div className="flex gap-[16px] items-center w-full">
-      <div className="bg-white flex-1 h-[56px] relative rounded-[8px]" data-name="Input" onKeyPress={handleKeyPress}>
+      <div className="bg-white flex-1 h-[56px] relative rounded-[8px]" data-name="Input">
         <div className="flex flex-row items-center h-full overflow-clip rounded-[inherit]">
           <div className="flex gap-[12px] items-center h-full px-[16px] py-[9.5px] w-full">
+            <div className="overflow-clip relative shrink-0 size-[28px]" data-name="Search icon">
+              <div className="absolute inset-[9.38%]" data-name="Vector">
+                <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16.2498 16.2498">
+                  <g id="Vector" transform="translate(1.198 1.198)">
+                    <path d="M9.25315 9.25315C9.44841 9.05789 9.76492 9.05789 9.96018 9.25315L12.8534 12.1464C13.0487 12.3416 13.0487 12.6581 12.8534 12.8534C12.6581 13.0487 12.3416 13.0487 12.1464 12.8534L9.25315 9.96018C9.05789 9.76492 9.05789 9.44841 9.25315 9.25315Z" fill="#525252" />
+                    <path d="M10.6667 5.83333C10.6667 3.16396 8.50271 1 5.83333 1C3.16396 1 1 3.16396 1 5.83333C1 8.50271 3.16396 10.6667 5.83333 10.6667C8.50271 10.6667 10.6667 8.50271 10.6667 5.83333ZM11.6667 5.83333C11.6667 9.05499 9.05499 11.6667 5.83333 11.6667C2.61167 11.6667 0 9.05499 0 5.83333C0 2.61167 2.61167 0 5.83333 0C9.05499 0 11.6667 2.61167 11.6667 5.83333Z" fill="#525252" />
+                  </g>
+                </svg>
+              </div>
+            </div>
             <Al value={searchTerm} onChange={onSearchChange} />
             {hasValue ? (
               <button
                 onClick={handleClear}
-                className="flex items-center justify-center p-[2px] shrink-0 w-[20px] cursor-pointer hover:opacity-70 transition-opacity"
+                className="flex items-center justify-center p-[2px] shrink-0 w-[24px] cursor-pointer hover:opacity-70 transition-opacity"
                 data-name="Clear button"
               >
-                <div className="overflow-clip relative shrink-0 size-[16px]">
+                <div className="overflow-clip relative shrink-0 size-[20px]">
                   <div className="absolute inset-[21.88%]">
                     <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.99992 8.99992">
                       <g>
@@ -159,55 +168,27 @@ function Frame5({ searchTerm, onSearchChange, onSearch }: { searchTerm: string; 
                   </div>
                 </div>
               </button>
-            ) : (
-              <div className="overflow-clip relative shrink-0 size-[20px]" data-name="Decoration right">
-                <div className="absolute inset-[9.38%]" data-name="Vector">
-                  <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16.2498 16.2498">
-                    <g id="Vector">
-                      <path d="M9.25315 9.25315C9.44841 9.05789 9.76492 9.05789 9.96018 9.25315L12.8534 12.1464C13.0487 12.3416 13.0487 12.6581 12.8534 12.8534C12.6581 13.0487 12.3416 13.0487 12.1464 12.8534L9.25315 9.96018C9.05789 9.76492 9.05789 9.44841 9.25315 9.25315Z" fill="#525252" />
-                      <path d="M10.6667 5.83333C10.6667 3.16396 8.50271 1 5.83333 1C3.16396 1 1 3.16396 1 5.83333C1 8.50271 3.16396 10.6667 5.83333 10.6667C8.50271 10.6667 10.6667 8.50271 10.6667 5.83333ZM11.6667 5.83333C11.6667 9.05499 9.05499 11.6667 5.83333 11.6667C2.61167 11.6667 0 9.05499 0 5.83333C0 2.61167 2.61167 0 5.83333 0C9.05499 0 11.6667 2.61167 11.6667 5.83333Z" fill="#525252" />
-                    </g>
-                  </svg>
-                </div>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
         <div aria-hidden="true" className="absolute border border-[#e5e5e5] border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
       </div>
-      <button onClick={onSearch} className={`${buttonBgColor} ${buttonHoverColor} h-[56px] relative rounded-[8px] shrink-0 transition-colors cursor-pointer px-[36px]`} data-name="Button">
-        <div className="flex items-center justify-center gap-[8px] h-full">
-          <div className="overflow-clip relative shrink-0 size-[16px]" data-name="Left icon">
-            <div className="absolute inset-[9.38%]" data-name="Vector">
-              <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.9999 12.9999">
-                <g id="Vector">
-                  <path d="M9.25315 9.25315C9.44841 9.05789 9.76492 9.05789 9.96018 9.25315L12.8534 12.1464C13.0487 12.3416 13.0487 12.6581 12.8534 12.8534C12.6581 13.0487 12.3416 13.0487 12.1464 12.8534L9.25315 9.96018C9.05789 9.76492 9.05789 9.44841 9.25315 9.25315Z" fill="white" />
-                  <path d="M10.6667 5.83333C10.6667 3.16396 8.50271 1 5.83333 1C3.16396 1 1 3.16396 1 5.83333C1 8.50271 3.16396 10.6667 5.83333 10.6667C8.50271 10.6667 10.6667 8.50271 10.6667 5.83333ZM11.6667 5.83333C11.6667 9.05499 9.05499 11.6667 5.83333 11.6667C2.61167 11.6667 0 9.05499 0 5.83333C0 2.61167 2.61167 0 5.83333 0C9.05499 0 11.6667 2.61167 11.6667 5.83333Z" fill="white" />
-                </g>
-              </svg>
-            </div>
-          </div>
-          <span className="font-['Geist',sans-serif] font-medium text-[#fafafa] text-[14px] whitespace-nowrap">
-            Pesquisar
-          </span>
-        </div>
-      </button>
     </div>
   );
 }
 
-function Frame({ searchTerm, onSearchChange, onSearch }: { searchTerm: string; onSearchChange: (value: string) => void; onSearch: () => void }) {
+function Frame({ searchTerm, onSearchChange }: { searchTerm: string; onSearchChange: (value: string) => void }) {
   return (
     <div className="bg-white relative shrink-0 w-full">
       <div className="flex flex-col items-center justify-center size-full">
-        <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[40px]">
+        <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[20px]">
           <div className="grid grid-cols-12 gap-[32px]">
             <div className="col-span-12 flex flex-col gap-[10px] items-center justify-center">
               <Frame7 />
-              <div className="h-[32px]" />
+              <div className="h-[16px]" />
             </div>
-            <div className="col-span-12 lg:col-start-3 lg:col-span-8" data-name="Search">
-              <Frame5 searchTerm={searchTerm} onSearchChange={onSearchChange} onSearch={onSearch} />
+            <div className="col-span-12 lg:col-start-4 lg:col-span-6" data-name="Search">
+              <Frame5 searchTerm={searchTerm} onSearchChange={onSearchChange} />
             </div>
           </div>
         </div>
@@ -287,57 +268,108 @@ function Frame6({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFilt
   );
 }
 
-function Example() {
+const placeholderDescricao = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+
+interface CategoriaCardData {
+  titulo: string;
+  descricao?: string;
+  slug?: string;
+}
+
+const secoesCategorias: { titulo: string; cards: CategoriaCardData[] }[] = [
+  { titulo: "Início da Operação", cards: [{ titulo: "Abertura de caixa" }, { titulo: "Login do operador" }, { titulo: "Suprimento inicial" }] },
+  { titulo: "Atendimento e Vendas", cards: [{ titulo: "Cliente cadastrado e não cadastrado" }, { titulo: "Registro de produtos" }, { titulo: "Formas de pagamento" }, { titulo: "Finalização da venda" }] },
+  { titulo: "Resgate de Pedido Balcão", cards: [{ titulo: "Localizar cesta criada no balcão" }, { titulo: "Resgatar atendimento" }, { titulo: "Finalizar pagamento" }] },
+  { titulo: "Resgate de Pedido Delivery", cards: [{ titulo: "Localizar pedido online" }, { titulo: "Conferir produtos" }, { titulo: "Faturar pedido" }, { titulo: "Finalizar atendimento" }] },
+  { titulo: "Programas e Benefícios", cards: [{ titulo: "Convênios" }, { titulo: "PBM" }, { titulo: "Farmácia Popular" }] },
+  { titulo: "Medicamentos Controlados", cards: [{ titulo: "Resgate de receita digital" }, { titulo: "Liberação manual" }, { titulo: "Finalização da venda" }] },
+  { titulo: "Experiência do Cliente", cards: [{ titulo: "Encantômetro" }] },
+  { titulo: "Ajustes durante a Venda", cards: [{ titulo: "Consulta de preço" }, { titulo: "Cancelamento parcial" }, { titulo: "Cancelamento total" }, { titulo: "DDG (Desconto Gerencial)" }] },
+  { titulo: "Pós-Venda", cards: [{ titulo: "Estorno" }, { titulo: "Troca de Mercadoria" }, { titulo: "Reimpressão de cupom" }, { titulo: "Reimpressão de comprovantes" }, { titulo: "Reimpressão Farmácia Popular" }] },
+  {
+    titulo: "Gestão do Caixa",
+    cards: [
+      {
+        titulo: "Sangria de Caixa",
+        descricao: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
+        slug: "sangria-de-caixa"
+      },
+      {
+        titulo: "Suprimento de Caixa",
+        descricao: "O suprimento de caixa é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
+        slug: "suprimento-de-caixa"
+      }
+    ]
+  },
+  { titulo: "Consultas e Relatórios", cards: [{ titulo: "Venda detalhe" }, { titulo: "Relatório do operador" }, { titulo: "Relatório do dia" }] },
+  { titulo: "Encerramento da Operação", cards: [{ titulo: "Saída do operador" }, { titulo: "Fechamento de caixa" }, { titulo: "Fechamento Z" }] },
+];
+
+function CategoriaCard({ titulo, subtitulo, onClick }: { titulo: string; subtitulo: string; onClick?: () => void }) {
   return (
-    <div className="content-stretch flex gap-[8px] items-center relative shrink-0" data-name="Example">
-      <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination">
-        <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
-            <p className="leading-[20px]">Anterior</p>
-          </div>
-        </div>
+    <div
+      onClick={onClick}
+      className={`bg-white border border-[#e5e5e5] rounded-[8px] overflow-hidden flex items-stretch${onClick ? " cursor-pointer hover:shadow-md transition-shadow" : ""}`}
+    >
+      <div className="w-[4px] shrink-0 bg-[#FF5C5C]" />
+      <div className="flex-1 min-w-0 px-[20px] py-[12px] flex flex-col justify-center gap-[2px]">
+        <p
+          className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#383838] leading-[1.2]"
+          style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}
+        >
+          {titulo}
+        </p>
+        <p
+          className="font-['Nunito_Sans',sans-serif] font-normal text-[13px] text-[#6c6c6c] leading-[1.3]"
+          style={{
+            fontVariationSettings: "'YTLC' 500, 'wdth' 100",
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+        >
+          {subtitulo}
+        </p>
       </div>
-      <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Button">
-        <div className="bg-[rgba(255,255,255,0.1)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0 w-[34px]" data-name="Button">
-          <div aria-hidden="true" className="absolute border border-[#d4d4d4] border-solid inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
-          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#0a0a0a] text-[14px] text-center whitespace-nowrap">
-            <p className="leading-[20px]">1</p>
-          </div>
-        </div>
-      </div>
-      <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Button">
-        <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0 w-[34px]" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
-            <p className="leading-[20px]">2</p>
-          </div>
-        </div>
-      </div>
-      <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Button">
-        <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0 w-[34px]" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
-            <p className="leading-[20px]">3</p>
-          </div>
-        </div>
-      </div>
-      <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination Ellipsis">
-        <div className="bg-[rgba(255,255,255,0)] content-stretch flex items-center justify-center min-h-[36px] min-w-[36px] overflow-clip p-[8px] relative rounded-[8px] shrink-0" data-name="Icon Button">
-          <div className="overflow-clip relative shrink-0 size-[16px]" data-name="Icon">
-            <div className="absolute inset-[42.71%_13.54%]" data-name="Vector">
-              <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 11.6667 2.33333">
-                <g id="Vector">
-                  <path d={svgPaths.p8c0fe00} fill="var(--fill-0, #0A0A0A)" />
-                  <path d={svgPaths.p377ace00} fill="var(--fill-0, #0A0A0A)" />
-                  <path d={svgPaths.p35d3300} fill="var(--fill-0, #0A0A0A)" />
-                </g>
-              </svg>
+    </div>
+  );
+}
+
+function CategoriaSection({ titulo, cards, onCardClick }: { titulo: string; cards: CategoriaCardData[]; onCardClick: (slug: string) => void }) {
+  return (
+    <div className="w-full bg-white border border-[#e5e5e5] rounded-[12px] overflow-hidden">
+      <div className="grid grid-cols-12 gap-[24px]">
+        <div className="col-span-3">
+          <div className="relative h-full min-h-[184px] overflow-clip">
+            <div
+              className="absolute -translate-x-1/2 -translate-y-1/2"
+              style={{ left: "50%", top: "50%", width: "120%", height: "120%" }}
+              data-name="image"
+            >
+              <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgCategoriaSecao} />
+            </div>
+            <div className="absolute bg-[rgba(51,50,67,0.64)] inset-0" />
+            <div className="absolute inset-0 flex items-center justify-center px-[16px]">
+              <p
+                className="font-['Nunito_Sans',sans-serif] font-bold text-[24px] text-center text-white leading-[1.2]"
+                style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}
+              >
+                {titulo}
+              </p>
             </div>
           </div>
         </div>
-      </div>
-      <div className="content-stretch flex items-start relative shrink-0" data-name="Pagination">
-        <div className="bg-[rgba(255,255,255,0)] content-stretch flex gap-[8px] items-center justify-center min-h-[36px] px-[16px] py-[8px] relative rounded-[8px] shrink-0" data-name="Button">
-          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-medium justify-center leading-[0] relative shrink-0 text-[#404040] text-[14px] text-center whitespace-nowrap">
-            <p className="leading-[20px]">Próximo</p>
+        <div className="col-span-9 pt-[24px] pr-[24px] pb-[24px] flex items-center">
+          <div className="grid grid-cols-3 gap-[16px] w-full">
+            {cards.map((card) => (
+              <CategoriaCard
+                key={card.titulo}
+                titulo={card.titulo}
+                subtitulo={card.descricao ?? placeholderDescricao}
+                onClick={card.slug ? () => onCardClick(card.slug!) : undefined}
+              />
+            ))}
           </div>
         </div>
       </div>
@@ -349,16 +381,16 @@ function Frame1({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFilt
   return (
     <div className="flex flex-col gap-[48px] w-full">
       <Frame6 funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
-      <div className="flex justify-center">
-        <Example />
-      </div>
+      {secoesCategorias.map((secao) => (
+        <CategoriaSection key={secao.titulo} titulo={secao.titulo} cards={secao.cards} onCardClick={onCardClick} />
+      ))}
     </div>
   );
 }
 
 function Table({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFiltradas: Funcionalidade[]; onCardClick: (slug: string) => void }) {
   return (
-    <div className="bg-white flex-[1_0_0] min-h-px relative w-full" data-name="Table">
+    <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
       <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[48px]">
         <Frame1 funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
       </div>
@@ -366,17 +398,16 @@ function Table({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFiltr
   );
 }
 
-function Frame2({ searchTerm, onSearchChange, onSearch, funcionalidadesFiltradas, onCardClick }: {
+function Frame2({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardClick }: {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  onSearch: () => void;
   funcionalidadesFiltradas: Funcionalidade[];
   onCardClick: (slug: string) => void;
 }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col h-full items-start min-w-px overflow-clip relative z-[1]">
       <Frame3 />
-      <Frame searchTerm={searchTerm} onSearchChange={onSearchChange} onSearch={onSearch} />
+      <Frame searchTerm={searchTerm} onSearchChange={onSearchChange} />
       <Table funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
     </div>
   );
@@ -385,10 +416,6 @@ function Frame2({ searchTerm, onSearchChange, onSearch, funcionalidadesFiltradas
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-
-  const handleSearch = () => {
-    // Busca já é aplicada em tempo real
-  };
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);
@@ -413,7 +440,6 @@ export default function Dashboard() {
       <Frame2
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        onSearch={handleSearch}
         funcionalidadesFiltradas={funcionalidadesFiltradas}
         onCardClick={handleCardClick}
       />

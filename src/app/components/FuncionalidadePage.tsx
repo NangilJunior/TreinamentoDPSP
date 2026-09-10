@@ -13,10 +13,13 @@ import SangriaFlow from "./SangriaFlow";
 import Home4, { MOTIVOS_SANGRIA } from "../../imports/Home-4/index";
 import Home6 from "../../imports/Home-6/index";
 import ValorRetiradaScreen from "./ValorRetiradaScreen";
+import SuprimentoResumoScreen from "./SuprimentoResumoScreen";
+import SuprimentoValorScreen from "./SuprimentoValorScreen";
+import SuprimentoComprovanteScreen from "./SuprimentoComprovanteScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import imgEntradaSaida from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
-import imgConsultaProduto from "../../imports/ManutencaoDeLojas/6566e1aba8cfe14364d9bb9f0c3fa7712c053726.png";
+import imgSangriaSuprimento from "../../imports/ManutencaoDeLojas/79e4da8f717af2976b6c4029d66ffdf41ddd92aa.png";
 
 interface FuncionalidadeContent {
   titulo: string;
@@ -28,6 +31,11 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   "sangria-de-caixa": {
     titulo: "Sangria de caixa",
     conteudo: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
+    hasPDV: true
+  },
+  "suprimento-de-caixa": {
+    titulo: "Suprimento de Caixa",
+    conteudo: "O suprimento de caixa é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -45,19 +53,31 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
 };
 
 // Sugestões exibidas na tela de conclusão (estilo "próximos vídeos")
-const proximosTreinamentos = [
+const treinamentoEntradaSaida = {
+  slug: "entrada-saida-operador",
+  titulo: "Entrada/Saída de Operador",
+  descricao: "Controle e rastreabilidade das operações: registre o início e o fim de cada turno no terminal.",
+  imagem: imgEntradaSaida,
+};
+
+const proximosTreinamentosSangria = [
   {
-    slug: "entrada-saida-operador",
-    titulo: "Entrada/Saída de Operador",
-    descricao: "Controle e rastreabilidade das operações: registre o início e o fim de cada turno no terminal.",
-    imagem: imgEntradaSaida,
+    slug: "suprimento-de-caixa",
+    titulo: "Suprimento de Caixa",
+    descricao: "Realize a entrada de dinheiro na gaveta do PDV para garantir troco aos clientes.",
+    imagem: imgSangriaSuprimento,
   },
+  treinamentoEntradaSaida,
+];
+
+const proximosTreinamentosSuprimento = [
   {
-    slug: "consulta-produto-offline",
-    titulo: "Consulta de Produto Offline",
-    descricao: "Consulte informações de produtos mesmo sem conexão com o servidor central.",
-    imagem: imgConsultaProduto,
+    slug: "sangria-de-caixa",
+    titulo: "Sangria de Caixa",
+    descricao: "Realize a retirada do excesso de dinheiro do caixa para reduzir riscos de assalto.",
+    imagem: imgSangriaSuprimento,
   },
+  treinamentoEntradaSaida,
 ];
 
 function Frame5() {
@@ -74,10 +94,10 @@ function Frame2() {
       <div className="flex flex-row items-center justify-center size-full">
         <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[20px]">
           <div className="grid grid-cols-12 gap-[32px] items-center">
-            <div className="col-span-6 flex items-center">
+            <div className="col-span-6 lg:col-span-8 flex items-center">
               <Frame5 />
             </div>
-            <div className="col-span-6 flex items-center justify-end">
+            <div className="col-span-6 lg:col-span-4 flex items-center justify-end">
               <ProfileMenu />
             </div>
           </div>
@@ -136,8 +156,16 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
   );
 }
 
-function PDVSimulator() {
+function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
+  const isSuprimentoAdicional = slug === "suprimento-de-caixa";
+  const welcomeTitulo = isSuprimentoAdicional
+    ? "Olá, boas vindas ao tutorial de Suprimento de Caixa."
+    : undefined;
+  const welcomeDescricao = isSuprimentoAdicional
+    ? funcionalidadesContent["suprimento-de-caixa"].conteudo
+    : undefined;
+  const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
   // Escala o PDV em tela cheia (1280×800) durante o treinamento para caber em
   // resoluções menores. A folga vertical (paddingY) garante espaço para o card
@@ -206,7 +234,7 @@ function PDVSimulator() {
   const handleKeyPress = (key: string) => {
     if (tutorialStep === 7) {
       if (key === "ENTRA" || key === "Enter") {
-        if (valorRetirada === 100000) { setTutorialStep(8); setShowKeyboard(false); setValorRetirada(0); }
+        if (valorRetirada === valorAlvo) { setTutorialStep(8); setShowKeyboard(false); if (!isSuprimentoAdicional) setValorRetirada(0); }
       } else if (key === "LIMPA") {
         setValorRetirada(0);
       } else if (key === "VOLTA") {
@@ -719,18 +747,18 @@ function PDVSimulator() {
             </div>
           </div>
         )}
-        <Frame19557 />
+        {!isSuprimentoAdicional && <Frame19557 />}
       </div>
 
       {/* Fluxo animado de Sangria (telas do gerente) */}
       {isTrainingMode && tutorialStep >= 4 && tutorialStep <= 5 && (
-        <SangriaFlow onReachSelection={() => setTutorialStep(5)} />
+        <SangriaFlow onReachSelection={() => setTutorialStep(5)} isSuprimentoAdicional={isSuprimentoAdicional} />
       )}
 
       {/* Motivos Sangria - step 6 */}
       {isTrainingMode && tutorialStep === 6 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <Home4 selectedIndex={motivoIndex} />
+          {isSuprimentoAdicional ? <SuprimentoResumoScreen selectedIndex={motivoIndex} /> : <Home4 selectedIndex={motivoIndex} />}
           {/* Faixa explicativa - posicionada abaixo da tabela */}
           <div className="fade-in-delay absolute bottom-[112px] left-0 right-0 px-[32px]">
             <div className="bg-[rgba(15,15,15,0.88)] flex gap-[20px] items-center px-[28px] py-[18px] rounded-[10px] w-full border border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.4)]" style={{ backdropFilter: 'blur(8px)' }}>
@@ -741,9 +769,19 @@ function PDVSimulator() {
                 </svg>
               </div>
               <p className="font-['Nunito_Sans',sans-serif] text-[14px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                Para realizar a sangria, o usuário pode selecionar o tipo de sangria que deseja executar. Nessa tela, a opção{" "}
-                <span className="font-bold text-white">"Remessa Urna"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nas sangrias de caixa. Use as teclas{" "}
-                <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo.
+                {isSuprimentoAdicional ? (
+                  <>
+                    Selecione na lista o tipo de suprimento que deseja realizar. Nesta tela, a opção{" "}
+                    <span className="font-bold text-white">"Suprimento Inicial"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nos suprimentos de caixa. Use as teclas{" "}
+                    <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo.
+                  </>
+                ) : (
+                  <>
+                    Para realizar a sangria, o usuário pode selecionar o tipo de sangria que deseja executar. Nessa tela, a opção{" "}
+                    <span className="font-bold text-white">"Remessa Urna"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nas sangrias de caixa. Use as teclas{" "}
+                    <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -753,14 +791,18 @@ function PDVSimulator() {
       {/* Valor da Retirada - step 7 */}
       {(isTrainingMode && tutorialStep === 7) && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <ValorRetiradaScreen valorCents={valorRetirada} />
+          {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} /> : <ValorRetiradaScreen valorCents={valorRetirada} />}
         </div>
       )}
 
       {/* Comprovante / Encerramento - step 9 */}
       {isTrainingMode && tutorialStep === 9 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <ComprovanteScreen valorCents={100000} saldoAnteriorCents={125000} />
+          {isSuprimentoAdicional ? (
+            <SuprimentoComprovanteScreen valorCents={20000} saldoAnteriorCents={50} />
+          ) : (
+            <ComprovanteScreen valorCents={100000} saldoAnteriorCents={125000} />
+          )}
         </div>
       )}
 
@@ -778,7 +820,7 @@ function PDVSimulator() {
           {/* Tooltip acima do modal */}
           <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
             <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-              Será exibido um modal informando que a realização da Sangria de Caixa requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
+              Será exibido um modal informando que a realização d{isSuprimentoAdicional ? "o Suprimento de Caixa" : "a Sangria de Caixa"} requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
             </div>
             <div className="flex justify-center">
               <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
@@ -883,7 +925,11 @@ function PDVSimulator() {
 
         {/* Tutorial Box - Positioned at bottom of PDV */}
         <div className={`absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20 transition-opacity duration-700 ease-in-out ${showTutorial ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <Inicio onNext={() => { stopAudio(); setTutorialStep(1); setShowTutorial(false); }} />
+          <Inicio
+            onNext={() => { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }}
+            titulo={welcomeTitulo}
+            descricao={welcomeDescricao}
+          />
         </div>
 
         {/* Step 2 - Informativo Sangria */}
@@ -900,10 +946,14 @@ function PDVSimulator() {
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Iniciando a Sangria de Caixa
+                  {isSuprimentoAdicional ? "O Suprimento de Caixa inicia no botão de Sangria" : "Iniciando a Sangria de Caixa"}
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Para iniciar o processo de Sangria de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.
+                  {isSuprimentoAdicional ? (
+                    <>Para iniciar o processo de Suprimento de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
+                  ) : (
+                    <>Para iniciar o processo de Sangria de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
+                  )}
                 </p>
               </div>
               {/* Botão Sangria ilustração */}
@@ -932,9 +982,19 @@ function PDVSimulator() {
                 <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <p className="font-['Nunito_Sans',sans-serif] text-[13px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                Informe o valor que será retirado. Neste exemplo, será realizada uma sangria no valor de{" "}
-                <span className="font-bold text-white">R$ 1.000,00</span>. Digite utilizando o teclado virtual e pressione{" "}
-                <span className="font-bold text-white">[Entra]</span> para continuar.
+                {isSuprimentoAdicional ? (
+                  <>
+                    Informe o valor que será adicionado. Neste exemplo, será realizado um suprimento no valor de{" "}
+                    <span className="font-bold text-white">R$ 200,00</span>. Digite utilizando o teclado virtual e pressione{" "}
+                    <span className="font-bold text-white">[Entra]</span> para continuar.
+                  </>
+                ) : (
+                  <>
+                    Informe o valor que será retirado. Neste exemplo, será realizada uma sangria no valor de{" "}
+                    <span className="font-bold text-white">R$ 1.000,00</span>. Digite utilizando o teclado virtual e pressione{" "}
+                    <span className="font-bold text-white">[Entra]</span> para continuar.
+                  </>
+                )}
               </p>
             </div>
             {/* Triângulo apontando para baixo (em direção ao input) */}
@@ -948,7 +1008,7 @@ function PDVSimulator() {
         {tutorialStep === 8 && (
           <>
             <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-              <Home6 />
+              {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} /> : <Home6 />}
             </div>
             <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
@@ -964,11 +1024,11 @@ function PDVSimulator() {
                   Gaveta Aberta
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Nesta etapa, a gaveta do caixa ser&aacute; aberta. Retire o valor indicado e, para prosseguir, feche a gaveta.
+                  Nesta etapa, a gaveta do caixa ser&aacute; aberta. {isSuprimentoAdicional ? "Adicione o valor informado" : "Retire o valor indicado"} e, para prosseguir, feche a gaveta.
                 </p>
               </div>
               <button
-                onClick={() => setTutorialStep(9)}
+                onClick={() => { setTutorialStep(9); setValorRetirada(0); }}
                 className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer border border-white/20"
                 style={{
                   boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
@@ -1000,7 +1060,7 @@ function PDVSimulator() {
                   Parabéns!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  A sangria de caixa foi realizada e concluída com sucesso.
+                  {isSuprimentoAdicional ? "O suprimento de caixa foi realizado e concluído com sucesso." : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
             </div>
@@ -1013,7 +1073,10 @@ function PDVSimulator() {
           {/* Botão Anterior */}
           <button
             onClick={() => {
-              if (tutorialStep === 2) setTutorialStep(1);
+              if (tutorialStep === 2) {
+                if (isSuprimentoAdicional) { setTutorialStep(0); setShowTutorial(true); playWelcomeAudio(); }
+                else setTutorialStep(1);
+              }
               else if (tutorialStep === 3) { setTutorialStep(2); setShowKeyboard(false); }
               else if (tutorialStep === 5) setTutorialStep(3);
               else if (tutorialStep === 6) setTutorialStep(5);
@@ -1033,7 +1096,7 @@ function PDVSimulator() {
           {/* Botão Próximo - steps 0, 1 e 9 */}
           <button
             onClick={() => {
-              if (showTutorial) { stopAudio(); setTutorialStep(1); setShowTutorial(false); }
+              if (showTutorial) { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }
               else if (tutorialStep === 1) setTutorialStep(2);
               else if (tutorialStep === 9) setTutorialStep(10);
             }}
@@ -1086,11 +1149,18 @@ function PDVSimulator() {
           }
         }
         .fade-in-delay {
-          animation: fade-in-delay 2s ease-in-out forwards;
+          animation: fade-in-delay 1.2s ease-in-out forwards;
         }
         @keyframes fade-in-delay {
           0% { opacity: 0; }
-          70% { opacity: 0; }
+          60% { opacity: 0; }
+          100% { opacity: 1; }
+        }
+        .fade-in-plain {
+          animation: fade-in-plain 0.5s ease-in-out forwards;
+        }
+        @keyframes fade-in-plain {
+          0% { opacity: 0; }
           100% { opacity: 1; }
         }
       `}</style>
@@ -1125,7 +1195,7 @@ function PDVSimulator() {
             if (buttonText === "LIMPA") { setValorRetirada(0); return; }
             if (buttonText === "VOLTA") { setValorRetirada(prev => Math.floor(prev / 10)); return; }
             if (buttonText === "ENTRA") {
-              if (valorRetirada === 100000) { setTutorialStep(8); setShowKeyboard(false); setValorRetirada(0); }
+              if (valorRetirada === valorAlvo) { setTutorialStep(8); setShowKeyboard(false); if (!isSuprimentoAdicional) setValorRetirada(0); }
               return;
             }
             if (buttonText === "00") { setValorRetirada(prev => Math.min(prev * 100, 99999999)); return; }
@@ -1148,15 +1218,17 @@ function PDVSimulator() {
         <VirtualKeyboard
           highlightSangria={tutorialStep === 2}
           onSangriaPress={tutorialStep === 2 ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === 100000)}
-          onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === 100000)) ? () => {
+          highlightEntra={tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo)}
+          onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo)) ? () => {
             if (tutorialStep === 3) { setTutorialStep(4); setShowKeyboard(false); }
             else if (tutorialStep === 6) { setTutorialStep(7); setShowKeyboard(false); }
-            else if (tutorialStep === 7 && valorRetirada === 100000) { setTutorialStep(8); setShowKeyboard(false); setValorRetirada(0); }
+            else if (tutorialStep === 7 && valorRetirada === valorAlvo) { setTutorialStep(8); setShowKeyboard(false); if (!isSuprimentoAdicional) setValorRetirada(0); }
           } : undefined}
-          highlightKey1={tutorialStep === 5 || (tutorialStep === 7 && valorRetirada === 0)}
-          onKey1Press={tutorialStep === 5 ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey0={tutorialStep === 7 && valorRetirada > 0 && valorRetirada < 100000}
+          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional)}
+          onKey1Press={tutorialStep === 5 && !isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
+          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional)}
+          onKey2Press={tutorialStep === 5 && isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
+          highlightKey0={tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo}
           onKey0Press={undefined}
           highlightV={tutorialStep === 6}
           onVPress={tutorialStep === 6 ? handleVPress : undefined}
@@ -1167,11 +1239,12 @@ function PDVSimulator() {
 
       {/* Step 10 - Conclusão do treinamento (estilo "fim de vídeo") */}
       {tutorialStep === 10 && (
-        <div
-          className="absolute inset-0 z-[80] flex items-center justify-center p-[40px] pb-[110px] overflow-y-auto"
-          style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(4px)' }}
-        >
-          <div className="flex flex-col items-center gap-[44px] max-w-[920px] w-full">
+        <div className="absolute inset-0 z-[80] bg-black flex justify-center overflow-y-auto p-[40px]">
+          <div
+            className="m-auto relative flex flex-col items-center gap-[32px] max-w-[920px] w-full rounded-[24px] p-[48px]"
+            style={{ background: 'rgba(0,0,0,0.95)', backdropFilter: 'blur(4px)' }}
+          >
+          <div className="fade-in-plain flex flex-col items-center gap-[44px] w-full">
             {/* Cabeçalho - parabéns */}
             <div className="flex flex-col items-center gap-[20px] text-center">
               <div className="flex items-center justify-center w-[96px] h-[96px] rounded-full bg-[#06AC73]/15 border border-[#06AC73]/40">
@@ -1184,7 +1257,7 @@ function PDVSimulator() {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">Sangria de Caixa</span>. Agora você está pronto para realizar essa operação no PDV.
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoAdicional ? "Suprimento de Caixa" : "Sangria de Caixa"}</span>. Agora você está pronto para realizar essa operação no PDV.
                 </p>
               </div>
             </div>
@@ -1195,7 +1268,7 @@ function PDVSimulator() {
                 Continue aprendendo
               </p>
               <div className="grid grid-cols-2 gap-[24px]">
-                {proximosTreinamentos.map((s) => (
+                {(isSuprimentoAdicional ? proximosTreinamentosSuprimento : proximosTreinamentosSangria).map((s) => (
                   <button
                     key={s.slug}
                     onClick={() => goToTraining(s.slug)}
@@ -1226,26 +1299,27 @@ function PDVSimulator() {
             </div>
           </div>
 
-          {/* Botão Fechar - inferior centralizado, estilo plataforma */}
-          <button
-            onClick={exitTraining}
-            className="absolute bottom-[40px] left-1/2 -translate-x-1/2 flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all cursor-pointer"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Fechar</span>
-          </button>
+            {/* Botão Fechar - inferior centralizado, estilo plataforma */}
+            <button
+              onClick={exitTraining}
+              className="flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all cursor-pointer"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Fechar</span>
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function ContentBody({ conteudo, hasPDV }: { conteudo: string; hasPDV?: boolean }) {
+function ContentBody({ conteudo, hasPDV, slug }: { conteudo: string; hasPDV?: boolean; slug?: string }) {
   return (
     <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
-      <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[48px]">
+      <div className="w-full max-w-[1440px] mx-auto px-[96px] pt-[48px] pb-[64px]">
         <div className="prose max-w-none mb-[48px]">
           <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
             {conteudo}
@@ -1256,7 +1330,7 @@ function ContentBody({ conteudo, hasPDV }: { conteudo: string; hasPDV?: boolean 
             <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[24px] text-[#383838] mb-[24px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               Simulador PDV - Prática de Treinamento
             </h2>
-            <PDVSimulator />
+            <PDVSimulator slug={slug} />
           </div>
         )}
       </div>
@@ -1284,7 +1358,7 @@ export default function FuncionalidadePage() {
       <div className="content-stretch flex flex-[1_0_0] flex-col h-full items-start min-w-px overflow-clip relative z-[1]">
         <Frame2 />
         <ContentHeader titulo={content.titulo} onBack={handleBack} />
-        <ContentBody conteudo={content.conteudo} hasPDV={content.hasPDV} />
+        <ContentBody conteudo={content.conteudo} hasPDV={content.hasPDV} slug={slug} />
       </div>
     </div>
   );

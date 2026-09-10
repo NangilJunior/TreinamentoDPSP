@@ -43,7 +43,7 @@ export function ScaleToFit({
     <div
       ref={containerRef}
       className={className}
-      style={{ height, display: "flex", justifyContent: "center" }}
+      style={{ height, display: "flex", justifyContent: "center", alignItems: "flex-start" }}
     >
       <div
         ref={contentRef}

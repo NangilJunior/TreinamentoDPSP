@@ -21,14 +21,18 @@ function Frame1() {
   );
 }
 
-function Frame5({ onNext }: { onNext?: () => void }) {
+function Frame5({
+  onNext,
+  titulo = "Olá, seja bem-vindo ao tutorial de Sangria de Caixa.",
+  descricao = "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) da gaveta do PDV durante o turno de trabalho. Essa operação é realizada sempre que o valor acumulado atinge um limite estabelecido, com o objetivo de reduzir o risco de perdas financeiras em casos de assalto.",
+}: { onNext?: () => void; titulo?: string; descricao?: string }) {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[16px] items-start leading-[1.2] relative shrink-0 w-full">
       <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[20px] text-white w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        Olá, seja bem-vindo ao tutorial de Sangria de Caixa.
+        {titulo}
       </p>
       <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[16px] text-[rgba(255,255,255,0.8)] w-full leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) da gaveta do PDV durante o turno de trabalho. Essa operação é realizada sempre que o valor acumulado atinge um limite estabelecido, com o objetivo de reduzir o risco de perdas financeiras em casos de assalto.
+        {descricao}
       </p>
     </div>
   );
@@ -82,19 +86,19 @@ function Frame6() {
   );
 }
 
-function Frame({ onNext }: { onNext?: () => void }) {
+function Frame({ onNext, titulo, descricao }: { onNext?: () => void; titulo?: string; descricao?: string }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col gap-[24px] items-start min-w-px relative">
-      <Frame5 onNext={onNext} />
+      <Frame5 onNext={onNext} titulo={titulo} descricao={descricao} />
     </div>
   );
 }
 
-export default function Inicio({ onNext }: { onNext?: () => void }) {
+export default function Inicio({ onNext, titulo, descricao }: { onNext?: () => void; titulo?: string; descricao?: string }) {
   return (
     <div className="bg-[rgba(0,0,0,0.8)] content-stretch flex gap-[24px] items-start px-[24px] py-[40px] pb-[120px] relative rounded-[8px] w-full" data-name="Início">
       <Frame1 />
-      <Frame onNext={onNext} />
+      <Frame onNext={onNext} titulo={titulo} descricao={descricao} />
     </div>
   );
 }
