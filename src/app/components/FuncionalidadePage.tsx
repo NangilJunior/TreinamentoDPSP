@@ -18,6 +18,8 @@ import SuprimentoResumoScreen from "./SuprimentoResumoScreen";
 import SuprimentoValorScreen from "./SuprimentoValorScreen";
 import SuprimentoComprovanteScreen from "./SuprimentoComprovanteScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
+import AberturaCaixaLoginScreen from "./AberturaCaixaLoginScreen";
+import EntradaOperadorScreen from "./EntradaOperadorScreen";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
 
@@ -159,19 +161,30 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
   );
 }
 
+// Matrícula e senha simuladas nas telas de "Ação do Gerente" da Abertura de
+// Caixa — mesmos valores e cadência (200ms/dígito, 300ms/dígito da senha)
+// usados em SangriaFlow.tsx.
+const MATRICULA_GERENTE = "5732465";
+const SENHA_GERENTE_DIGITOS = 7;
+
 function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
   const isSuprimentoInicial = slug === "suprimento-inicial";
   const isSuprimentoAdicional = slug === "suprimento-complementar" || isSuprimentoInicial;
+  const isAberturaDeCaixa = slug === "abertura-de-caixa";
   const welcomeTitulo = isSuprimentoInicial
     ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
     : isSuprimentoAdicional
     ? "Olá, boas vindas ao tutorial de Suprimento Complementar."
+    : isAberturaDeCaixa
+    ? "Olá, boas vindas ao tutorial de Abertura de Caixa"
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
     : isSuprimentoAdicional
     ? "O Suprimento Complementar é a operação de entrada adicional de dinheiro na gaveta do PDV durante o período de operação. Ele é utilizado quando o caixa precisa de mais cédulas ou moedas para continuar realizando trocos, evitando que a falta de dinheiro interrompa ou dificulte o atendimento. O aporte complementa o valor disponível no caixa e pode ser realizado sempre que houver necessidade de reforçar o fundo de troco."
+    : isAberturaDeCaixa
+    ? "A Abertura de Caixa é o processo que permite ao operador iniciar suas atividades em um PDV (Ponto de Venda). Para abrir o caixa, primeiro é necessária a autorização de um usuário com perfil de gerente, por meio de senha. Em seguida, o operador realiza sua própria autenticação. O sistema verifica se o caixa está disponível para abertura e registra a operação, garantindo segurança e rastreabilidade durante o atendimento."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -182,6 +195,18 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [keyboardReady, setKeyboardReady] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showAberturaLogin, setShowAberturaLogin] = useState(false);
+  const [showAberturaAutorizacao, setShowAberturaAutorizacao] = useState(false);
+  const [showAberturaGerenteMatricula, setShowAberturaGerenteMatricula] = useState(false);
+  const [showAberturaGerenteSenha, setShowAberturaGerenteSenha] = useState(false);
+  const [aberturaMatricula, setAberturaMatricula] = useState("");
+  const [aberturaSenha, setAberturaSenha] = useState("");
+  const [showEntradaOperadorMatricula, setShowEntradaOperadorMatricula] = useState(false);
+  const [showEntradaOperadorSenha, setShowEntradaOperadorSenha] = useState(false);
+  const [showAberturaIdentificacao, setShowAberturaIdentificacao] = useState(false);
+  const [operadorMatricula, setOperadorMatricula] = useState("");
+  const [operadorSenha, setOperadorSenha] = useState("");
+  const [aberturaEntraState, setAberturaEntraState] = useState<"disabled" | "active" | "pressed">("disabled");
   const [tutorialStep, setTutorialStep] = useState(0);
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [cpf, setCpf] = useState("");
@@ -220,6 +245,18 @@ function PDVSimulator({ slug }: { slug?: string }) {
     stopAudio();
     setShowKeyboard(false);
     setShowTutorial(false);
+    setShowAberturaLogin(false);
+    setShowAberturaAutorizacao(false);
+    setShowAberturaGerenteMatricula(false);
+    setShowAberturaGerenteSenha(false);
+    setShowEntradaOperadorMatricula(false);
+    setShowEntradaOperadorSenha(false);
+    setShowAberturaIdentificacao(false);
+    setOperadorMatricula("");
+    setOperadorSenha("");
+    setAberturaMatricula("");
+    setAberturaSenha("");
+    setAberturaEntraState("disabled");
     setTutorialStep(0);
     setIsTrainingMode(false);
     setIsFirstAccess(true);
@@ -239,7 +276,121 @@ function PDVSimulator({ slug }: { slug?: string }) {
     audio.play().catch(() => {});
   };
 
+  // Simulação da Ação do Gerente na tela de login da Abertura de Caixa:
+  // digita a matrícula e libera o botão Entra, na mesma cadência usada em
+  // SangriaFlow.tsx, encerrando com a transição para a simulação da senha.
+  useEffect(() => {
+    if (!showAberturaGerenteMatricula) return;
+    let cancelled = false;
+    const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    const run = async () => {
+      await wait(1200);
+      if (cancelled) return;
+      for (let i = 1; i <= MATRICULA_GERENTE.length; i++) {
+        await wait(200);
+        if (cancelled) return;
+        setAberturaMatricula(MATRICULA_GERENTE.slice(0, i));
+      }
+
+      await wait(700);
+      if (cancelled) return;
+      setAberturaEntraState("active");
+
+      await wait(1400);
+      if (cancelled) return;
+      setAberturaEntraState("pressed");
+
+      await wait(600);
+      if (cancelled) return;
+      setShowAberturaGerenteMatricula(false);
+      setAberturaMatricula("");
+      setAberturaEntraState("disabled");
+      setShowAberturaGerenteSenha(true);
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAberturaGerenteMatricula]);
+
+  // Simulação da Ação do Gerente digitando a Senha Gerencial (oculta), na
+  // mesma cadência usada em SangriaFlow.tsx, encerrando com a transição
+  // para o restante do fluxo (tela de boas-vindas).
+  useEffect(() => {
+    if (!showAberturaGerenteSenha) return;
+    let cancelled = false;
+    const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    const run = async () => {
+      await wait(1100);
+      if (cancelled) return;
+      for (let i = 1; i <= SENHA_GERENTE_DIGITOS; i++) {
+        await wait(300);
+        if (cancelled) return;
+        setAberturaSenha("•".repeat(i));
+      }
+
+      await wait(700);
+      if (cancelled) return;
+      setAberturaEntraState("active");
+
+      await wait(1400);
+      if (cancelled) return;
+      setAberturaEntraState("pressed");
+
+      await wait(600);
+      if (cancelled) return;
+      setShowAberturaGerenteSenha(false);
+      setAberturaSenha("");
+      setAberturaEntraState("disabled");
+      setShowEntradaOperadorMatricula(true);
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAberturaGerenteSenha]);
+
   const handleKeyPress = (key: string) => {
+    if (showEntradaOperadorMatricula) {
+      if (key === "ENTRA" || key === "Enter") {
+        if (operadorMatricula.length === 6) {
+          setShowKeyboard(false);
+          setShowEntradaOperadorMatricula(false);
+          setOperadorMatricula("");
+          setShowEntradaOperadorSenha(true);
+        }
+      } else if (key === "LIMPA") {
+        setOperadorMatricula("");
+      } else if (key === "VOLTA") {
+        setOperadorMatricula(prev => prev.slice(0, -1));
+      } else if (key === "0") {
+        setOperadorMatricula(prev => (prev.length < 6 ? prev + "0" : prev));
+      }
+      return;
+    }
+    if (showEntradaOperadorSenha) {
+      if (key === "ENTRA" || key === "Enter") {
+        if (operadorSenha.length === 6) {
+          setShowKeyboard(false);
+          setShowEntradaOperadorSenha(false);
+          setOperadorSenha("");
+          setShowAberturaIdentificacao(true);
+        }
+      } else if (key === "LIMPA") {
+        setOperadorSenha("");
+      } else if (key === "VOLTA") {
+        setOperadorSenha(prev => prev.slice(0, -1));
+      } else if (key === "0") {
+        setOperadorSenha(prev => (prev.length < 6 ? prev + "•" : prev));
+      }
+      return;
+    }
     if (tutorialStep === 7) {
       if (key === "ENTRA" || key === "Enter") {
         if (valorRetirada === valorAlvo) { setTutorialStep(8); setShowKeyboard(false); if (!isSuprimentoAdicional) setValorRetirada(0); }
@@ -755,7 +906,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             </div>
           </div>
         )}
-        {!isSuprimentoAdicional && <Frame19557 />}
+        {!isSuprimentoAdicional && !isAberturaDeCaixa && <Frame19557 />}
       </div>
 
       {/* Fluxo animado de Sangria (telas do gerente) */}
@@ -869,6 +1020,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
             setShowKeyboard(false);
             setTutorialStep(0);
             setIsTrainingMode(true);
+            if (isAberturaDeCaixa) {
+              // Fluxo de Abertura de Caixa começa pela tela de login do PDV;
+              // o restante do fluxo (boas-vindas + demais passos) só é
+              // acionado quando o operador clica em Avançar nessa tela.
+              setShowAberturaLogin(true);
+              return;
+            }
             playWelcomeAudio();
             // Mostrar tutorial com delay para o fade-in
             setTimeout(() => {
@@ -909,10 +1067,70 @@ function PDVSimulator({ slug }: { slug?: string }) {
       <div className="absolute top-[42%] left-1/2 z-10" style={{ transform: `translate(-50%, -50%) scale(${trainingScale})` }}>
 
 
-        {pdvContent}
+        {showAberturaLogin || showAberturaAutorizacao || showAberturaGerenteMatricula || showAberturaGerenteSenha ? (
+          <AberturaCaixaLoginScreen
+            campo={showAberturaGerenteSenha ? "senha" : "matricula"}
+            valor={showAberturaGerenteMatricula ? aberturaMatricula : showAberturaGerenteSenha ? aberturaSenha : ""}
+            entraState={showAberturaGerenteMatricula || showAberturaGerenteSenha ? aberturaEntraState : "disabled"}
+          />
+        ) : showEntradaOperadorMatricula ? (
+          <EntradaOperadorScreen campo="matricula" valor={operadorMatricula} />
+        ) : showEntradaOperadorSenha ? (
+          <EntradaOperadorScreen campo="senha" valor={operadorSenha} />
+        ) : pdvContent}
+
+        {/* Tooltip - Autorização do Gerente (tela intermediária) */}
+        {showAberturaAutorizacao && (
+          <div className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '227px', left: '678px', right: '32px' }}>
+            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[14px] items-start px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8 border-b-0" style={{ backdropFilter: 'blur(10px)' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <p className="font-['Nunito_Sans',sans-serif] text-[15px] text-[rgba(255,255,255,0.75)] leading-[1.5]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                Esta operação requer autorização do gerente. Após a introdução das credenciais, você poderá continuar.
+              </p>
+            </div>
+            {/* Triângulo apontando para baixo (em direção ao input) */}
+            <div className="flex justify-center mt-0">
+              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+            </div>
+          </div>
+        )}
+
+        {/* Tooltip - Matrícula/Senha do Operador */}
+        {(showEntradaOperadorMatricula || showEntradaOperadorSenha) && (
+          <div key={showEntradaOperadorSenha ? "senha" : "matricula"} className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '120px', left: '240px', right: '240px' }}>
+            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8 border-b-0" style={{ backdropFilter: 'blur(10px)' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                {showEntradaOperadorSenha ? (
+                  <>
+                    Agora informe sua senha. Neste exemplo, digite o número{" "}
+                    <span className="font-bold text-white">000000</span> no teclado virtual e pressione{" "}
+                    <span className="font-bold text-white">[Entra]</span> para continuar.
+                  </>
+                ) : (
+                  <>
+                    Informe no teclado a sua matrícula. Neste exemplo, digite o número{" "}
+                    <span className="font-bold text-white">000000</span> no teclado virtual e pressione{" "}
+                    <span className="font-bold text-white">[Entra]</span> para continuar.
+                  </>
+                )}
+              </p>
+            </div>
+            {/* Triângulo apontando para baixo (em direção ao input) */}
+            <div className="flex justify-center mt-0">
+              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+            </div>
+          </div>
+        )}
 
         {/* Banner Ação do Gerente - abaixo do PDV */}
-        {tutorialStep === 4 && (
+        {(tutorialStep === 4 || showAberturaGerenteMatricula || showAberturaGerenteSenha) && (
           <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
@@ -939,7 +1157,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         )}
 
         {/* Tutorial Box - Positioned at bottom of PDV */}
-        <div className={`absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20 transition-opacity duration-700 ease-in-out ${showTutorial ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20 transition-opacity duration-700 ease-in-out ${showTutorial || showAberturaLogin ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <Inicio
             onNext={() => { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }}
             titulo={welcomeTitulo}
@@ -1059,8 +1277,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
         </>)}
 
-        {/* Banner de conclusão - step 9 (comprovante) */}
-        {tutorialStep === 9 && (
+        {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) */}
+        {(tutorialStep === 9 || showAberturaIdentificacao) && (
           <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
@@ -1075,7 +1293,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Parabéns!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : "A sangria de caixa foi realizada e concluída com sucesso."}
+                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
             </div>
@@ -1084,11 +1302,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
 
         {/* Navegação do tutorial - plataforma de treinamentos */}
-        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-30 flex justify-between transition-opacity duration-700 ease-in-out ${(showTutorial || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 || showAberturaIdentificacao ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-30 flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             onClick={() => {
-              if (tutorialStep === 2) {
+              if (showAberturaIdentificacao) { setShowAberturaIdentificacao(false); setShowEntradaOperadorSenha(true); setOperadorSenha(""); }
+              else if (showAberturaAutorizacao) { setShowAberturaAutorizacao(false); setShowAberturaLogin(true); }
+              else if (showEntradaOperadorSenha) { setShowEntradaOperadorSenha(false); setOperadorSenha(""); setShowEntradaOperadorMatricula(true); setOperadorMatricula(""); }
+              else if (showEntradaOperadorMatricula) { setShowEntradaOperadorMatricula(false); setOperadorMatricula(""); setShowAberturaLogin(true); }
+              else if (isAberturaDeCaixa && tutorialStep === 0) { stopAudio(); setShowTutorial(false); setShowAberturaLogin(true); }
+              else if (tutorialStep === 2) {
                 if (isSuprimentoAdicional) { setTutorialStep(0); setShowTutorial(true); playWelcomeAudio(); }
                 else setTutorialStep(1);
               }
@@ -1100,7 +1323,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (tutorialStep === 9) setTutorialStep(8);
               else { setTutorialStep(0); setShowTutorial(true); playWelcomeAudio(); }
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${tutorialStep === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || (tutorialStep === 0 && !(isAberturaDeCaixa && showTutorial))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -1108,14 +1331,26 @@ function PDVSimulator({ slug }: { slug?: string }) {
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">Anterior</span>
           </button>
 
-          {/* Botão Próximo - steps 0, 1 e 9 */}
+          {/* Botão Próximo - tela de login (Abertura de Caixa), steps 0, 1 e 9 */}
           <button
             onClick={() => {
-              if (showTutorial) { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }
+              if (showAberturaLogin) {
+                setShowAberturaLogin(false);
+                setShowAberturaAutorizacao(true);
+              }
+              else if (showAberturaAutorizacao) {
+                setShowAberturaAutorizacao(false);
+                setShowAberturaGerenteMatricula(true);
+              }
+              else if (showAberturaIdentificacao) {
+                setShowAberturaIdentificacao(false);
+                setTutorialStep(10);
+              }
+              else if (showTutorial) { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }
               else if (tutorialStep === 1) setTutorialStep(2);
               else if (tutorialStep === 9) setTutorialStep(10);
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showTutorial || tutorialStep === 1 || tutorialStep === 9) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">Próximo</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1135,7 +1370,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
           isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? 'animate-pulse-subtle' : ''
-        } ${tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        } ${!showEntradaOperadorMatricula && !showEntradaOperadorSenha && (tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
@@ -1233,17 +1468,29 @@ function PDVSimulator({ slug }: { slug?: string }) {
         <VirtualKeyboard
           highlightSangria={tutorialStep === 2}
           onSangriaPress={tutorialStep === 2 ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo)}
-          onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo)) ? () => {
+          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6)}
+          onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6)) ? () => {
             if (tutorialStep === 3) { setTutorialStep(4); setShowKeyboard(false); }
             else if (tutorialStep === 6) { setTutorialStep(7); setShowKeyboard(false); }
             else if (tutorialStep === 7 && valorRetirada === valorAlvo) { setTutorialStep(8); setShowKeyboard(false); if (!isSuprimentoAdicional) setValorRetirada(0); }
+            else if (showEntradaOperadorMatricula && operadorMatricula.length === 6) {
+              setShowKeyboard(false);
+              setShowEntradaOperadorMatricula(false);
+              setOperadorMatricula("");
+              setShowEntradaOperadorSenha(true);
+            }
+            else if (showEntradaOperadorSenha && operadorSenha.length === 6) {
+              setShowKeyboard(false);
+              setShowEntradaOperadorSenha(false);
+              setOperadorSenha("");
+              setShowAberturaIdentificacao(true);
+            }
           } : undefined}
           highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional)}
           onKey1Press={tutorialStep === 5 && !isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
           highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional)}
           onKey2Press={tutorialStep === 5 && isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey0={tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo}
+          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6)}
           onKey0Press={undefined}
           highlightV={tutorialStep === 6}
           onVPress={tutorialStep === 6 ? handleVPress : undefined}
@@ -1272,7 +1519,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : "Sangria de Caixa"}</span>. Agora você está pronto para realizar essa operação no PDV.
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : "Sangria de Caixa"}</span>. Agora você está pronto para realizar essa operação no PDV.
                 </p>
               </div>
             </div>
