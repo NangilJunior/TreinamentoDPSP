@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router";
 import { useState, useRef, useEffect, useCallback } from "react";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
+import Footer from "./Footer";
 import svgPaths from "../../imports/ManutencaoDeLojas-1/svg-ygln4qhrvj";
 import pdvSvgPaths from "../../imports/Home/svg-3nwk8k5aou";
 import peripheralSvgPaths from "../../imports/Frame19555/svg-8dfs6vtjpy";
@@ -20,6 +21,7 @@ import ComprovanteScreen from "./ComprovanteScreen";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import imgEntradaSaida from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
 import imgSangriaSuprimento from "../../imports/ManutencaoDeLojas/79e4da8f717af2976b6c4029d66ffdf41ddd92aa.png";
+import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
 
 interface FuncionalidadeContent {
   titulo: string;
@@ -1316,24 +1318,107 @@ function PDVSimulator({ slug }: { slug?: string }) {
   );
 }
 
+function TrilhaCard({ titulo, descricao, ativo, onClick }: { titulo: string; descricao?: string; ativo: boolean; onClick?: () => void }) {
+  const clicavel = Boolean(onClick);
+  return (
+    <div
+      onClick={onClick}
+      className={`bg-white border rounded-[8px] overflow-hidden flex items-stretch${clicavel ? " cursor-pointer hover:shadow-md transition-shadow" : ""} ${ativo ? "border-[#2258e6]" : "border-[#e5e5e5]"}`}
+    >
+      <div className={`w-[4px] shrink-0 ${ativo ? "bg-[#2258e6]" : "bg-[#FF5C5C]"}`} />
+      <div className="flex-1 min-w-0 px-[16px] py-[12px] flex flex-col gap-[4px]">
+        <div className="flex items-center justify-between gap-[8px]">
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#383838] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+            {titulo}
+          </p>
+          {ativo && (
+            <span className="shrink-0 font-['Geist',sans-serif] font-semibold text-[10px] tracking-wide uppercase text-[#2258e6] bg-[#2258e6]/10 px-[8px] py-[2px] rounded-full">
+              Em andamento
+            </span>
+          )}
+        </div>
+        <p
+          className="font-['Nunito_Sans',sans-serif] font-normal text-[14px] text-[#6c6c6c] leading-[1.4]"
+          style={{
+            fontVariationSettings: "'YTLC' 500, 'wdth' 100",
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+        >
+          {descricao ?? "Conteúdo em breve."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSecaoData; slugAtual?: string }) {
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex flex-col">
+      <p className="font-['Geist',sans-serif] font-medium text-[10px] tracking-[2px] uppercase text-[#737373]">
+        Trilha de Treinamentos
+      </p>
+      <h3 className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#383838] mt-[4px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+        {categoria.titulo}
+      </h3>
+      <div className="border-b border-[#e5e5e5] mt-[16px] mb-[24px]" />
+      <div className="flex flex-col gap-[12px]">
+        {categoria.cards.map((item) => (
+          <TrilhaCard
+            key={item.titulo}
+            titulo={item.titulo}
+            descricao={item.descricao}
+            ativo={item.slug === slugAtual}
+            onClick={item.slug ? () => navigate(`/funcionalidade/${item.slug}`) : undefined}
+          />
+        ))}
+      </div>
+      <div className="border-b border-[#e5e5e5] mt-[24px] mb-[16px]" />
+      <div className="flex justify-end">
+        <button className="font-['Geist',sans-serif] font-medium text-[13px] text-[#2258e6] hover:underline cursor-pointer">
+          Próximos treinamentos
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function ContentBody({ conteudo, hasPDV, slug }: { conteudo: string; hasPDV?: boolean; slug?: string }) {
+  const categoria = slug
+    ? secoesCategorias.find((secao) => secao.cards.some((card) => card.slug === slug))
+    : undefined;
+
   return (
     <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
-      <div className="w-full max-w-[960px] mx-auto px-[96px] pt-[48px] pb-[64px]">
-        <div className="prose max-w-none mb-[32px]">
-          <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-            {conteudo}
-          </p>
-        </div>
-        {hasPDV && (
-          <div className="mt-[32px]">
-            <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#383838] mb-[12px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-              Simulador PDV - Prática de Treinamento
-            </h2>
-            <PDVSimulator slug={slug} />
+      <div className="w-full max-w-[1440px] mx-auto px-[96px] pt-[48px] pb-[64px]">
+        <div className="grid grid-cols-12 gap-[32px] items-start">
+          <div className={categoria ? "col-span-8" : "col-span-12"}>
+            <div className="prose max-w-none mb-[32px]">
+              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                {conteudo}
+              </p>
+            </div>
+            {hasPDV && (
+              <div className="mt-[32px]">
+                <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#383838] mb-[12px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Simulador PDV - Prática de Treinamento
+                </h2>
+                <PDVSimulator slug={slug} />
+              </div>
+            )}
           </div>
-        )}
+          {categoria && (
+            <div className="col-span-4">
+              <TrilhaTreinamentos categoria={categoria} slugAtual={slug} />
+            </div>
+          )}
+        </div>
       </div>
+      <Footer />
     </div>
   );
 }

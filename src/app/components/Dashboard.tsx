@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, type UIEvent } from "react";
 import { useNavigate } from "react-router";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
+import Footer from "./Footer";
 import imgImage4 from "../../imports/ManutencaoDeLojas/79e4da8f717af2976b6c4029d66ffdf41ddd92aa.png";
 import imgImage5 from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
 import imgImage6 from "../../imports/ManutencaoDeLojas/6566e1aba8cfe14364d9bb9f0c3fa7712c053726.png";
 import imgImage7 from "../../imports/ManutencaoDeLojas/95ee02e5d5e03c30315d82fd444278082f8dfea9.png";
+import { secoesCategorias, type CategoriaCardData } from "../data/secoesCategorias";
 
 const imgCategoriaSecao = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
 
@@ -113,7 +115,7 @@ function Frame7() {
   );
 }
 
-function Al({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+function Al({ value, onChange, compact }: { value: string; onChange: (value: string) => void; compact?: boolean }) {
   return (
     <div className="flex flex-[1_0_0] gap-px items-center min-w-px relative" data-name="AL">
       <input
@@ -121,14 +123,14 @@ function Al({ value, onChange }: { value: string; onChange: (value: string) => v
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Busque o treinamento"
-        className="flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Nunito_Sans',sans-serif] font-normal leading-[130%] text-[16px] placeholder:text-[#737373]"
+        className={`flex-[1_0_0] min-w-px bg-transparent outline-none border-none font-['Nunito_Sans',sans-serif] font-normal leading-[130%] placeholder:text-[#737373] transition-all duration-200 ${compact ? "text-[15px]" : "text-[16px]"}`}
         style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}
       />
     </div>
   );
 }
 
-function Frame5({ searchTerm, onSearchChange }: { searchTerm: string; onSearchChange: (value: string) => void }) {
+function Frame5({ searchTerm, onSearchChange, compact }: { searchTerm: string; onSearchChange: (value: string) => void; compact?: boolean }) {
   const handleClear = () => {
     onSearchChange("");
   };
@@ -137,10 +139,10 @@ function Frame5({ searchTerm, onSearchChange }: { searchTerm: string; onSearchCh
 
   return (
     <div className="flex gap-[16px] items-center w-full">
-      <div className="bg-white flex-1 h-[56px] relative rounded-[8px]" data-name="Input">
+      <div className={`bg-white flex-1 relative rounded-[8px] transition-all duration-200 ${compact ? "h-[40px]" : "h-[56px]"}`} data-name="Input">
         <div className="flex flex-row items-center h-full overflow-clip rounded-[inherit]">
           <div className="flex gap-[12px] items-center h-full px-[16px] py-[9.5px] w-full">
-            <div className="overflow-clip relative shrink-0 size-[28px]" data-name="Search icon">
+            <div className={`overflow-clip relative shrink-0 transition-all duration-200 ${compact ? "size-[20px]" : "size-[28px]"}`} data-name="Search icon">
               <div className="absolute inset-[9.38%]" data-name="Vector">
                 <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 16.2498 16.2498">
                   <g id="Vector" transform="translate(1.198 1.198)">
@@ -150,7 +152,7 @@ function Frame5({ searchTerm, onSearchChange }: { searchTerm: string; onSearchCh
                 </svg>
               </div>
             </div>
-            <Al value={searchTerm} onChange={onSearchChange} />
+            <Al value={searchTerm} onChange={onSearchChange} compact={compact} />
             {hasValue ? (
               <button
                 onClick={handleClear}
@@ -177,25 +179,6 @@ function Frame5({ searchTerm, onSearchChange }: { searchTerm: string; onSearchCh
   );
 }
 
-function Frame({ searchTerm, onSearchChange }: { searchTerm: string; onSearchChange: (value: string) => void }) {
-  return (
-    <div className="bg-white relative shrink-0 w-full">
-      <div className="flex flex-col items-center justify-center size-full">
-        <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[20px]">
-          <div className="grid grid-cols-12 gap-[32px]">
-            <div className="col-span-12 flex flex-col gap-[10px] items-center justify-center">
-              <Frame7 />
-              <div className="h-[16px]" />
-            </div>
-            <div className="col-span-12 lg:col-start-4 lg:col-span-6" data-name="Search">
-              <Frame5 searchTerm={searchTerm} onSearchChange={onSearchChange} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function FuncionalidadeCard({ funcionalidade, onClick }: { funcionalidade: Funcionalidade; onClick: () => void }) {
   const offset = funcionalidade.imageOffset;
@@ -269,41 +252,6 @@ function Frame6({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFilt
 }
 
 const placeholderDescricao = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
-
-interface CategoriaCardData {
-  titulo: string;
-  descricao?: string;
-  slug?: string;
-}
-
-const secoesCategorias: { titulo: string; cards: CategoriaCardData[] }[] = [
-  { titulo: "Início da Operação", cards: [{ titulo: "Abertura de caixa" }, { titulo: "Login do operador" }, { titulo: "Suprimento inicial" }] },
-  { titulo: "Atendimento e Vendas", cards: [{ titulo: "Cliente cadastrado e não cadastrado" }, { titulo: "Registro de produtos" }, { titulo: "Formas de pagamento" }, { titulo: "Finalização da venda" }] },
-  { titulo: "Resgate de Pedido Balcão", cards: [{ titulo: "Localizar cesta criada no balcão" }, { titulo: "Resgatar atendimento" }, { titulo: "Finalizar pagamento" }] },
-  { titulo: "Resgate de Pedido Delivery", cards: [{ titulo: "Localizar pedido online" }, { titulo: "Conferir produtos" }, { titulo: "Faturar pedido" }, { titulo: "Finalizar atendimento" }] },
-  { titulo: "Programas e Benefícios", cards: [{ titulo: "Convênios" }, { titulo: "PBM" }, { titulo: "Farmácia Popular" }] },
-  { titulo: "Medicamentos Controlados", cards: [{ titulo: "Resgate de receita digital" }, { titulo: "Liberação manual" }, { titulo: "Finalização da venda" }] },
-  { titulo: "Experiência do Cliente", cards: [{ titulo: "Encantômetro" }] },
-  { titulo: "Ajustes durante a Venda", cards: [{ titulo: "Consulta de preço" }, { titulo: "Cancelamento parcial" }, { titulo: "Cancelamento total" }, { titulo: "DDG (Desconto Gerencial)" }] },
-  { titulo: "Pós-Venda", cards: [{ titulo: "Estorno" }, { titulo: "Troca de Mercadoria" }, { titulo: "Reimpressão de cupom" }, { titulo: "Reimpressão de comprovantes" }, { titulo: "Reimpressão Farmácia Popular" }] },
-  {
-    titulo: "Gestão do Caixa",
-    cards: [
-      {
-        titulo: "Sangria de Caixa",
-        descricao: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
-        slug: "sangria-de-caixa"
-      },
-      {
-        titulo: "Suprimento de Caixa",
-        descricao: "O suprimento de caixa é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
-        slug: "suprimento-de-caixa"
-      }
-    ]
-  },
-  { titulo: "Consultas e Relatórios", cards: [{ titulo: "Venda detalhe" }, { titulo: "Relatório do operador" }, { titulo: "Relatório do dia" }] },
-  { titulo: "Encerramento da Operação", cards: [{ titulo: "Saída do operador" }, { titulo: "Fechamento de caixa" }, { titulo: "Fechamento Z" }] },
-];
 
 function CategoriaCard({ titulo, subtitulo, onClick }: { titulo: string; subtitulo: string; onClick?: () => void }) {
   return (
@@ -388,12 +336,42 @@ function Frame1({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFilt
   );
 }
 
-function Table({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFiltradas: Funcionalidade[]; onCardClick: (slug: string) => void }) {
+function Table({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardClick }: {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  funcionalidadesFiltradas: Funcionalidade[];
+  onCardClick: (slug: string) => void;
+}) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const COMPACT_SCROLL_THRESHOLD = 80;
+
+  const handleScroll = (e: UIEvent<HTMLDivElement>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    setIsScrolled(scrollTop > 0);
+    setIsCompact(scrollTop > COMPACT_SCROLL_THRESHOLD);
+  };
+
   return (
-    <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
-      <div className="w-full max-w-[1440px] mx-auto px-[96px] py-[48px]">
+    <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table" onScroll={handleScroll}>
+      <div className="w-full max-w-[1440px] mx-auto px-[96px] pt-[32px] flex items-center justify-center">
+        <Frame7 />
+      </div>
+      <div
+        className={`sticky top-0 z-10 bg-white w-full transition-shadow duration-200${isScrolled ? " shadow-[0_4px_12px_-4px_rgba(0,0,0,0.15)]" : ""}`}
+      >
+        <div className={`w-full max-w-[1440px] mx-auto px-[96px] transition-all duration-200 ${isCompact ? "pt-[20px] pb-[20px]" : "pt-[32px] pb-[32px]"}`}>
+          <div className="grid grid-cols-12 gap-[32px]">
+            <div className="col-span-12 lg:col-start-4 lg:col-span-6" data-name="Search">
+              <Frame5 searchTerm={searchTerm} onSearchChange={onSearchChange} compact={isCompact} />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="w-full max-w-[1440px] mx-auto px-[96px] pb-[48px]">
         <Frame1 funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
       </div>
+      <Footer />
     </div>
   );
 }
@@ -407,8 +385,12 @@ function Frame2({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardCl
   return (
     <div className="content-stretch flex flex-[1_0_0] flex-col h-full items-start min-w-px overflow-clip relative z-[1]">
       <Frame3 />
-      <Frame searchTerm={searchTerm} onSearchChange={onSearchChange} />
-      <Table funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
+      <Table
+        searchTerm={searchTerm}
+        onSearchChange={onSearchChange}
+        funcionalidadesFiltradas={funcionalidadesFiltradas}
+        onCardClick={onCardClick}
+      />
     </div>
   );
 }
