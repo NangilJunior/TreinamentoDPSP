@@ -19,9 +19,10 @@ import SuprimentoValorScreen from "./SuprimentoValorScreen";
 import SuprimentoComprovanteScreen from "./SuprimentoComprovanteScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
-import imgEntradaSaida from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
-import imgSangriaSuprimento from "../../imports/ManutencaoDeLojas/79e4da8f717af2976b6c4029d66ffdf41ddd92aa.png";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
+
+// Mesma imagem de fundo utilizada na categoria "Gestão do Caixa" em /dashboard
+const imgGestaoDoCaixa = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
 
 interface FuncionalidadeContent {
   titulo: string;
@@ -64,32 +65,22 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   }
 };
 
-// Sugestões exibidas na tela de conclusão (estilo "próximos vídeos")
-const treinamentoEntradaSaida = {
-  slug: "entrada-saida-operador",
-  titulo: "Entrada/Saída de Operador",
-  descricao: "Controle e rastreabilidade das operações: registre o início e o fim de cada turno no terminal.",
-  imagem: imgEntradaSaida,
-};
-
-const proximosTreinamentosSangria = [
-  {
-    slug: "suprimento-complementar",
-    titulo: "Suprimento Complementar",
-    descricao: "Realize a entrada de dinheiro na gaveta do PDV para garantir troco aos clientes.",
-    imagem: imgSangriaSuprimento,
-  },
-  treinamentoEntradaSaida,
-];
-
-const proximosTreinamentosSuprimento = [
+// Sugestões exibidas na tela de conclusão (estilo "próximos vídeos"). Textos e
+// imagem padronizados para coincidir com os cards de Sangria de Caixa e
+// Suprimento Complementar em /dashboard.
+const proximosTreinamentos = [
   {
     slug: "sangria-de-caixa",
     titulo: "Sangria de Caixa",
-    descricao: "Realize a retirada do excesso de dinheiro do caixa para reduzir riscos de assalto.",
-    imagem: imgSangriaSuprimento,
+    descricao: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
+    imagem: imgGestaoDoCaixa,
   },
-  treinamentoEntradaSaida,
+  {
+    slug: "suprimento-complementar",
+    titulo: "Suprimento Complementar",
+    descricao: "O suprimento complementar é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
+    imagem: imgGestaoDoCaixa,
+  },
 ];
 
 function Frame5() {
@@ -1292,7 +1283,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Continue aprendendo
               </p>
               <div className="grid grid-cols-2 gap-[24px]">
-                {(isSuprimentoAdicional ? proximosTreinamentosSuprimento : proximosTreinamentosSangria).map((s) => (
+                {proximosTreinamentos.map((s) => (
                   <button
                     key={s.slug}
                     onClick={() => goToTraining(s.slug)}
@@ -1303,7 +1294,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                       <div className="absolute inset-0 bg-[rgba(51,50,67,0.45)] group-hover:bg-[rgba(51,50,67,0.3)] transition-colors" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-[44px] h-[44px] rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                          <svg className="w-[18px] h-[18px] ml-[3px]" viewBox="0 0 24 24" fill="none">
+                          <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none">
                             <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
                           </svg>
                         </div>

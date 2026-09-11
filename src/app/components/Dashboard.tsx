@@ -3,79 +3,9 @@ import { useNavigate } from "react-router";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
 import Footer from "./Footer";
-import imgImage4 from "../../imports/ManutencaoDeLojas/79e4da8f717af2976b6c4029d66ffdf41ddd92aa.png";
-import imgImage5 from "../../imports/ManutencaoDeLojas/3e23023c5cc358b98b16c368222d6ca0d31df01c.png";
-import imgImage6 from "../../imports/ManutencaoDeLojas/6566e1aba8cfe14364d9bb9f0c3fa7712c053726.png";
-import imgImage7 from "../../imports/ManutencaoDeLojas/95ee02e5d5e03c30315d82fd444278082f8dfea9.png";
-import { secoesCategorias, type CategoriaCardData } from "../data/secoesCategorias";
+import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
 
 const imgCategoriaSecao = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
-
-// SVG Paths
-const svgPaths = {
-  // Search icon paths
-  p2d57a800: "M9.25315 9.25315C9.44841 9.05789 9.76492 9.05789 9.96018 9.25315L12.8534 12.1464C13.0487 12.3416 13.0487 12.6581 12.8534 12.8534C12.6581 13.0487 12.3416 13.0487 12.1464 12.8534L9.25315 9.96018C9.05789 9.76492 9.05789 9.44841 9.25315 9.25315Z",
-  p1a257980: "M10.6667 5.83333C10.6667 3.16396 8.50271 1 5.83333 1C3.16396 1 1 3.16396 1 5.83333C1 8.50271 3.16396 10.6667 5.83333 10.6667C8.50271 10.6667 10.6667 8.50271 10.6667 5.83333ZM11.6667 5.83333C11.6667 9.05499 9.05499 11.6667 5.83333 11.6667C2.61167 11.6667 0 9.05499 0 5.83333C0 2.61167 2.61167 0 5.83333 0C9.05499 0 11.6667 2.61167 11.6667 5.83333Z",
-};
-
-interface ImageOffset {
-  left: string;
-  top: string;
-  width: string;
-  height: string;
-}
-
-interface Funcionalidade {
-  id: number;
-  titulo: string;
-  descricao: string;
-  imagem: string;
-  imageOffset: ImageOffset;
-  slug: string;
-}
-
-const funcionalidades: Funcionalidade[] = [
-  {
-    id: 1,
-    titulo: "Sangria de Caixa",
-    descricao: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
-    imagem: imgImage4,
-    imageOffset: { left: "50%", top: "50%", width: "120%", height: "120%" },
-    slug: "sangria-de-caixa"
-  },
-  {
-    id: 5,
-    titulo: "Suprimento Complementar",
-    descricao: "O suprimento complementar é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
-    imagem: imgImage4,
-    imageOffset: { left: "50%", top: "50%", width: "120%", height: "120%" },
-    slug: "suprimento-complementar"
-  },
-  {
-    id: 2,
-    titulo: "Entrada/Saída de Operador",
-    descricao: "O processo de Entrada e Saída de Operador é fundamental para o controle e rastreabilidade das operações no sistema. Permite identificar qual operador está utilizando cada terminal e registrar horários de início e término de turnos.",
-    imagem: imgImage5,
-    imageOffset: { left: "50%", top: "50%", width: "100%", height: "100%" },
-    slug: "entrada-saida-operador"
-  },
-  {
-    id: 3,
-    titulo: "Consulta de Produto Offline",
-    descricao: "A funcionalidade de Consulta de Produto Offline permite que os operadores visualizem informações de produtos mesmo quando o sistema está sem conexão com o servidor central. Isso garante a continuidade das operações e melhor atendimento aos clientes.",
-    imagem: imgImage6,
-    imageOffset: { left: "50%", top: "50%", width: "100%", height: "100%" },
-    slug: "consulta-produto-offline"
-  },
-  {
-    id: 4,
-    titulo: "Pausa do Sistema",
-    descricao: "A Pausa do Sistema permite interromper temporariamente as operações do PDV para realizar manutenções, contagens de caixa ou resolver situações específicas sem encerrar completamente o sistema. É importante para a gestão eficiente do ponto de venda.",
-    imagem: imgImage7,
-    imageOffset: { left: "50%", top: "50%", width: "100%", height: "100%" },
-    slug: "pausa-sistema"
-  }
-];
 
 function Frame8() {
   return (
@@ -180,77 +110,6 @@ function Frame5({ searchTerm, onSearchChange, compact }: { searchTerm: string; o
 }
 
 
-function FuncionalidadeCard({ funcionalidade, onClick }: { funcionalidade: Funcionalidade; onClick: () => void }) {
-  const offset = funcionalidade.imageOffset;
-
-  return (
-    <div className="flex flex-col gap-[28px]">
-      <div
-        onClick={onClick}
-        className="h-[200px] overflow-clip relative rounded-[8px] w-full cursor-pointer hover:shadow-lg transition-all hover:scale-[1.02]"
-      >
-        <div
-          className="absolute -translate-x-1/2 -translate-y-1/2"
-          style={{
-            left: offset.left,
-            top: offset.top,
-            width: offset.width,
-            height: offset.height
-          }}
-          data-name="image"
-        >
-          <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={funcionalidade.imagem} />
-        </div>
-        <div className="absolute bg-[rgba(51,50,67,0.64)] inset-0 hover:bg-[rgba(51,50,67,0.5)] transition-colors" />
-        <div className="absolute inset-0 flex items-center justify-center px-[24px]">
-          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[24px] text-center text-white leading-[1.2] max-w-[200px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-            {funcionalidade.titulo}
-          </p>
-        </div>
-      </div>
-      <div className="[word-break:break-word] flex flex-col gap-[8px] items-start leading-[1.2] text-[#434343]">
-        <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-          {funcionalidade.titulo}
-        </p>
-        <p
-          className="font-['Nunito_Sans',sans-serif] font-normal text-[12.8px] line-clamp-3"
-          style={{
-            fontVariationSettings: "'YTLC' 500, 'wdth' 100",
-            display: '-webkit-box',
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}
-        >
-          {funcionalidade.descricao}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function Frame6({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFiltradas: Funcionalidade[]; onCardClick: (slug: string) => void }) {
-  if (funcionalidadesFiltradas.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-[80px] w-full col-span-12">
-        <p className="font-['Nunito_Sans',sans-serif] font-normal text-[16px] text-[#6c6c6c]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-          Nenhuma funcionalidade encontrada
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-12 gap-[32px] w-full">
-      {funcionalidadesFiltradas.map((func) => (
-        <div key={func.id} className="col-span-12 md:col-span-6 lg:col-span-3">
-          <FuncionalidadeCard funcionalidade={func} onClick={() => onCardClick(func.slug)} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 const placeholderDescricao = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
 function CategoriaCard({ titulo, subtitulo, onClick }: { titulo: string; subtitulo: string; onClick?: () => void }) {
@@ -325,21 +184,30 @@ function CategoriaSection({ titulo, cards, onCardClick }: { titulo: string; card
   );
 }
 
-function Frame1({ funcionalidadesFiltradas, onCardClick }: { funcionalidadesFiltradas: Funcionalidade[]; onCardClick: (slug: string) => void }) {
+function Frame1({ categoriasFiltradas, onCardClick }: { categoriasFiltradas: CategoriaSecaoData[]; onCardClick: (slug: string) => void }) {
+  if (categoriasFiltradas.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[240px] w-full">
+        <p className="font-['Nunito_Sans',sans-serif] font-normal text-[16px] text-[#6c6c6c]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+          Nenhuma funcionalidade encontrada
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-[48px] w-full">
-      <Frame6 funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
-      {secoesCategorias.map((secao) => (
+      {categoriasFiltradas.map((secao) => (
         <CategoriaSection key={secao.titulo} titulo={secao.titulo} cards={secao.cards} onCardClick={onCardClick} />
       ))}
     </div>
   );
 }
 
-function Table({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardClick }: {
+function Table({ searchTerm, onSearchChange, categoriasFiltradas, onCardClick }: {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  funcionalidadesFiltradas: Funcionalidade[];
+  categoriasFiltradas: CategoriaSecaoData[];
   onCardClick: (slug: string) => void;
 }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -353,7 +221,7 @@ function Table({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardCli
   };
 
   return (
-    <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table" onScroll={handleScroll}>
+    <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto flex flex-col" data-name="Table" onScroll={handleScroll}>
       <div className="w-full max-w-[1440px] mx-auto px-[96px] pt-[32px] flex items-center justify-center">
         <Frame7 />
       </div>
@@ -368,18 +236,18 @@ function Table({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardCli
           </div>
         </div>
       </div>
-      <div className="w-full max-w-[1440px] mx-auto px-[96px] pb-[48px]">
-        <Frame1 funcionalidadesFiltradas={funcionalidadesFiltradas} onCardClick={onCardClick} />
+      <div className="flex-1 w-full max-w-[1440px] mx-auto px-[96px] pb-[48px]">
+        <Frame1 categoriasFiltradas={categoriasFiltradas} onCardClick={onCardClick} />
       </div>
       <Footer />
     </div>
   );
 }
 
-function Frame2({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardClick }: {
+function Frame2({ searchTerm, onSearchChange, categoriasFiltradas, onCardClick }: {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  funcionalidadesFiltradas: Funcionalidade[];
+  categoriasFiltradas: CategoriaSecaoData[];
   onCardClick: (slug: string) => void;
 }) {
   return (
@@ -388,7 +256,7 @@ function Frame2({ searchTerm, onSearchChange, funcionalidadesFiltradas, onCardCl
       <Table
         searchTerm={searchTerm}
         onSearchChange={onSearchChange}
-        funcionalidadesFiltradas={funcionalidadesFiltradas}
+        categoriasFiltradas={categoriasFiltradas}
         onCardClick={onCardClick}
       />
     </div>
@@ -407,22 +275,26 @@ export default function Dashboard() {
     navigate(`/funcionalidade/${slug}`);
   };
 
-  const funcionalidadesFiltradas = funcionalidades.filter((func) => {
-    if (!searchTerm.trim()) return true;
-
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      func.titulo.toLowerCase().includes(searchLower) ||
-      func.descricao.toLowerCase().includes(searchLower)
-    );
-  });
+  const searchLower = searchTerm.trim().toLowerCase();
+  const categoriasFiltradas = searchLower
+    ? secoesCategorias
+        .map((secao) => ({
+          ...secao,
+          cards: secao.cards.filter(
+            (card) =>
+              card.titulo.toLowerCase().includes(searchLower) ||
+              (card.descricao ?? "").toLowerCase().includes(searchLower)
+          ),
+        }))
+        .filter((secao) => secao.cards.length > 0)
+    : secoesCategorias;
 
   return (
     <div className="bg-white content-stretch flex isolate items-center relative h-screen w-full" data-name="Manutenção de Lojas">
       <Frame2
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
-        funcionalidadesFiltradas={funcionalidadesFiltradas}
+        categoriasFiltradas={categoriasFiltradas}
         onCardClick={handleCardClick}
       />
     </div>
