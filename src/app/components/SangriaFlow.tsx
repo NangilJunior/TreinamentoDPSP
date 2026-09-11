@@ -252,7 +252,7 @@ function SenhaScreen({ dotCount, entraState }: { dotCount: number; entraState: E
 
 // ── Screen 3: Seleção ─────────────────────────────────────────────────────────
 
-function SelectionScreen({ isSuprimentoAdicional }: { isSuprimentoAdicional?: boolean }) {
+function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean }) {
   return (
     <div className="relative h-full w-full flex flex-col">
       <PDVHeader />
@@ -273,7 +273,7 @@ function SelectionScreen({ isSuprimentoAdicional }: { isSuprimentoAdicional?: bo
             {/* Tooltip */}
             {!isSuprimentoAdicional && (
               <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none whitespace-nowrap flex flex-col items-center">
-                <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
                   Para realizar a <span className="font-bold">Sangria de Caixa</span>, pressione a tecla <span className="font-bold">[1]</span> no teclado do PDV.
                 </div>
                 <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
@@ -308,8 +308,8 @@ function SelectionScreen({ isSuprimentoAdicional }: { isSuprimentoAdicional?: bo
             {/* Tooltip */}
             {isSuprimentoAdicional && (
               <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none whitespace-nowrap flex flex-col items-center">
-                <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-                  Para realizar o <span className="font-bold">Suprimento de Caixa</span>, pressione a tecla <span className="font-bold">[2]</span> no teclado do PDV.
+                <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+                  Para realizar o <span className="font-bold">{isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}</span>, pressione a tecla <span className="font-bold">[2]</span> no teclado do PDV.
                 </div>
                 <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
               </div>
@@ -346,7 +346,7 @@ function SelectionScreen({ isSuprimentoAdicional }: { isSuprimentoAdicional?: bo
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean }) {
+export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean }) {
   const [screen, setScreen] = useState<Screen>(1);
   const [opacity, setOpacity] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -438,7 +438,7 @@ export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional }:
       <div className="size-full transition-opacity duration-300" style={{ opacity }}>
         {screen === 1 && <MatriculaScreen typedText={typedText} entraState={entraState} />}
         {screen === 2 && <SenhaScreen dotCount={dotCount} entraState={entraState} />}
-        {screen === 3 && <SelectionScreen isSuprimentoAdicional={isSuprimentoAdicional} />}
+        {screen === 3 && <SelectionScreen isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} />}
       </div>
     </div>
   );

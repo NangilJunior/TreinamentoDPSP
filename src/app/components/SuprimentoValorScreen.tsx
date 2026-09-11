@@ -123,7 +123,7 @@ export function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SUPRIMENTO DE CAIXA</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SUPRIMENTO COMPLEMENTAR</p>
           <div className="h-[10px] relative shrink-0 w-[7px]">
             <div className="absolute inset-[-5%_-7.14%]">
               <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
@@ -138,7 +138,7 @@ export function PDVHeader() {
   );
 }
 
-export default function SuprimentoValorScreen({ valorCents }: { valorCents: number }) {
+export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false }: { valorCents: number; gavetaAberta?: boolean }) {
   const showValue = valorCents > 0;
   const isValidValue = valorCents === 20000;
 
@@ -162,7 +162,7 @@ export default function SuprimentoValorScreen({ valorCents }: { valorCents: numb
                     </svg>
                   </div>
                 </div>
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#7e7e7e] text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Suprimento de Caixa</p>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#7e7e7e] text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Suprimento Complementar</p>
               </div>
             </div>
           </div>
@@ -216,7 +216,7 @@ export default function SuprimentoValorScreen({ valorCents }: { valorCents: numb
                     <span className="font-semibold">{"confirmar o valor. "}</span>
                     {"A "}
                     <span className="font-bold">gaveta do caixa abrirá</span>
-                    {" para a realização do suprimento de caixa."}
+                    {" para a realização do suprimento complementar."}
                   </p>
                 </div>
               </div>
@@ -228,37 +228,39 @@ export default function SuprimentoValorScreen({ valorCents }: { valorCents: numb
       {/* Bottom buttons */}
       <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-[24px] py-[20px]">
         {/* Volta */}
-        <div className="bg-[rgba(255,255,255,0.1)] flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px]">
+        <div className={`bg-[rgba(255,255,255,0.1)] flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px] ${gavetaAberta ? "opacity-50" : ""}`}>
           <div aria-hidden className="absolute border border-[#d4d4d4] inset-0 pointer-events-none rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
           <div className="overflow-clip relative shrink-0 size-[16px]">
             <div className="absolute inset-[21.88%]">
               <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.99992 8.99992">
-                <path d={svgH5.p73f4c00} fill="#ED403D" /><path d={svgH5.p20889a80} fill="#ED403D" />
+                <path d={svgH5.p73f4c00} fill={gavetaAberta ? "#818181" : "#ED403D"} /><path d={svgH5.p20889a80} fill={gavetaAberta ? "#818181" : "#ED403D"} />
               </svg>
             </div>
           </div>
-          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#ed403d] text-[20px] text-center whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Volta</p>
+          <p className={`font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap ${gavetaAberta ? "text-[#818181]" : "text-[#ed403d]"}`} style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Volta</p>
         </div>
 
         {/* Confirmar */}
-        <div
-          className="flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px] transition-all duration-300"
-          style={{ backgroundColor: isValidValue ? '#2258e6' : '#cfcfcf', opacity: isValidValue ? 1 : 0.5 }}
-        >
-          <div className="overflow-clip relative shrink-0 size-[16px]">
-            <div className="absolute inset-[9.38%]">
-              <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
-                <path d={svgH5.p2010def2} fill={isValidValue ? 'white' : '#3B3B3B'} />
-                <path d={svgH5.p2ef5a800} fill={isValidValue ? 'white' : '#3B3B3B'} />
-                <path d={svgH5.p1d703980} fill={isValidValue ? 'white' : '#3B3B3B'} />
-              </svg>
+        {!gavetaAberta && (
+          <div
+            className="flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px] transition-all duration-300"
+            style={{ backgroundColor: isValidValue ? '#2258e6' : '#cfcfcf', opacity: isValidValue ? 1 : 0.5 }}
+          >
+            <div className="overflow-clip relative shrink-0 size-[16px]">
+              <div className="absolute inset-[9.38%]">
+                <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
+                  <path d={svgH5.p2010def2} fill={isValidValue ? 'white' : '#3B3B3B'} />
+                  <path d={svgH5.p2ef5a800} fill={isValidValue ? 'white' : '#3B3B3B'} />
+                  <path d={svgH5.p1d703980} fill={isValidValue ? 'white' : '#3B3B3B'} />
+                </svg>
+              </div>
             </div>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap"
+              style={{ color: isValidValue ? 'white' : '#3b3b3b', fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+              Confirmar
+            </p>
           </div>
-          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap"
-            style={{ color: isValidValue ? 'white' : '#3b3b3b', fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-            Confirmar
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );

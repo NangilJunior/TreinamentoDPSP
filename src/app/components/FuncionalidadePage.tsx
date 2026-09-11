@@ -30,14 +30,24 @@ interface FuncionalidadeContent {
 }
 
 const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
+  "suprimento-inicial": {
+    titulo: "Suprimento Inicial",
+    conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
+    hasPDV: true
+  },
+  "abertura-de-caixa": {
+    titulo: "Abertura de Caixa",
+    conteudo: "A abertura de caixa é o protocolo de segurança que autoriza o início das atividades de um operador no PDV. O processo exige a validação prévia de um gerente, seguida da autenticação do operador, garantindo rastreabilidade e prevenção de acessos não autorizados ao caixa.",
+    hasPDV: true
+  },
   "sangria-de-caixa": {
-    titulo: "Sangria de caixa",
+    titulo: "Sangria de Caixa",
     conteudo: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
     hasPDV: true
   },
-  "suprimento-de-caixa": {
-    titulo: "Suprimento de Caixa",
-    conteudo: "O suprimento de caixa é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
+  "suprimento-complementar": {
+    titulo: "Suprimento Complementar",
+    conteudo: "O Suprimento Complementar é a entrada adicional de dinheiro no PDV durante a operação, realizada quando é necessário reforçar o caixa para continuar dando troco.",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -64,8 +74,8 @@ const treinamentoEntradaSaida = {
 
 const proximosTreinamentosSangria = [
   {
-    slug: "suprimento-de-caixa",
-    titulo: "Suprimento de Caixa",
+    slug: "suprimento-complementar",
+    titulo: "Suprimento Complementar",
     descricao: "Realize a entrada de dinheiro na gaveta do PDV para garantir troco aos clientes.",
     imagem: imgSangriaSuprimento,
   },
@@ -160,12 +170,17 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
 
 function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
-  const isSuprimentoAdicional = slug === "suprimento-de-caixa";
-  const welcomeTitulo = isSuprimentoAdicional
-    ? "Olá, boas vindas ao tutorial de Suprimento de Caixa."
+  const isSuprimentoInicial = slug === "suprimento-inicial";
+  const isSuprimentoAdicional = slug === "suprimento-complementar" || isSuprimentoInicial;
+  const welcomeTitulo = isSuprimentoInicial
+    ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
+    : isSuprimentoAdicional
+    ? "Olá, boas vindas ao tutorial de Suprimento Complementar."
     : undefined;
-  const welcomeDescricao = isSuprimentoAdicional
-    ? funcionalidadesContent["suprimento-de-caixa"].conteudo
+  const welcomeDescricao = isSuprimentoInicial
+    ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
+    : isSuprimentoAdicional
+    ? "O Suprimento Complementar é a operação de entrada adicional de dinheiro na gaveta do PDV durante o período de operação. Ele é utilizado quando o caixa precisa de mais cédulas ou moedas para continuar realizando trocos, evitando que a falta de dinheiro interrompa ou dificulte o atendimento. O aporte complementa o valor disponível no caixa e pode ser realizado sempre que houver necessidade de reforçar o fundo de troco."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -740,7 +755,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       <div className={`transition-all duration-500 ${isTrainingMode && tutorialStep === 1 ? 'relative z-10 ring-2 ring-[#F59E0B] shadow-[0_0_24px_4px_rgba(245,158,11,0.35)]' : ''}`}>
         {isTrainingMode && tutorialStep === 1 && (
           <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[560px] pointer-events-none">
-            <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+            <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
               Quando o valor em caixa atingir o limite configurado para a unidade, o PDV exibirá um aviso discreto ao operador solicitando a realização da Sangria de Caixa. A mensagem foi projetada para informar a necessidade da operação sem evidenciar que o caixa está com elevado volume de numerário.
             </div>
             {/* Triângulo apontando para baixo */}
@@ -754,7 +769,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
       {/* Fluxo animado de Sangria (telas do gerente) */}
       {isTrainingMode && tutorialStep >= 4 && tutorialStep <= 5 && (
-        <SangriaFlow onReachSelection={() => setTutorialStep(5)} isSuprimentoAdicional={isSuprimentoAdicional} />
+        <SangriaFlow onReachSelection={() => setTutorialStep(5)} isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} />
       )}
 
       {/* Motivos Sangria - step 6 */}
@@ -770,12 +785,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
-              <p className="font-['Nunito_Sans',sans-serif] text-[14px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                {isSuprimentoAdicional ? (
+              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                {isSuprimentoInicial ? (
+                  <>
+                    Selecione na lista o tipo de suprimento que deseja realizar. Nesta tela, a opção{" "}
+                    <span className="font-bold text-white">"Suprimento Inicial"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nos suprimentos de caixa. As teclas{" "}
+                    <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) podem ser utilizadas para escolher outros motivos. Neste exemplo, prossiga com Suprimento Inicial.
+                  </>
+                ) : isSuprimentoAdicional ? (
                   <>
                     Selecione na lista o tipo de suprimento que deseja realizar. Nesta tela, a opção{" "}
                     <span className="font-bold text-white">"Suprimento Inicial"</span> já aparece previamente selecionada, pois é o motivo mais utilizado nos suprimentos de caixa. Use as teclas{" "}
-                    <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo.
+                    <span className="font-bold text-white">V</span> (↑) e <span className="font-bold text-white">K</span> (↓) para escolher outro motivo. Neste exemplo, navegue entre as opções para selecionar{" "}
+                    <span className="font-bold text-white">"Suprimento Complementar"</span>.
                   </>
                 ) : (
                   <>
@@ -821,8 +843,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
           {/* Tooltip acima do modal */}
           <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
-            <div className="bg-[#111] text-white text-[13px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-              Será exibido um modal informando que a realização d{isSuprimentoAdicional ? "o Suprimento de Caixa" : "a Sangria de Caixa"} requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
+            <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+              Será exibido um modal informando que a realização d{isSuprimentoInicial ? "o Suprimento Inicial" : isSuprimentoAdicional ? "o Suprimento Complementar" : "a Sangria de Caixa"} requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
             </div>
             <div className="flex justify-center">
               <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
@@ -910,10 +932,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Ação do Gerente
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Esta operação requer a presença e autenticação do gerente responsável pela loja.
                 </p>
               </div>
@@ -948,11 +970,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoAdicional ? "O Suprimento de Caixa inicia no botão de Sangria" : "Iniciando a Sangria de Caixa"}
+                  {isSuprimentoInicial ? "O Suprimento Inicial inicia no botão de Sangria" : isSuprimentoAdicional ? "O Suprimento Complementar inicia no botão de Sangria" : "Iniciando a Sangria de Caixa"}
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoAdicional ? (
-                    <>Para iniciar o processo de Suprimento de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
+                    <>Para iniciar o processo de {isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
                   ) : (
                     <>Para iniciar o processo de Sangria de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
                   )}
@@ -983,7 +1005,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
                 <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <p className="font-['Nunito_Sans',sans-serif] text-[13px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 {isSuprimentoAdicional ? (
                   <>
                     Informe o valor que será adicionado. Neste exemplo, será realizado um suprimento no valor de{" "}
@@ -1010,7 +1032,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {tutorialStep === 8 && (
           <>
             <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-              {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} /> : <Home6 />}
+              {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta /> : <Home6 />}
             </div>
             <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
@@ -1022,10 +1044,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[2px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Gaveta Aberta
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Nesta etapa, a gaveta do caixa ser&aacute; aberta. {isSuprimentoAdicional ? "Adicione o valor informado" : "Retire o valor indicado"} e, para prosseguir, feche a gaveta.
                 </p>
               </div>
@@ -1058,11 +1080,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[15px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Parabéns!
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[12px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoAdicional ? "O suprimento de caixa foi realizado e concluído com sucesso." : "A sangria de caixa foi realizada e concluída com sucesso."}
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
             </div>
@@ -1092,7 +1114,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Anterior</span>
+            <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">Anterior</span>
           </button>
 
           {/* Botão Próximo - steps 0, 1 e 9 */}
@@ -1104,7 +1126,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             }}
             className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showTutorial || tutorialStep === 1 || tutorialStep === 9) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
-            <span className="font-['Nunito_Sans',sans-serif] text-[14px] font-semibold tracking-wide">Próximo</span>
+            <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">Próximo</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -1220,7 +1242,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         <VirtualKeyboard
           highlightSangria={tutorialStep === 2}
           onSangriaPress={tutorialStep === 2 ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo)}
+          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo)}
           onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo)) ? () => {
             if (tutorialStep === 3) { setTutorialStep(4); setShowKeyboard(false); }
             else if (tutorialStep === 6) { setTutorialStep(7); setShowKeyboard(false); }
@@ -1259,7 +1281,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoAdicional ? "Suprimento de Caixa" : "Sangria de Caixa"}</span>. Agora você está pronto para realizar essa operação no PDV.
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : "Sangria de Caixa"}</span>. Agora você está pronto para realizar essa operação no PDV.
                 </p>
               </div>
             </div>

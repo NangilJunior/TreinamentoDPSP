@@ -23,7 +23,7 @@ function Frame1() {
 
 function Frame5({
   onNext,
-  titulo = "Olá, seja bem-vindo ao tutorial de Sangria de Caixa.",
+  titulo = "Olá, boas vindas ao tutorial de Sangria de Caixa.",
   descricao = "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) da gaveta do PDV durante o turno de trabalho. Essa operação é realizada sempre que o valor acumulado atinge um limite estabelecido, com o objetivo de reduzir o risco de perdas financeiras em casos de assalto.",
 }: { onNext?: () => void; titulo?: string; descricao?: string }) {
   return (
@@ -31,7 +31,7 @@ function Frame5({
       <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[20px] text-white w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         {titulo}
       </p>
-      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[16px] text-[rgba(255,255,255,0.8)] w-full leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[18px] text-[rgba(255,255,255,0.8)] w-full leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         {descricao}
       </p>
     </div>

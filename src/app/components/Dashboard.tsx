@@ -45,11 +45,11 @@ const funcionalidades: Funcionalidade[] = [
   },
   {
     id: 5,
-    titulo: "Suprimento de Caixa",
-    descricao: "O suprimento de caixa é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
+    titulo: "Suprimento Complementar",
+    descricao: "O suprimento complementar é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
     imagem: imgImage4,
     imageOffset: { left: "50%", top: "50%", width: "120%", height: "120%" },
-    slug: "suprimento-de-caixa"
+    slug: "suprimento-complementar"
   },
   {
     id: 2,
