@@ -860,13 +860,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
               setShowTutorial(true);
             }, 300);
           }}>
-            <div className="flex flex-col items-center gap-[16px]">
-              <div className="w-[80px] h-[80px] bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                <svg className="w-[32px] h-[32px] ml-[4px]" viewBox="0 0 24 24" fill="none">
+            <div className="flex flex-col items-center gap-[24px]">
+              <div className="w-[88px] h-[88px] bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                <svg className="w-[42px] h-[42px]" viewBox="0 0 24 24" fill="none">
                   <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
                 </svg>
               </div>
-              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[28px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Iniciar Treinamento
               </p>
             </div>
@@ -1319,15 +1319,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
 function ContentBody({ conteudo, hasPDV, slug }: { conteudo: string; hasPDV?: boolean; slug?: string }) {
   return (
     <div className="bg-white flex-[1_0_0] min-h-px relative w-full overflow-y-auto" data-name="Table">
-      <div className="w-full max-w-[1440px] mx-auto px-[96px] pt-[48px] pb-[64px]">
-        <div className="prose max-w-none mb-[48px]">
+      <div className="w-full max-w-[960px] mx-auto px-[96px] pt-[48px] pb-[64px]">
+        <div className="prose max-w-none mb-[32px]">
           <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#434343] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
             {conteudo}
           </p>
         </div>
         {hasPDV && (
-          <div className="mt-[48px]">
-            <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[24px] text-[#383838] mb-[24px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+          <div className="mt-[32px]">
+            <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#383838] mb-[12px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
               Simulador PDV - Prática de Treinamento
             </h2>
             <PDVSimulator slug={slug} />
