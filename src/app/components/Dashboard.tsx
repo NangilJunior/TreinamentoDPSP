@@ -8,10 +8,11 @@ import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategor
 const imgCategoriaSecao = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
 
 function Frame8() {
+  const navigate = useNavigate();
   return (
-    <div className="h-[34px] w-[80px]">
+    <button onClick={() => navigate("/dashboard")} className="h-[34px] w-[80px] cursor-pointer">
       <Frame19675 />
-    </div>
+    </button>
   );
 }
 

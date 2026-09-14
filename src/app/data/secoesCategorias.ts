@@ -25,7 +25,31 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       }
     ]
   },
-  { titulo: "Atendimento e Vendas", cards: [{ titulo: "Cliente Cadastrado e Não Cadastrado" }, { titulo: "Registro de Produtos" }, { titulo: "Formas de Pagamento" }, { titulo: "Finalização da Venda" }] },
+  {
+    titulo: "Atendimento e Vendas",
+    cards: [
+      {
+        titulo: "Cliente Cadastrado e Não Cadastrado",
+        descricao: "Para iniciar o atendimento, o operador pode informar o CPF ou CNPJ do cliente caso este deseje ser identificado na venda.",
+        slug: "cliente-cadastrado-e-nao-cadastrado"
+      },
+      {
+        titulo: "Registro de Produtos",
+        descricao: "Etapa em que produtos são adicionados à venda. O registro pode ser feito pelo código de barras, utilizando um leitor ou digitando sua numeração. Após a identificação, os dados do produto são exibidos na tela.",
+        slug: "registro-de-produtos"
+      },
+      {
+        titulo: "Formas de Pagamento",
+        descricao: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        slug: "formas-de-pagamento"
+      },
+      {
+        titulo: "Finalização da Venda",
+        descricao: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        slug: "finalizacao-da-venda"
+      }
+    ]
+  },
   { titulo: "Resgate de Pedido Balcão", cards: [{ titulo: "Localizar Cesta Criada no Balcão" }, { titulo: "Resgatar Atendimento" }, { titulo: "Finalizar Pagamento" }] },
   { titulo: "Resgate de Pedido Delivery", cards: [{ titulo: "Localizar Pedido Online" }, { titulo: "Conferir Produtos" }, { titulo: "Faturar Pedido" }, { titulo: "Finalizar Atendimento" }] },
   { titulo: "Programas e Benefícios", cards: [{ titulo: "Convênios" }, { titulo: "PBM" }, { titulo: "Farmácia Popular" }] },

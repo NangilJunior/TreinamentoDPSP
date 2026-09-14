@@ -1,40 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import imgImage3 from "../../imports/Desktop1/5dad878508fbae62144168c791d21d1da82445a7.png";
-import imgTreino1 from "../../imports/Desktop1/a6674fa2eff44835094f341db4e84915eee0d916.png";
 import Frame19675 from "../../imports/Frame19675/Frame19675.tsx";
 import { useFitScale } from "./ScaleToFit";
-
-function Frame15() {
-  return (
-    <div className="h-[817px] overflow-clip relative shrink-0 w-[646px]">
-      <div className="absolute h-[804px] left-[-226px] top-[-2px] w-[1434px]" data-name="image 3">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgImage3} />
-      </div>
-      <div className="absolute h-[851px] left-[-279px] top-0 w-[1276px]" data-name="treino 1">
-        <img alt="" className="absolute inset-0 max-w-none object-cover pointer-events-none size-full" src={imgTreino1} />
-      </div>
-      <div className="-translate-x-1/2 -translate-y-1/2 absolute h-[1163px] left-1/2 top-1/2 w-[936px]" style={{ backgroundImage: "url('data:image/svg+xml;utf8,<svg viewBox=\\'0 0 936 1163\\' xmlns=\\'http://www.w3.org/2000/svg\\' preserveAspectRatio=\\'none\\'><rect x=\\'0\\' y=\\'0\\' height=\\'100%\\' width=\\'100%\\' fill=\\'url(%23grad)\\' opacity=\\'1\\'/><defs><radialGradient id=\\'grad\\' gradientUnits=\\'userSpaceOnUse\\' cx=\\'0\\' cy=\\'0\\' r=\\'10\\' gradientTransform=\\'matrix(2.8657e-15 58.15 -46.8 3.5607e-15 468 581.5)\\'><stop stop-color=\\'rgba(0,0,0,0)\\' offset=\\'0\\'/><stop stop-color=\\'rgba(29,29,29,0.5)\\' offset=\\'0.5\\'/><stop stop-color=\\'rgba(58,58,58,1)\\' offset=\\'1\\'/></radialGradient></defs></svg>')" }} />
-      <div className="absolute flex items-center justify-center left-[427px] size-[607.405px] top-[5px]">
-        <div className="-rotate-45 flex-none">
-          <div className="border-4 border-solid border-white h-[287px] relative rounded-[1000px] w-[572px]" />
-        </div>
-      </div>
-      <div className="absolute border-4 border-solid border-white h-[287px] left-[-145px] rounded-[1000px] top-[-185px] w-[572px]" />
-      <div className="absolute flex h-[572px] items-center justify-center left-[-88px] top-[343px] w-[287px]">
-        <div className="-rotate-90 flex-none">
-          <div className="border-4 border-solid border-white h-[287px] relative rounded-[1000px] w-[572px]" />
-        </div>
-      </div>
-      <div className="absolute border-4 border-solid border-white h-[287px] left-[-123px] rounded-[1000px] top-[723px] w-[721px]" />
-      <div className="absolute flex h-[287px] items-center justify-center left-[-241px] top-[1402px] w-[572px]">
-        <div className="flex-none rotate-180">
-          <div className="border-4 border-solid border-white h-[287px] relative rounded-[1000px] w-[572px]" />
-        </div>
-      </div>
-    </div>
-  );
-}
+import { PainelFoto } from "./AberturaCaixaLoginScreen";
 
 function Frame11() {
   return (
@@ -288,7 +256,7 @@ function Frame14({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit,
 function Frame1({ matricula, senha, onMatriculaChange, onSenhaChange, onSubmit, error, passwordError }: LoginFormProps) {
   return (
     <div className="absolute content-stretch flex h-[800px] items-start left-0 top-0 w-[1280px]">
-      <Frame15 />
+      <PainelFoto />
       <Frame14
         matricula={matricula}
         senha={senha}

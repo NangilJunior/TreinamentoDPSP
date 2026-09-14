@@ -22,6 +22,12 @@ import AberturaCaixaLoginScreen from "./AberturaCaixaLoginScreen";
 import EntradaOperadorScreen from "./EntradaOperadorScreen";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
+import iconeEntrar from "../../imports/AberturaCaixaLogin/icone-entrar.svg";
+import iconeIdCard from "../../imports/ClienteCadastrado/icone-id-card.svg";
+import iconeUserRoundCheck from "../../imports/ClienteCadastrado/icone-user-round-check.svg";
+import iconeTrophy from "../../imports/ClienteCadastrado/icone-trophy.svg";
+import iconeUserRoundMinus from "../../imports/ClienteCadastrado/icone-user-round-minus.svg";
+import iconeArrowLeft from "../../imports/ClienteCadastrado/icone-arrow-left.svg";
 
 // Mesma imagem de fundo utilizada na categoria "Gestão do Caixa" em /dashboard
 const imgGestaoDoCaixa = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
@@ -51,6 +57,26 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   "suprimento-complementar": {
     titulo: "Suprimento Complementar",
     conteudo: "O Suprimento Complementar é a entrada adicional de dinheiro no PDV durante a operação, realizada quando é necessário reforçar o caixa para continuar dando troco.",
+    hasPDV: true
+  },
+  "cliente-cadastrado-e-nao-cadastrado": {
+    titulo: "Cliente Cadastrado e Não Cadastrado",
+    conteudo: "Para iniciar o atendimento, o operador pode informar o CPF ou CNPJ do cliente caso este deseje ser identificado na venda.",
+    hasPDV: true
+  },
+  "registro-de-produtos": {
+    titulo: "Registro de Produtos",
+    conteudo: "Etapa em que produtos são adicionados à venda. O registro pode ser feito pelo código de barras, utilizando um leitor ou digitando sua numeração. Após a identificação, os dados do produto são exibidos na tela.",
+    hasPDV: true
+  },
+  "formas-de-pagamento": {
+    titulo: "Formas de Pagamento",
+    conteudo: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    hasPDV: true
+  },
+  "finalizacao-da-venda": {
+    titulo: "Finalização da Venda",
+    conteudo: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -86,10 +112,11 @@ const proximosTreinamentos = [
 ];
 
 function Frame5() {
+  const navigate = useNavigate();
   return (
-    <div className="h-[34px] w-[80px]">
+    <button onClick={() => navigate("/dashboard")} className="h-[34px] w-[80px] cursor-pointer">
       <Frame19675 />
-    </div>
+    </button>
   );
 }
 
@@ -167,17 +194,60 @@ function ContentHeader({ titulo, onBack }: { titulo: string; onBack: () => void 
 const MATRICULA_GERENTE = "5732465";
 const SENHA_GERENTE_DIGITOS = 7;
 
+// CPF de exemplo digitado no teclado virtual no passo 2 do fluxo de Cliente
+// Cadastrado e Não Cadastrado (111.222.333-00, sem máscara).
+const CPF_EXEMPLO = "11122233300";
+
+// Aplica a máscara de CPF (XXX.XXX.XXX-XX) progressivamente, conforme os
+// dígitos (sem pontuação) já digitados.
+function formatCpf(digitos: string): string {
+  const d = digitos.slice(0, 11);
+  let resultado = d.slice(0, 3);
+  if (d.length > 3) resultado += "." + d.slice(3, 6);
+  if (d.length > 6) resultado += "." + d.slice(6, 9);
+  if (d.length > 9) resultado += "-" + d.slice(9, 11);
+  return resultado;
+}
+
+// Cada fluxo tem seu próprio áudio de boas-vindas, tocado assim que a
+// primeira tela do treinamento é exibida — independentemente de qual tela
+// seja (banner de boas-vindas genérico, tela de login da Abertura de Caixa,
+// etc.). Por enquanto só o áudio de Sangria de Caixa foi gravado; os demais
+// fluxos já estão preparados para receber e reproduzir o arquivo
+// correspondente assim que ele for entregue.
+const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
+  "abertura-de-caixa": "abertura-de-caixa.mp3",
+  "suprimento-inicial": "suprimento-inicial.mp3",
+  "suprimento-complementar": "suprimento-complementar.mp3",
+  "sangria-de-caixa": "sangria-de-caixa.mp3",
+  "cliente-cadastrado-e-nao-cadastrado": "cliente-cadastrado-e-nao-cadastrado.mp3",
+  "registro-de-produtos": "registro-de-produtos.mp3",
+  "formas-de-pagamento": "formas-de-pagamento.mp3",
+  "finalizacao-da-venda": "finalizacao-da-venda.mp3"
+};
+
 function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
   const isSuprimentoInicial = slug === "suprimento-inicial";
   const isSuprimentoAdicional = slug === "suprimento-complementar" || isSuprimentoInicial;
   const isAberturaDeCaixa = slug === "abertura-de-caixa";
+  // Aviso de limite de valores/recomendação de sangria só faz sentido no
+  // próprio fluxo de Sangria de Caixa — os fluxos de Atendimento e Vendas
+  // reaproveitam esse simulador como placeholder, mas não devem exibi-lo.
+  const isSangriaDeCaixa = slug === "sangria-de-caixa";
+  const isClienteCadastrado = slug === "cliente-cadastrado-e-nao-cadastrado";
+  // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
+  // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
+  // Cadastrado e Não Cadastrado também não deve exibi-la.
+  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado;
   const welcomeTitulo = isSuprimentoInicial
     ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
     : isSuprimentoAdicional
     ? "Olá, boas vindas ao tutorial de Suprimento Complementar."
     : isAberturaDeCaixa
     ? "Olá, boas vindas ao tutorial de Abertura de Caixa"
+    : isClienteCadastrado
+    ? "Olá, boas vindas ao tutorial de Cliente Cadastrado e Não Cadastrado."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -185,6 +255,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "O Suprimento Complementar é a operação de entrada adicional de dinheiro na gaveta do PDV durante o período de operação. Ele é utilizado quando o caixa precisa de mais cédulas ou moedas para continuar realizando trocos, evitando que a falta de dinheiro interrompa ou dificulte o atendimento. O aporte complementa o valor disponível no caixa e pode ser realizado sempre que houver necessidade de reforçar o fundo de troco."
     : isAberturaDeCaixa
     ? "A Abertura de Caixa é o processo que permite ao operador iniciar suas atividades em um PDV (Ponto de Venda). Para abrir o caixa, primeiro é necessária a autorização de um usuário com perfil de gerente, por meio de senha. Em seguida, o operador realiza sua própria autenticação. O sistema verifica se o caixa está disponível para abertura e registra a operação, garantindo segurança e rastreabilidade durante o atendimento."
+    : isClienteCadastrado
+    ? "Ao iniciar uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se a identificação do cliente deve ser informada na nota fiscal. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -210,6 +282,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const [tutorialStep, setTutorialStep] = useState(0);
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [cpf, setCpf] = useState("");
+  // Indica que o passo 2 está sendo revisitado após a tela "O cliente foi
+  // identificado" (step 12), para exibir o exemplo de venda sem identificar
+  // o cliente com uma tooltip e posicionamento diferentes da primeira visita.
+  const [demoSemIdentificar, setDemoSemIdentificar] = useState(false);
   const [sku, setSku] = useState("");
   const [items, setItems] = useState<Array<{ sku: string; name: string; qty: number; price: number }>>([]);
   const [subtotal, setSubtotal] = useState(0);
@@ -222,16 +298,24 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const audioBlobUrl = useRef<string | null>(null);
 
   const isWelcomeStep = showTutorial && tutorialStep === 0;
+  // Primeira tela do fluxo de treinamento — pode ser o banner de boas-vindas
+  // genérico (demais fluxos) ou a tela de login (Abertura de Caixa).
+  const isPrimeiraTelaTreinamento = showAberturaLogin || isWelcomeStep;
+  const audioArquivo = slug ? AUDIO_BOAS_VINDAS_POR_FLUXO[slug] : undefined;
 
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}boas-vindas.mp3`)
-      .then(r => r.blob())
+    if (!audioArquivo) return;
+    fetch(`${import.meta.env.BASE_URL}${audioArquivo}`)
+      .then(r => (r.ok ? r.blob() : Promise.reject()))
       .then(blob => { audioBlobUrl.current = URL.createObjectURL(blob); })
       .catch(() => {});
     return () => {
-      if (audioBlobUrl.current) URL.revokeObjectURL(audioBlobUrl.current);
+      if (audioBlobUrl.current) {
+        URL.revokeObjectURL(audioBlobUrl.current);
+        audioBlobUrl.current = null;
+      }
     };
-  }, []);
+  }, [audioArquivo]);
 
   const stopAudio = () => {
     if (audioRef.current) {
@@ -261,6 +345,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setIsTrainingMode(false);
     setIsFirstAccess(true);
     setMotivoIndex(0);
+    setCpf("");
+    setActiveInput(null);
+    setDemoSemIdentificar(false);
   };
 
   const goToTraining = (slug: string) => {
@@ -269,12 +356,25 @@ function PDVSimulator({ slug }: { slug?: string }) {
   };
 
   const playWelcomeAudio = () => {
+    if (!audioArquivo) return;
     stopAudio();
-    const src = audioBlobUrl.current ?? `${import.meta.env.BASE_URL}boas-vindas.mp3`;
+    const src = audioBlobUrl.current ?? `${import.meta.env.BASE_URL}${audioArquivo}`;
     const audio = new Audio(src);
     audioRef.current = audio;
     audio.play().catch(() => {});
   };
+
+  // Toca o áudio de boas-vindas sempre que a primeira tela do treinamento é
+  // exibida — seja na entrada inicial, seja ao voltar para ela com o botão
+  // "Anterior". Assim, cada fluxo controla seu próprio áudio (ou a ausência
+  // dele, enquanto o arquivo não é entregue) sem depender de qual tela é a
+  // primeira.
+  useEffect(() => {
+    if (isPrimeiraTelaTreinamento) {
+      playWelcomeAudio();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPrimeiraTelaTreinamento]);
 
   // Simulação da Ação do Gerente na tela de login da Abertura de Caixa:
   // digita a matrícula e libera o botão Entra, na mesma cadência usada em
@@ -356,7 +456,67 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAberturaGerenteSenha]);
 
+  // Direciona a digitação do teclado virtual para o campo de CPF assim que
+  // o passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado é exibido,
+  // sem exigir que o operador clique manualmente no input primeiro.
+  useEffect(() => {
+    if (isClienteCadastrado && tutorialStep === 2) {
+      setActiveInput("cpf");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClienteCadastrado, tutorialStep]);
+
   const handleKeyPress = (key: string) => {
+    // Identificar CPF/CNPJ na nota? — Entra: quer identificar (segue para a
+    // pergunta de reaproveitar o CPF). Volta: não quer identificar (pula
+    // direto para a tela padrão, sem modal).
+    if (isClienteCadastrado && tutorialStep === 11) {
+      if (key === "ENTRA" || key === "Enter") {
+        setShowKeyboard(false);
+        setTutorialStep(13);
+      } else if (key === "VOLTA") {
+        setShowKeyboard(false);
+        setTutorialStep(12);
+      }
+      return;
+    }
+    // Usar o mesmo CPF/CNPJ da identificação? — Entra: confirma e segue
+    // direto para a tela padrão. Volta: retorna à pergunta anterior.
+    if (isClienteCadastrado && tutorialStep === 13) {
+      if (key === "ENTRA" || key === "Enter") {
+        setShowKeyboard(false);
+        setTutorialStep(12);
+      } else if (key === "VOLTA") {
+        setShowKeyboard(false);
+        setTutorialStep(11);
+      }
+      return;
+    }
+    // Revisita ao passo 2 (exemplo de venda sem identificar o cliente) —
+    // tanto Volta quanto Entra seguem para a tela sem identificação, sem
+    // exigir digitação de CPF.
+    if (isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar) {
+      if (key === "ENTRA" || key === "Enter" || key === "VOLTA") {
+        setShowKeyboard(false);
+        setTutorialStep(14);
+      }
+      return;
+    }
+    if (isClienteCadastrado && tutorialStep === 2 && activeInput === "cpf") {
+      if (key === "ENTRA" || key === "Enter") {
+        if (cpf.length === CPF_EXEMPLO.length) {
+          setShowKeyboard(false);
+          setTutorialStep(11);
+        }
+      } else if (key === "LIMPA") {
+        setCpf("");
+      } else if (key === "VOLTA") {
+        setCpf(prev => prev.slice(0, -1));
+      } else if (!isNaN(Number(key)) && key !== "00" && cpf.length < CPF_EXEMPLO.length && key === CPF_EXEMPLO[cpf.length]) {
+        setCpf(prev => prev + key);
+      }
+      return;
+    }
     if (showEntradaOperadorMatricula) {
       if (key === "ENTRA" || key === "Enter") {
         if (operadorMatricula.length === 6) {
@@ -498,6 +658,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const handleKPress = useCallback(() => {
     setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
   }, []);
+
+  // Próximo dígito do CPF de exemplo a ser destacado no teclado virtual
+  // (passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado).
+  const proximoDigitoCpf =
+    isClienteCadastrado && tutorialStep === 2 && !demoSemIdentificar && cpf.length < CPF_EXEMPLO.length
+      ? CPF_EXEMPLO[cpf.length]
+      : null;
 
   const pdvContent = (
     <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? "h-[800px] overflow-y-auto" : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
@@ -669,50 +836,134 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            <div className="bg-[#f5f5f5] flex rounded-[12px]">
-              <div className="bg-[#2258e6] flex gap-[8px] items-center justify-center px-[32px] py-[16px] rounded-[10px] w-[256px] shadow-sm">
-                <p className="font-['Geist',sans-serif] font-medium text-[14px] text-white">Com identificação</p>
+            {isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13 ? (
+              /* Cliente já identificado após o CPF informado na etapa anterior */
+              <div className="flex items-stretch w-full isolate">
+                <div className="bg-[#61bae8] w-[8px] rounded-l-[4px] shrink-0" />
+                <div className="bg-white border border-[#dadada] flex-1 flex items-center justify-between gap-[24px] px-[24px] py-[15px] rounded-r-[4px] flex-wrap">
+                  <div className="flex gap-[24px] items-center">
+                    <div className="bg-[#e8f7ff] flex items-center justify-center rounded-full size-[32px] shrink-0">
+                      <img alt="" className="size-[24px]" src={iconeUserRoundCheck} />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="font-semibold text-[16px] text-[#231f20]">Pedro Nalini</p>
+                      <p className="text-[12px] text-[#929292]">
+                        CPF: ***.{cpf.slice(3, 6)}.{cpf.slice(6, 9)}-**
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-[#f9edbf] border border-[#ae964a] flex gap-[10px] items-center justify-center px-[18px] py-[6px] rounded-full shrink-0">
+                    <img alt="" className="size-[18px]" src={iconeTrophy} />
+                    <p className="font-semibold text-[12px] text-[#ae964a] whitespace-nowrap">Exclusivo Cliente Drogaria Pacheco</p>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-[8px] items-center justify-center px-[32px] py-[14px] w-[256px]">
-                <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">Sem Identificação</p>
+            ) : isClienteCadastrado && tutorialStep === 14 ? (
+              /* Venda seguiu sem identificar o cliente (exemplo a partir da revisita ao passo 2) */
+              <div className="flex items-stretch w-full isolate">
+                <div className="bg-[#9d9d9d] w-[8px] rounded-l-[4px] shrink-0" />
+                <div className="bg-white border border-[#dadada] flex-1 flex items-center gap-[24px] px-[24px] py-[15px] rounded-r-[4px]">
+                  <div className="bg-[#e7e7e7] flex items-center justify-center rounded-full size-[32px] shrink-0">
+                    <img alt="" className="size-[24px]" src={iconeUserRoundMinus} />
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="font-semibold text-[16px] text-[#231f20]">Sem identificação</p>
+                    <p className="text-[12px] text-[#929292]">Pressione a tecla [Convênios] no teclado para identificar o usuário.</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="bg-[#f5f5f5] flex rounded-[12px]">
+                  <div className="bg-[#2258e6] flex gap-[8px] items-center justify-center px-[32px] py-[16px] rounded-[10px] w-[256px] shadow-sm">
+                    <p className="font-['Geist',sans-serif] font-medium text-[14px] text-white">Com identificação</p>
+                  </div>
+                  <div className="relative flex gap-[8px] items-center justify-center px-[32px] py-[14px] w-[256px]">
+                    {/* Tooltip - step 2 (revisita) do fluxo de Cliente Cadastrado e Não Cadastrado, exemplo de venda sem identificar o cliente */}
+                    {tutorialStep === 2 && isClienteCadastrado && demoSemIdentificar && (
+                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
+                        <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                            <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                            <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            Para seguir sem identificar o cliente, clique em{" "}
+                            <span className="font-bold text-white">[Volta]</span> no teclado virtual. Outra opção é clicar em{" "}
+                            <span className="font-bold text-white">[Entra]</span> sem ter informado o número do CPF.
+                          </p>
+                        </div>
+                        <div className="flex justify-center mt-0">
+                          <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+                        </div>
+                      </div>
+                    )}
+                    <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">Sem Identificação</p>
+                    <img alt="" className="size-[24px]" src={iconeArrowLeft} />
+                  </div>
+                </div>
 
-            <div className="flex gap-[8px] w-full">
-              <input
-                ref={cpfInputRef}
-                type="text"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
-                onFocus={() => setActiveInput("cpf")}
-                placeholder="|Digite o CPF do cliente ou aperte [Volta] para seguir sem identificação"
-                className="flex-1 bg-white h-[48px] rounded-[8px] px-[16px] border border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4] font-['Geist',sans-serif] text-[14px] text-[#787878] focus:outline-none focus:border-[#2258e6]"
-              />
-              <button className="bg-[#171717] opacity-50 flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[48px] rounded-[8px]">
-                <div className="overflow-clip relative shrink-0 size-[16px]">
-                  <div className="absolute inset-[9.38%]">
-                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.9999 12.9999">
-                      <g>
-                        <path d={pdvSvgPaths.p236d3680} fill="white" />
-                        <path d={pdvSvgPaths.p21e32300} fill="white" />
-                      </g>
-                    </svg>
+                <div className="flex gap-[8px] w-full">
+                  <div className="relative flex-1">
+                    {/* Tooltip - step 2 (primeira visita) do fluxo de Cliente Cadastrado e Não Cadastrado */}
+                    {tutorialStep === 2 && isClienteCadastrado && !demoSemIdentificar && (
+                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
+                        <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                            <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                            <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            Informe o CPF do cliente. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
+                            <span className="font-bold text-white">[Entra]</span> para continuar.
+                          </p>
+                        </div>
+                        <div className="flex justify-center mt-0">
+                          <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+                        </div>
+                      </div>
+                    )}
+                    <input
+                      ref={cpfInputRef}
+                      type="text"
+                      value={formatCpf(cpf)}
+                      onChange={(e) => setCpf(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                      onFocus={() => setActiveInput("cpf")}
+                      placeholder="|Digite o CPF do cliente ou aperte [Volta] para seguir sem identificação"
+                      className={`w-full bg-white h-[48px] rounded-[8px] px-[16px] border font-['Geist',sans-serif] text-[14px] text-[#787878] focus:outline-none ${
+                        cpf.length > 0
+                          ? "border-[#2258e6] shadow-[0px_0px_0px_3px_#d4d4d4]"
+                          : "border-[#a3a3a3] focus:border-[#2258e6] focus:shadow-[0px_0px_0px_3px_#d4d4d4]"
+                      }`}
+                    />
                   </div>
+                  <button className="bg-[#171717] opacity-50 flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[48px] rounded-[8px]">
+                    <div className="overflow-clip relative shrink-0 size-[16px]">
+                      <div className="absolute inset-[9.38%]">
+                        <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.9999 12.9999">
+                          <g>
+                            <path d={pdvSvgPaths.p236d3680} fill="white" />
+                            <path d={pdvSvgPaths.p21e32300} fill="white" />
+                          </g>
+                        </svg>
+                      </div>
+                    </div>
+                    <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#fafafa]">Buscar</p>
+                    <div className="overflow-clip relative shrink-0 size-[16px]">
+                      <div className="absolute inset-[9.38%]">
+                        <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
+                          <g>
+                            <path d={pdvSvgPaths.p2010def2} fill="white" />
+                            <path d={pdvSvgPaths.p2ef5a800} fill="white" />
+                            <path d={pdvSvgPaths.p1d703980} fill="white" />
+                          </g>
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
                 </div>
-                <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#fafafa]">Buscar</p>
-                <div className="overflow-clip relative shrink-0 size-[16px]">
-                  <div className="absolute inset-[9.38%]">
-                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
-                      <g>
-                        <path d={pdvSvgPaths.p2010def2} fill="white" />
-                        <path d={pdvSvgPaths.p2ef5a800} fill="white" />
-                        <path d={pdvSvgPaths.p1d703980} fill="white" />
-                      </g>
-                    </svg>
-                  </div>
-                </div>
-              </button>
-            </div>
+              </>
+            )}
           </div>
 
           <div className="h-px bg-[#bdbdbd]" />
@@ -753,7 +1004,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               onKeyDown={handleAddProduct}
               onFocus={() => setActiveInput("sku")}
               placeholder="SKU do produto - Escaneie o código do produto ou digite"
-              className="bg-white h-[56px] rounded-[8px] px-[16px] border border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4] font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none focus:border-[#2258e6]"
+              className="bg-white h-[56px] rounded-[8px] px-[16px] border border-[#a3a3a3] font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none focus:border-[#2258e6] focus:shadow-[0px_0px_0px_3px_#d4d4d4]"
             />
           </div>
 
@@ -906,7 +1157,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             </div>
           </div>
         )}
-        {!isSuprimentoAdicional && !isAberturaDeCaixa && <Frame19557 />}
+        {isSangriaDeCaixa && <Frame19557 />}
       </div>
 
       {/* Fluxo animado de Sangria (telas do gerente) */}
@@ -1005,6 +1256,112 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
         </>
       )}
+
+      {/* Modal - Identificar CPF/CNPJ na nota? (Cliente Cadastrado e Não Cadastrado) */}
+      {isTrainingMode && tutorialStep === 11 && isClienteCadastrado && (
+        <>
+          {/* Backdrop escuro com blur */}
+          <div className="fade-in-delay absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
+
+          {/* Tooltip acima do modal */}
+          <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
+            <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+              Será exibido um modal perguntando se o cliente deseja que o CPF/CNPJ seja identificado na nota fiscal. Pressione a tecla <span className="font-bold">[Entra]</span> para confirmar a identificação ou <span className="font-bold">[Volta]</span> para prosseguir sem identificação.
+            </div>
+            <div className="flex justify-center">
+              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
+            </div>
+          </div>
+
+          {/* Modal bottom sheet */}
+          <div
+            className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)] bg-white flex flex-col gap-[32px] px-[40px] py-[32px]"
+            onClick={(e) => {
+              const text = (e.target as HTMLElement).closest('[data-name="Button"]')?.querySelector('p')?.textContent?.trim();
+              if (text === "Entra") { setShowKeyboard(false); setTutorialStep(13); }
+              else if (text === "Volta") { setShowKeyboard(false); setTutorialStep(12); }
+            }}
+          >
+            <div className="flex gap-[32px] items-center w-full">
+              <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full shrink-0">
+                <img alt="" className="size-[32px]" src={iconeIdCard} />
+              </div>
+              <div className="flex flex-col gap-[10px] flex-1 text-[#7e7e7e]">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[25px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Identificar CPF/CNPJ na nota?
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Pressione [ENTRA] para informar ou [VOLTA] para continuar sem identificação.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <div data-name="Button" className="bg-white border border-[#d4d4d4] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[185px] cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18l-6-6 6-6" stroke="#ed403d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#ed403d]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Volta
+                </p>
+              </div>
+              <div data-name="Button" className="bg-[#2258e6] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] w-[185px]">
+                <img alt="" className="size-[16px]" src={iconeEntrar} />
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Entra
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Modal - Usar o mesmo CPF/CNPJ da identificação? (Cliente Cadastrado e Não Cadastrado) */}
+      {isTrainingMode && tutorialStep === 13 && isClienteCadastrado && (
+        <>
+          {/* Backdrop escuro com blur */}
+          <div className="fade-in-delay absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
+
+          {/* Modal bottom sheet */}
+          <div
+            className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)] bg-white flex flex-col gap-[32px] px-[40px] py-[32px]"
+            onClick={(e) => {
+              const text = (e.target as HTMLElement).closest('[data-name="Button"]')?.querySelector('p')?.textContent?.trim();
+              if (text === "Entra") { setShowKeyboard(false); setTutorialStep(14); }
+              else if (text === "Volta") { setShowKeyboard(false); setTutorialStep(11); }
+            }}
+          >
+            <div className="flex gap-[32px] items-center w-full">
+              <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full shrink-0">
+                <img alt="" className="size-[32px]" src={iconeIdCard} />
+              </div>
+              <div className="flex flex-col gap-[10px] flex-1 text-[#7e7e7e]">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[25px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Usar o mesmo CPF/CNPJ da identificação?
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Pressione [ENTRA] para sim ou [VOLTA] para digitar um novo CPF.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <div data-name="Button" className="bg-white border border-[#d4d4d4] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[185px] cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18l-6-6 6-6" stroke="#ed403d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#ed403d]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Volta
+                </p>
+              </div>
+              <div data-name="Button" className="bg-[#2258e6] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] w-[185px]">
+                <img alt="" className="size-[16px]" src={iconeEntrar} />
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Entra
+                </p>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -1013,7 +1370,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       <ScaleToFit designWidth={1280}>
         {/* PDV + máscara dentro do mesmo wrapper escalado → sempre alinhados */}
         <div className="relative w-[1280px]">
-          {pdvContent}
+          {isAberturaDeCaixa ? <AberturaCaixaLoginScreen /> : pdvContent}
 
           {/* Play Overlay */}
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-[20px] cursor-pointer group hover:bg-black/70 transition-colors" onClick={() => {
@@ -1027,8 +1384,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
               setShowAberturaLogin(true);
               return;
             }
-            playWelcomeAudio();
-            // Mostrar tutorial com delay para o fade-in
+            // O áudio de boas-vindas toca sozinho quando a primeira tela
+            // (banner de boas-vindas) aparece — ver efeito ligado a
+            // isPrimeiraTelaTreinamento.
             setTimeout(() => {
               setShowTutorial(true);
             }, 300);
@@ -1087,7 +1445,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
                 <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <p className="font-['Nunito_Sans',sans-serif] text-[15px] text-[rgba(255,255,255,0.75)] leading-[1.5]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Esta operação requer autorização do gerente. Após a introdução das credenciais, você poderá continuar.
               </p>
             </div>
@@ -1159,14 +1517,39 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Tutorial Box - Positioned at bottom of PDV */}
         <div className={`absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20 transition-opacity duration-700 ease-in-out ${showTutorial || showAberturaLogin ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <Inicio
-            onNext={() => { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }}
+            onNext={() => { stopAudio(); setTutorialStep(pulaTelaLimiteCaixa ? 2 : 1); setShowTutorial(false); }}
             titulo={welcomeTitulo}
             descricao={welcomeDescricao}
           />
         </div>
 
-        {/* Step 2 - Informativo Sangria */}
-        {tutorialStep === 2 && (
+        {/* Caixa preta de encerramento (mesmo box do passo inicial de
+            boas-vindas), reaproveitada na última tela do fluxo de Cliente
+            Cadastrado e Não Cadastrado */}
+        {isClienteCadastrado && tutorialStep === 12 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <Inicio
+              titulo="O cliente foi identificado"
+              descricao="Neste momento é possível iniciar o registro dos produtos, tema do nosso próximo tutorial. Mas antes disso, vamos fazer um exemplo de como iniciar uma venda sem identificar o cliente."
+            />
+          </div>
+        )}
+
+        {/* Caixa preta de encerramento — tela final do exemplo de venda sem
+            identificar o cliente */}
+        {isClienteCadastrado && tutorialStep === 14 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <Inicio
+              titulo="Cliente Não Identificado"
+              descricao="Neste momento é possível iniciar o registro dos produtos, tema do nosso próximo tutorial."
+            />
+          </div>
+        )}
+
+        {/* Step 2 - Informativo Sangria (não se aplica ao fluxo de Cliente
+            Cadastrado e Não Cadastrado, que reaproveita este simulador como
+            placeholder) */}
+        {tutorialStep === 2 && !isClienteCadastrado && (
           <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
             <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
               {/* Ícone */}
@@ -1312,16 +1695,21 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (showEntradaOperadorMatricula) { setShowEntradaOperadorMatricula(false); setOperadorMatricula(""); setShowAberturaLogin(true); }
               else if (isAberturaDeCaixa && tutorialStep === 0) { stopAudio(); setShowTutorial(false); setShowAberturaLogin(true); }
               else if (tutorialStep === 2) {
-                if (isSuprimentoAdicional) { setTutorialStep(0); setShowTutorial(true); playWelcomeAudio(); }
+                if (isClienteCadastrado && demoSemIdentificar) { setTutorialStep(12); setDemoSemIdentificar(false); }
+                else if (pulaTelaLimiteCaixa) { setTutorialStep(0); setShowTutorial(true); setCpf(""); setDemoSemIdentificar(false); }
                 else setTutorialStep(1);
               }
               else if (tutorialStep === 3) { setTutorialStep(2); setShowKeyboard(false); }
+              else if (tutorialStep === 14) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(true); }
+              else if (tutorialStep === 13) { setTutorialStep(11); setShowKeyboard(false); }
+              else if (tutorialStep === 12) { setTutorialStep(11); setShowKeyboard(false); }
+              else if (tutorialStep === 11) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(false); }
               else if (tutorialStep === 5) setTutorialStep(3);
               else if (tutorialStep === 6) setTutorialStep(5);
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
               else if (tutorialStep === 8) setTutorialStep(7);
               else if (tutorialStep === 9) setTutorialStep(8);
-              else { setTutorialStep(0); setShowTutorial(true); playWelcomeAudio(); }
+              else { setTutorialStep(0); setShowTutorial(true); }
             }}
             className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || (tutorialStep === 0 && !(isAberturaDeCaixa && showTutorial))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
@@ -1346,11 +1734,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 setShowAberturaIdentificacao(false);
                 setTutorialStep(10);
               }
-              else if (showTutorial) { stopAudio(); setTutorialStep(isSuprimentoAdicional ? 2 : 1); setShowTutorial(false); }
+              else if (showTutorial) { stopAudio(); setTutorialStep(pulaTelaLimiteCaixa ? 2 : 1); setShowTutorial(false); }
+              else if (isClienteCadastrado && tutorialStep === 12) { setCpf(""); setTutorialStep(2); setDemoSemIdentificar(true); }
+              else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
               else if (tutorialStep === 1) setTutorialStep(2);
               else if (tutorialStep === 9) setTutorialStep(10);
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14))) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">Próximo</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -1370,7 +1760,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
           isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? 'animate-pulse-subtle' : ''
-        } ${!showEntradaOperadorMatricula && !showEntradaOperadorSenha && (tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        } ${!showEntradaOperadorMatricula && !showEntradaOperadorSenha && (tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
@@ -1466,9 +1856,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
         }}
       >
         <VirtualKeyboard
-          highlightSangria={tutorialStep === 2}
-          onSangriaPress={tutorialStep === 2 ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6)}
+          key={tutorialStep}
+          highlightSangria={tutorialStep === 2 && !isClienteCadastrado}
+          onSangriaPress={tutorialStep === 2 && !isClienteCadastrado ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
+          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13))}
+          highlightVolta={isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar}
+          onVoltaPress={isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar ? () => handleKeyPress("VOLTA") : undefined}
           onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6)) ? () => {
             if (tutorialStep === 3) { setTutorialStep(4); setShowKeyboard(false); }
             else if (tutorialStep === 6) { setTutorialStep(7); setShowKeyboard(false); }
@@ -1486,12 +1879,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
               setShowAberturaIdentificacao(true);
             }
           } : undefined}
-          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional)}
+          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1"}
           onKey1Press={tutorialStep === 5 && !isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional)}
+          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2"}
           onKey2Press={tutorialStep === 5 && isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6)}
+          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0"}
           onKey0Press={undefined}
+          highlightKey3={proximoDigitoCpf === "3"}
+          highlightKey4={proximoDigitoCpf === "4"}
+          highlightKey5={proximoDigitoCpf === "5"}
+          highlightKey6={proximoDigitoCpf === "6"}
+          highlightKey7={proximoDigitoCpf === "7"}
+          highlightKey8={proximoDigitoCpf === "8"}
+          highlightKey9={proximoDigitoCpf === "9"}
           highlightV={tutorialStep === 6}
           onVPress={tutorialStep === 6 ? handleVPress : undefined}
           highlightK={tutorialStep === 6}
@@ -1519,7 +1919,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : "Sangria de Caixa"}</span>. Agora você está pronto para realizar essa operação no PDV.
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : "Agora você está pronto para realizar essa operação no PDV."}
                 </p>
               </div>
             </div>
@@ -1614,8 +2014,15 @@ function TrilhaCard({ titulo, descricao, ativo, onClick }: { titulo: string; des
   );
 }
 
+// Categoria "Início da Operação" aponta o link "Próximos treinamentos" para o
+// primeiro fluxo da categoria seguinte (Atendimento e Vendas).
+const PROXIMO_TREINAMENTO_POR_CATEGORIA: Record<string, string> = {
+  "Início da Operação": "cliente-cadastrado-e-nao-cadastrado"
+};
+
 function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSecaoData; slugAtual?: string }) {
   const navigate = useNavigate();
+  const proximoSlug = PROXIMO_TREINAMENTO_POR_CATEGORIA[categoria.titulo];
 
   return (
     <div className="flex flex-col">
@@ -1639,7 +2046,10 @@ function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSeca
       </div>
       <div className="border-b border-[#e5e5e5] mt-[24px] mb-[16px]" />
       <div className="flex justify-end">
-        <button className="font-['Geist',sans-serif] font-medium text-[13px] text-[#2258e6] hover:underline cursor-pointer">
+        <button
+          onClick={proximoSlug ? () => navigate(`/funcionalidade/${proximoSlug}`) : undefined}
+          className={`font-['Geist',sans-serif] font-medium text-[13px] text-[#2258e6] ${proximoSlug ? "hover:underline cursor-pointer" : "opacity-50 cursor-default"}`}
+        >
           Próximos treinamentos
         </button>
       </div>

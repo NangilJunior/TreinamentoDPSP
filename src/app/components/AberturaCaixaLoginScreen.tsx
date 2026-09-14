@@ -15,7 +15,7 @@ const CRUZ_PATH =
 
 const FOTO_ESTILO_BASE = { width: "1563px", height: "876px", maxWidth: "none", maxHeight: "none", objectFit: "cover" as const };
 
-function PainelFoto() {
+export function PainelFoto() {
   return (
     <div className="relative w-[646px] h-full overflow-hidden shrink-0 bg-[#3a2a1a]">
       {/* Camada A: foto desfocada + tingida de âmbar, preenchendo o painel */}
