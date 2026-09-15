@@ -28,6 +28,7 @@ import iconeUserRoundCheck from "../../imports/ClienteCadastrado/icone-user-roun
 import iconeTrophy from "../../imports/ClienteCadastrado/icone-trophy.svg";
 import iconeUserRoundMinus from "../../imports/ClienteCadastrado/icone-user-round-minus.svg";
 import iconeArrowLeft from "../../imports/ClienteCadastrado/icone-arrow-left.svg";
+import iconeEscanearProduto from "../../imports/RegistroDeProdutos/icone-escanear-produto.svg";
 
 // Mesma imagem de fundo utilizada na categoria "Gestão do Caixa" em /dashboard
 const imgGestaoDoCaixa = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
@@ -198,6 +199,10 @@ const SENHA_GERENTE_DIGITOS = 7;
 // Cadastrado e Não Cadastrado (111.222.333-00, sem máscara).
 const CPF_EXEMPLO = "11122233300";
 
+// Código de barras de exemplo digitado manualmente no teclado virtual na
+// etapa de registro manual do fluxo de Registro de Produtos.
+const SKU_MANUAL_EXEMPLO = "11122233";
+
 // Aplica a máscara de CPF (XXX.XXX.XXX-XX) progressivamente, conforme os
 // dígitos (sem pontuação) já digitados.
 function formatCpf(digitos: string): string {
@@ -236,10 +241,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // reaproveitam esse simulador como placeholder, mas não devem exibi-lo.
   const isSangriaDeCaixa = slug === "sangria-de-caixa";
   const isClienteCadastrado = slug === "cliente-cadastrado-e-nao-cadastrado";
+  const isRegistroDeProdutos = slug === "registro-de-produtos";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
-  // Cadastrado e Não Cadastrado também não deve exibi-la.
-  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado;
+  // Cadastrado e Não Cadastrado e Registro de Produtos também não devem
+  // exibi-la.
+  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos;
   const welcomeTitulo = isSuprimentoInicial
     ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
     : isSuprimentoAdicional
@@ -248,6 +255,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Olá, boas vindas ao tutorial de Abertura de Caixa"
     : isClienteCadastrado
     ? "Olá, boas vindas ao tutorial de Cliente Cadastrado e Não Cadastrado."
+    : isRegistroDeProdutos
+    ? "Olá, boas vindas ao tutorial de Registro de Produtos."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -257,6 +266,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "A Abertura de Caixa é o processo que permite ao operador iniciar suas atividades em um PDV (Ponto de Venda). Para abrir o caixa, primeiro é necessária a autorização de um usuário com perfil de gerente, por meio de senha. Em seguida, o operador realiza sua própria autenticação. O sistema verifica se o caixa está disponível para abertura e registra a operação, garantindo segurança e rastreabilidade durante o atendimento."
     : isClienteCadastrado
     ? "Ao iniciar uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se a identificação do cliente deve ser informada na nota fiscal. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos."
+    : isRegistroDeProdutos
+    ? "O Registro de Produtos é a etapa em que os itens são adicionados à venda. Para tal, o operador deve utilizar o leitor, posicionando-o sobre o código de barras do produto, ou, alternativamente, digitar o número do código no campo indicado e confirmar a operação. Após a identificação, o item é incluído na venda com suas informações e quantidades correspondentes. O processo deve ser repetido para cada produto da compra."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -279,6 +290,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const [operadorMatricula, setOperadorMatricula] = useState("");
   const [operadorSenha, setOperadorSenha] = useState("");
   const [aberturaEntraState, setAberturaEntraState] = useState<"disabled" | "active" | "pressed">("disabled");
+  // Telas de demonstração (steps 15 a 17) do fluxo de Registro de Produtos:
+  // não usadas por nenhum outro fluxo, para não colidir com os steps 0-14
+  // já existentes.
   const [tutorialStep, setTutorialStep] = useState(0);
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [cpf, setCpf] = useState("");
@@ -563,6 +577,38 @@ function PDVSimulator({ slug }: { slug?: string }) {
       }
       return;
     }
+    // Registro manual (passo 16 do fluxo de Registro de Produtos): só aceita
+    // o próximo dígito correto de SKU_MANUAL_EXEMPLO, replicando o mesmo
+    // guiamento usado no exemplo de CPF do fluxo de Cliente Cadastrado.
+    if (isRegistroDeProdutos && tutorialStep === 16) {
+      if (key === "ENTRA" || key === "Enter") {
+        if (sku.length === SKU_MANUAL_EXEMPLO.length) {
+          setShowKeyboard(false);
+          setTutorialStep(17);
+          setSku("");
+        }
+      } else if (key === "LIMPA") {
+        setSku("");
+      } else if (key === "VOLTA") {
+        setSku(prev => prev.slice(0, -1));
+      } else if (!isNaN(Number(key)) && key !== "00" && sku.length < SKU_MANUAL_EXEMPLO.length && key === SKU_MANUAL_EXEMPLO[sku.length]) {
+        setSku(prev => prev + key);
+      }
+      return;
+    }
+    // Multiplicando produtos (passo 18 do fluxo de Registro de Produtos): só
+    // aceita o dígito "3" (quantidade do exemplo); a confirmação acontece ao
+    // pressionar a tecla Multiplica (ver onMultiplicaPress no VirtualKeyboard).
+    if (isRegistroDeProdutos && tutorialStep === 18) {
+      if (key === "LIMPA") {
+        setSku("");
+      } else if (key === "VOLTA") {
+        setSku(prev => prev.slice(0, -1));
+      } else if (!isNaN(Number(key)) && key !== "00" && sku.length === 0 && key === "3") {
+        setSku(prev => prev + key);
+      }
+      return;
+    }
     if (activeInput === "cpf") {
       if (key === "ENTRA" || key === "Enter") {
         skuInputRef.current?.focus();
@@ -665,6 +711,24 @@ function PDVSimulator({ slug }: { slug?: string }) {
     isClienteCadastrado && tutorialStep === 2 && !demoSemIdentificar && cpf.length < CPF_EXEMPLO.length
       ? CPF_EXEMPLO[cpf.length]
       : null;
+
+  // Próximo dígito do código de barras de exemplo a ser destacado no teclado
+  // virtual (passo 16 - registro manual - do fluxo de Registro de Produtos).
+  const proximoDigitoSkuManual =
+    isRegistroDeProdutos && tutorialStep === 16 && sku.length < SKU_MANUAL_EXEMPLO.length
+      ? SKU_MANUAL_EXEMPLO[sku.length]
+      : null;
+
+  // Telas de demonstração do fluxo de Registro de Produtos que reaproveitam
+  // o card do item "Dipirona 500mg" já escaneado (steps 15 a 17).
+  const mostrarCardDipirona = isRegistroDeProdutos && tutorialStep >= 15 && tutorialStep <= 20;
+  const quantidadeCardsDipirona =
+    tutorialStep === 20 ? 3 : tutorialStep === 17 || tutorialStep === 18 || tutorialStep === 19 ? 2 : 1;
+  const itensDemoRegistroDeProdutos = [
+    { nome: "Dipirona 500mg", ref: "30039069", cod: "646156", quantidade: 1, precoUnit: "8.50", descontoPct: "-10%", descontoValor: "-R$ 0.85", precoFinal: "8.50" },
+    { nome: "Nimesulida 50 mg", ref: "40051267", cod: "719284", quantidade: 1, precoUnit: "14.90", descontoPct: "-51%", descontoValor: "-R$ 15.56", precoFinal: "14.90" },
+    { nome: "Paracetamol 750 mg", ref: "50062348", cod: "832671", quantidade: 3, precoUnit: "7.99", descontoPct: "-52%", descontoValor: "-R$ 8.74", precoFinal: "23.97" },
+  ];
 
   const pdvContent = (
     <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? "h-[800px] overflow-y-auto" : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
@@ -836,8 +900,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            {isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13 ? (
-              /* Cliente já identificado após o CPF informado na etapa anterior */
+            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos ? (
+              /* Cliente já identificado após o CPF informado na etapa anterior
+                 (também usado como tela de fundo do fluxo de Registro de
+                 Produtos, que parte de um cliente já identificado). */
               <div className="flex items-stretch w-full isolate">
                 <div className="bg-[#61bae8] w-[8px] rounded-l-[4px] shrink-0" />
                 <div className="bg-white border border-[#dadada] flex-1 flex items-center justify-between gap-[24px] px-[24px] py-[15px] rounded-r-[4px] flex-wrap">
@@ -996,16 +1062,22 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            <input
-              ref={skuInputRef}
-              type="text"
-              value={sku}
-              onChange={(e) => setSku(e.target.value)}
-              onKeyDown={handleAddProduct}
-              onFocus={() => setActiveInput("sku")}
-              placeholder="SKU do produto - Escaneie o código do produto ou digite"
-              className="bg-white h-[56px] rounded-[8px] px-[16px] border border-[#a3a3a3] font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none focus:border-[#2258e6] focus:shadow-[0px_0px_0px_3px_#d4d4d4]"
-            />
+            <div className="relative">
+              <input
+                ref={skuInputRef}
+                type="text"
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                onKeyDown={handleAddProduct}
+                onFocus={() => setActiveInput("sku")}
+                placeholder="SKU do produto - Escaneie o código do produto ou digite"
+                className={`w-full bg-white h-[56px] rounded-[8px] px-[16px] border font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none ${
+                  sku.length > 0
+                    ? "border-[#2258e6] shadow-[0px_0px_0px_3px_#d4d4d4]"
+                    : "border-[#a3a3a3] focus:border-[#2258e6] focus:shadow-[0px_0px_0px_3px_#d4d4d4]"
+                }`}
+              />
+            </div>
           </div>
 
           <div className="h-px bg-[#bdbdbd]" />
@@ -1034,7 +1106,116 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
           {/* Items Display */}
           <div className="bg-white flex-1 min-h-[200px]">
-            {items.length === 0 ? (
+            {mostrarCardDipirona ? (
+              /* Item(ns) de exemplo já escaneado(s) (Dipirona 500mg) - telas
+                 15 a 17 do fluxo de Registro de Produtos. */
+              <div className="p-[20px] relative">
+                {tutorialStep === 15 && (
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[380px] pointer-events-none z-[45]">
+                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                      <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        O item escaneado ficará listado aqui.
+                      </p>
+                    </div>
+                    <div className="flex justify-center mt-0">
+                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+                    </div>
+                  </div>
+                )}
+                {tutorialStep === 17 && (
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[380px] pointer-events-none z-[45]">
+                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                      <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        Se o código inserido estiver correto, o item entrará na lista.
+                      </p>
+                    </div>
+                    <div className="flex justify-center mt-0">
+                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+                    </div>
+                  </div>
+                )}
+                <div className="space-y-[12px]">
+                  {Array.from({ length: quantidadeCardsDipirona }).map((_, idx) => {
+                    const item = itensDemoRegistroDeProdutos[idx] ?? itensDemoRegistroDeProdutos[0];
+                    return (
+                    <div key={idx} className="relative">
+                      {tutorialStep === 20 && idx === 2 && (
+                        <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[380px] pointer-events-none z-[45]">
+                          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                              O item é inserido com a quantidade informada
+                            </p>
+                          </div>
+                          <div className="flex justify-center mt-0">
+                            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+                          </div>
+                        </div>
+                      )}
+                      <div className="bg-white border border-[#dddddd] flex items-stretch justify-between overflow-hidden rounded-[8px] w-full">
+                      <div className="bg-[#f6f6f6] flex flex-col items-center justify-center shrink-0 w-[27px]">
+                        <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#7a7a7a] text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                          {idx + 1}
+                        </p>
+                      </div>
+                      <div className="flex flex-1 items-center justify-between gap-[16px] px-[20px] py-[12px]">
+                        <div className="flex flex-col gap-[4px] shrink-0 w-[220px] min-w-0">
+                          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#404040] truncate" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            {item.nome}
+                          </p>
+                          <div className="flex gap-[12px] font-['Nunito_Sans',sans-serif] text-[12.8px] text-[#757575] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            <p>Ref: {item.ref}</p>
+                            <p>Cód: {item.cod}</p>
+                          </div>
+                        </div>
+                        <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[16px] text-[#404040] shrink-0 w-[20px] text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                          {item.quantidade}
+                        </p>
+                        <div className="flex flex-col items-end shrink-0 w-[90px]">
+                          <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[12.8px] text-[#757575] whitespace-nowrap text-right" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            Preço Unit.
+                          </p>
+                          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#404040] text-right" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            R$ {item.precoUnit}
+                          </p>
+                        </div>
+                        <div className="flex gap-[8px] items-center justify-end shrink-0 w-[140px]">
+                          <div className="bg-[#f2fbf9] flex items-center justify-center px-[5px] py-[5px] rounded-[8px]">
+                            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[14px] text-[#00ae8e] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                              {item.descontoPct}
+                            </p>
+                          </div>
+                          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[14px] text-[#00ae8e] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            {item.descontoValor}
+                          </p>
+                        </div>
+                        <div className="flex flex-col items-end shrink-0 w-[90px]">
+                          <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[12.8px] text-[#757575] whitespace-nowrap text-right" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            Preço Final
+                          </p>
+                          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#404040] text-right" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                            R$ {item.precoFinal}
+                          </p>
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : items.length === 0 ? (
               <div className="flex items-center justify-center h-full p-[20px]">
                 <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Nenhum produto adicionado
@@ -1099,7 +1280,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Subtotal:
               </p>
               <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                R$ {subtotal.toFixed(2)}
+                R$ {(mostrarCardDipirona ? 8.5 : subtotal).toFixed(2)}
               </p>
             </div>
 
@@ -1110,9 +1291,20 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Total:
               </p>
               <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                R$ {subtotal.toFixed(2)}
+                R$ {(mostrarCardDipirona ? 8.5 : subtotal).toFixed(2)}
               </p>
             </div>
+
+            {mostrarCardDipirona && (
+              <div className="flex justify-between">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#00ae8e]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Economizou
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#00ae8e]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  R$ 0.85
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="h-px bg-[#bdbdbd]" />
@@ -1546,10 +1738,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
         )}
 
-        {/* Step 2 - Informativo Sangria (não se aplica ao fluxo de Cliente
-            Cadastrado e Não Cadastrado, que reaproveita este simulador como
-            placeholder) */}
-        {tutorialStep === 2 && !isClienteCadastrado && (
+        {/* Step 2 - Informativo Sangria (não se aplica aos fluxos de Cliente
+            Cadastrado e Não Cadastrado e Registro de Produtos, que
+            reaproveitam este simulador como placeholder) */}
+        {tutorialStep === 2 && !isClienteCadastrado && !isRegistroDeProdutos && (
           <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
             <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
               {/* Ícone */}
@@ -1584,6 +1776,82 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   </div>
                 </div>
                 <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">SANGRIA</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2 - Informativo Registro de Produtos: instrui o operador a
+            usar o botão "Escanear Produto" logo abaixo. */}
+        {tutorialStep === 2 && isRegistroDeProdutos && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              {/* Ícone */}
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              {/* Texto */}
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Faça o registro do primeiro produto
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Neste exemplo, vamos simular o uso do leitor para registrar um produto. Clique no botão abaixo para seguir.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 16 - Informativo Registro Manual: instrui o operador a abrir
+            o teclado e digitar o código de barras de exemplo. */}
+        {tutorialStep === 16 && isRegistroDeProdutos && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              {/* Ícone */}
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              {/* Texto */}
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Agora vamos fazer um registro manual
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Nem sempre o leitor é capaz de registrar o produto. Nesses casos, você poderá digitar os números que acompanham o código de barras, normalmente entre 8 e 13 dígitos. Pressione o botão Exibir Teclado, digite os números 11122233 e pressione <span className="font-bold text-white">[Entra]</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 18 - Informativo Multiplicando Produtos: instrui o operador a
+            usar a tecla de multiplicação [*] para registrar mais de uma
+            unidade do mesmo item. */}
+        {tutorialStep === 18 && isRegistroDeProdutos && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              {/* Ícone */}
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              {/* Texto */}
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Multiplicando produtos
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Para registrar mais de um item no ponto de venda, o operador pode multiplicar a quantidade digitando o número de itens que o cliente irá levar e, em seguida, a tecla de <span className="font-bold text-white">multiplicação [*]</span>. Em seguida, o código de barras pode ser escaneado ou digitado.
+                </p>
               </div>
             </div>
           </div>
@@ -1700,6 +1968,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 else setTutorialStep(1);
               }
               else if (tutorialStep === 3) { setTutorialStep(2); setShowKeyboard(false); }
+              else if (tutorialStep === 15) { setTutorialStep(2); setSku(""); }
+              else if (tutorialStep === 16) { setTutorialStep(15); setSku(""); setShowKeyboard(false); }
+              else if (tutorialStep === 17) { setTutorialStep(16); setSku(""); setShowKeyboard(false); }
+              else if (tutorialStep === 18) { setTutorialStep(17); setSku(""); setShowKeyboard(false); }
+              else if (tutorialStep === 19) { setTutorialStep(18); setSku(""); }
+              else if (tutorialStep === 20) { setTutorialStep(19); }
               else if (tutorialStep === 14) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(true); }
               else if (tutorialStep === 13) { setTutorialStep(11); setShowKeyboard(false); }
               else if (tutorialStep === 12) { setTutorialStep(11); setShowKeyboard(false); }
@@ -1739,10 +2013,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
               else if (tutorialStep === 1) setTutorialStep(2);
               else if (tutorialStep === 9) setTutorialStep(10);
+              else if (isRegistroDeProdutos && tutorialStep === 15) setTutorialStep(16);
+              else if (isRegistroDeProdutos && tutorialStep === 17) setTutorialStep(18);
+              else if (isRegistroDeProdutos && tutorialStep === 20) setTutorialStep(10);
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14))) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20))) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
-            <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">Próximo</span>
+            <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
+              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : "Próximo"}
+            </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -1759,9 +2038,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
           }
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
-          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? 'animate-pulse-subtle' : ''
-        } ${!showEntradaOperadorMatricula && !showEntradaOperadorSenha && (tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) ? {
+          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) ? 'animate-pulse-subtle' : ''
+        } ${!showEntradaOperadorMatricula && !showEntradaOperadorSenha && (tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 19 || tutorialStep === 20))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
         } : {}}
@@ -1778,6 +2057,48 @@ function PDVSimulator({ slug }: { slug?: string }) {
           {showKeyboard ? "Ocultar Teclado" : "Exibir Teclado"}
         </span>
       </button>
+
+      {/* Botão Escanear Produto - substitui o "Exibir Teclado" na segunda
+          tela do fluxo de Registro de Produtos (leva à terceira tela) e
+          também no passo 19 (leva ao passo 20, com o item multiplicado). */}
+      {isRegistroDeProdutos && tutorialStep === 19 && (
+        <div
+          className="fade-in-delay absolute bottom-[160px] left-1/2 w-[380px] pointer-events-none z-[45]"
+          style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              Agora clique em Escanear Produtos
+            </p>
+          </div>
+          <div className="flex justify-center mt-0">
+            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+          </div>
+        </div>
+      )}
+
+      {isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19) && (
+        <button
+          onClick={() => {
+            setSku("");
+            setTutorialStep(tutorialStep === 2 ? 15 : 20);
+          }}
+          className="absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] animate-pulse-subtle"
+          style={{
+            boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
+            animation: 'pulse-subtle 2s ease-in-out infinite'
+          }}
+        >
+          <img src={iconeEscanearProduto} alt="" className="w-[24px] h-[24px]" />
+          <span className="font-['Geist',sans-serif] font-medium text-[14px] text-white">
+            Escanear Produtos
+          </span>
+        </button>
+      )}
 
       <style>{`
         @keyframes pulse-subtle {
@@ -1804,6 +2125,50 @@ function PDVSimulator({ slug }: { slug?: string }) {
           100% { opacity: 1; }
         }
       `}</style>
+
+      {/* Tooltip - Teclado numérico (passo 16, registro manual do fluxo de
+          Registro de Produtos) */}
+      {showKeyboard && isRegistroDeProdutos && tutorialStep === 16 && (
+        <div
+          className="fade-in-delay absolute bottom-[520px] left-1/2 w-[480px] pointer-events-none z-[45]"
+          style={{ transform: `translateX(calc(-50% + 228px)) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              Insira o código de barras 11122233
+            </p>
+          </div>
+          <div className="flex justify-center mt-0">
+            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+          </div>
+        </div>
+      )}
+
+      {/* Tooltip - Teclado numérico (passo 18, multiplicando produtos do
+          fluxo de Registro de Produtos) */}
+      {showKeyboard && isRegistroDeProdutos && tutorialStep === 18 && (
+        <div
+          className="fade-in-delay absolute bottom-[520px] left-1/2 w-[480px] pointer-events-none z-[45]"
+          style={{ transform: `translateX(calc(-50% + 228px)) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              Neste exemplo, vamos multiplicar o produto que será registrado por 3.
+            </p>
+          </div>
+          <div className="flex justify-center mt-0">
+            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+          </div>
+        </div>
+      )}
 
       {/* Virtual Keyboard - Posicionado embaixo com animação */}
       <div
@@ -1859,9 +2224,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
           key={tutorialStep}
           highlightSangria={tutorialStep === 2 && !isClienteCadastrado}
           onSangriaPress={tutorialStep === 2 && !isClienteCadastrado ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13))}
+          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length)}
           highlightVolta={isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar}
           onVoltaPress={isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar ? () => handleKeyPress("VOLTA") : undefined}
+          highlightMultiplica={isRegistroDeProdutos && tutorialStep === 18 && sku === "3"}
+          onMultiplicaPress={isRegistroDeProdutos && tutorialStep === 18 && sku === "3" ? () => { setShowKeyboard(false); setSku(""); setTutorialStep(19); } : undefined}
           onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6)) ? () => {
             if (tutorialStep === 3) { setTutorialStep(4); setShowKeyboard(false); }
             else if (tutorialStep === 6) { setTutorialStep(7); setShowKeyboard(false); }
@@ -1879,13 +2246,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
               setShowAberturaIdentificacao(true);
             }
           } : undefined}
-          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1"}
+          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1"}
           onKey1Press={tutorialStep === 5 && !isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2"}
+          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2"}
           onKey2Press={tutorialStep === 5 && isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
           highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0"}
           onKey0Press={undefined}
-          highlightKey3={proximoDigitoCpf === "3"}
+          highlightKey3={proximoDigitoCpf === "3" || proximoDigitoSkuManual === "3" || (isRegistroDeProdutos && tutorialStep === 18 && sku.length === 0)}
           highlightKey4={proximoDigitoCpf === "4"}
           highlightKey5={proximoDigitoCpf === "5"}
           highlightKey6={proximoDigitoCpf === "6"}
@@ -1919,7 +2286,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : "Agora você está pronto para realizar essa operação no PDV."}
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : "Agora você está pronto para realizar essa operação no PDV."}
                 </p>
               </div>
             </div>

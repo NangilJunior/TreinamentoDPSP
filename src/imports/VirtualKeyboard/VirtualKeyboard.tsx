@@ -668,9 +668,14 @@ function Frame7({ highlightSangria, onSangriaPress, highlightV, onVPress, highli
   );
 }
 
-function Frame47() {
+function Frame47({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="[word-break:break-word] bg-white content-stretch flex flex-col gap-[22px] h-[123px] items-center leading-[0] px-[10px] py-[9px] relative rounded-[8px] shrink-0 text-[#2d2d2d] w-[142px] cursor-pointer hover:bg-[#f5f5f5] active:bg-[#e5e5e5] transition-colors">
+    <div
+      onClick={onPress}
+      className={`[word-break:break-word] bg-white content-stretch flex flex-col gap-[22px] h-[123px] items-center leading-[0] px-[10px] py-[9px] relative rounded-[8px] shrink-0 text-[#2d2d2d] w-[142px] cursor-pointer transition-colors ${
+        highlighted ? 'key-highlighted-white z-[10]' : 'hover:bg-[#f5f5f5] active:bg-[#e5e5e5]'
+      }`}
+    >
       <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
         <p className="leading-[16px]">MULTIPLICA</p>
       </div>
@@ -706,10 +711,10 @@ function Frame49() {
   );
 }
 
-function Frame46({ highlightVolta, onVoltaPress }: { highlightVolta?: boolean; onVoltaPress?: () => void }) {
+function Frame46({ highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress }: { highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void }) {
   return (
     <div className="content-stretch flex gap-[10px] items-center justify-end relative shrink-0 w-full">
-      <Frame47 />
+      <Frame47 highlighted={highlightMultiplica} onPress={onMultiplicaPress} />
       <Frame48 highlighted={highlightVolta} onPress={onVoltaPress} />
       <Frame49 />
     </div>
@@ -940,10 +945,10 @@ function Frame60({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, hig
   );
 }
 
-function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey3, highlightKey0, onKey0Press, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9, highlightVolta, onVoltaPress }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey3?: boolean; highlightKey0?: boolean; onKey0Press?: () => void; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean; highlightVolta?: boolean; onVoltaPress?: () => void }) {
+function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey3, highlightKey0, onKey0Press, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9, highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey3?: boolean; highlightKey0?: boolean; onKey0Press?: () => void; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean; highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void }) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0">
-      <Frame46 highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} />
+      <Frame46 highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} highlightMultiplica={highlightMultiplica} onMultiplicaPress={onMultiplicaPress} />
       <Frame50 highlightKey7={highlightKey7} highlightKey8={highlightKey8} highlightKey9={highlightKey9} />
       <Frame55 highlightKey4={highlightKey4} highlightKey5={highlightKey5} highlightKey6={highlightKey6} />
       <Frame60 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
@@ -951,8 +956,8 @@ function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, hig
   );
 }
 
-export default function VirtualKeyboard({ highlightSangria, onSangriaPress, highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press, highlightV, onVPress, highlightK, onKPress, highlightKey3, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9, highlightVolta, onVoltaPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void; highlightKey3?: boolean; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean; highlightVolta?: boolean; onVoltaPress?: () => void }) {
-  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK || highlightKey3 || highlightKey4 || highlightKey5 || highlightKey6 || highlightKey7 || highlightKey8 || highlightKey9 || highlightVolta;
+export default function VirtualKeyboard({ highlightSangria, onSangriaPress, highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press, highlightV, onVPress, highlightK, onKPress, highlightKey3, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9, highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void; highlightKey3?: boolean; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean; highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void }) {
+  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK || highlightKey3 || highlightKey4 || highlightKey5 || highlightKey6 || highlightKey7 || highlightKey8 || highlightKey9 || highlightVolta || highlightMultiplica;
   return (
     <>
       <style>{keyHighlightStyle}</style>
@@ -961,7 +966,7 @@ export default function VirtualKeyboard({ highlightSangria, onSangriaPress, high
           <div className="absolute inset-0 bg-black/50 rounded-[12px] z-[5] pointer-events-none" />
         )}
         <Frame7 highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} highlightK={highlightK} onKPress={onKPress} />
-        <Frame45 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press} highlightKey4={highlightKey4} highlightKey5={highlightKey5} highlightKey6={highlightKey6} highlightKey7={highlightKey7} highlightKey8={highlightKey8} highlightKey9={highlightKey9} highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} />
+        <Frame45 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press} highlightKey4={highlightKey4} highlightKey5={highlightKey5} highlightKey6={highlightKey6} highlightKey7={highlightKey7} highlightKey8={highlightKey8} highlightKey9={highlightKey9} highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} highlightMultiplica={highlightMultiplica} onMultiplicaPress={onMultiplicaPress} />
       </div>
     </>
   );
