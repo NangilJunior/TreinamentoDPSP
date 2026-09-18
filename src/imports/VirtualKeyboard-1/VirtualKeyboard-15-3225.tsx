@@ -62,7 +62,7 @@ function Frame5() {
           <p className="leading-[16px]">Y</p>
         </div>
         <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
-          <p className="leading-[16px]">VOUNCHER</p>
+          <p className="leading-[16px]">VOUCHER</p>
         </div>
       </div>
     </div>

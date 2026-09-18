@@ -1,10 +1,11 @@
+import { Fragment } from "react";
 import svgH5 from "../../imports/Home-5/svg-bveu4s30mg";
 
 export function formatCurrency(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export function PDVHeader() {
+export function PDVHeader({ trilha = ["Sangria / Suprimento", "REALIZAR SANGRIA", "SANGRIA"] }: { trilha?: string[] } = {}) {
   return (
     <>
       <div className="bg-white flex items-center justify-between px-[20px] py-[20px] shrink-0 w-full">
@@ -94,35 +95,38 @@ export function PDVHeader() {
         </div>
       </div>
       <div className="bg-[#bdbdbd] h-px shrink-0 w-full" />
-      {/* Breadcrumb */}
-      <div className="shrink-0 w-full drop-shadow-[0px_4px_8px_rgba(0,0,0,0.06)]">
-        <div className="flex items-center p-[24px] gap-[24px]">
-          <div className="overflow-clip relative shrink-0 size-[24px]">
-            <div className="absolute inset-[21.88%_5.21%]">
-              <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 13.5">
-                <path d={svgH5.p18b3a300} fill="#A6A6A6" /><path d={svgH5.pde21300} fill="#A6A6A6" /><path d={svgH5.p32886000} fill="#A6A6A6" />
-              </svg>
+      {/* Breadcrumb — omitido quando trilha é um array vazio (telas sem
+          navegação hierárquica, como as de entrada de valor do fluxo de
+          Formas de Pagamento). */}
+      {trilha.length > 0 && (
+        <div className="shrink-0 w-full drop-shadow-[0px_4px_8px_rgba(0,0,0,0.06)]">
+          <div className="flex items-center p-[24px] gap-[24px]">
+            <div className="overflow-clip relative shrink-0 size-[24px]">
+              <div className="absolute inset-[21.88%_5.21%]">
+                <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 13.5">
+                  <path d={svgH5.p18b3a300} fill="#A6A6A6" /><path d={svgH5.pde21300} fill="#A6A6A6" /><path d={svgH5.p32886000} fill="#A6A6A6" />
+                </svg>
+              </div>
             </div>
+            {trilha.map((segmento, idx) => (
+              <Fragment key={segmento}>
+                {idx > 0 && (
+                  <div className="h-[10px] relative shrink-0 w-[7px]">
+                    <div className="absolute inset-[-5%_-7.14%]">
+                      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
+                        <path d={svgH5.p37db7a18} stroke="#A5A5A5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+                <p className={`font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap ${idx === 0 ? "uppercase" : ""}`}>
+                  {segmento}
+                </p>
+              </Fragment>
+            ))}
           </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
-          <div className="h-[10px] relative shrink-0 w-[7px]">
-            <div className="absolute inset-[-5%_-7.14%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
-                <path d={svgH5.p37db7a18} stroke="#A5A5A5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">REALIZAR SANGRIA</p>
-          <div className="h-[10px] relative shrink-0 w-[7px]">
-            <div className="absolute inset-[-5%_-7.14%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
-                <path d={svgH5.p37db7a18} stroke="#A5A5A5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SANGRIA</p>
         </div>
-      </div>
+      )}
     </>
   );
 }

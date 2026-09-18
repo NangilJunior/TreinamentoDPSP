@@ -25,6 +25,14 @@ const keyHighlightStyle = `
       box-shadow: 0 0 32px 10px rgba(255,0,0,0.9), 0 0 0 4px rgba(255,255,255,1);
     }
   }
+  @keyframes key-pulse-blue {
+    0%, 100% {
+      box-shadow: 0 0 12px 2px rgba(34,88,230,0.5), 0 0 0 3px rgba(255,255,255,0.6);
+    }
+    50% {
+      box-shadow: 0 0 32px 10px rgba(34,88,230,0.9), 0 0 0 4px rgba(255,255,255,1);
+    }
+  }
   .key-highlighted {
     animation: key-pulse 1.2s ease-in-out infinite;
     transform: scale(1.06);
@@ -35,6 +43,11 @@ const keyHighlightStyle = `
   }
   .key-highlighted-red {
     animation: key-pulse-red 1.2s ease-in-out infinite;
+    transform: scale(1.06);
+  }
+  .key-highlighted-blue {
+    background-color: #2258e6 !important;
+    animation: key-pulse-blue 1.2s ease-in-out infinite;
     transform: scale(1.06);
   }
 `;
@@ -93,15 +106,20 @@ function Frame1() {
   );
 }
 
-function Frame5() {
+function Frame5({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-[#a656eb] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#b571ef] active:bg-[#9440d9] transition-colors">
+    <div
+      onClick={onPress}
+      className={`h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors ${
+        highlighted ? 'bg-[#a656eb] key-highlighted-blue z-[10]' : 'bg-[#a656eb] hover:bg-[#b571ef] active:bg-[#9440d9]'
+      }`}
+    >
       <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-white">
         <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">Y</p>
         </div>
         <div className="flex flex-col font-['Geist',sans-serif] font-bold justify-center relative shrink-0 text-[16px] text-center w-full">
-          <p className="leading-[16px]">VOUNCHER</p>
+          <p className="leading-[16px]">VOUCHER</p>
         </div>
       </div>
     </div>
@@ -168,11 +186,11 @@ function Frame10() {
   );
 }
 
-function Frame3() {
+function Frame3({ highlightVoucher, onVoucherPress }: { highlightVoucher?: boolean; onVoucherPress?: () => void }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[10px] items-center min-h-px relative">
       <Frame1 />
-      <Frame5 />
+      <Frame5 highlighted={highlightVoucher} onPress={onVoucherPress} />
       <Frame4 />
       <Frame8 />
       <Frame9 />
@@ -257,10 +275,15 @@ function Frame16() {
   );
 }
 
-function Frame17() {
+function Frame17({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-[#efc120] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
-      <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-[#454545]">
+    <div
+      onClick={onPress}
+      className={`h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors ${
+        highlighted ? 'bg-[#efc120] key-highlighted-blue z-[10] text-white' : 'bg-[#efc120] hover:bg-[#f2ca45] active:bg-[#d9ad0f] text-[#454545]'
+      }`}
+    >
+      <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full">
         <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">N</p>
         </div>
@@ -272,7 +295,7 @@ function Frame17() {
   );
 }
 
-function Frame11() {
+function Frame11({ highlightDebito, onDebitoPress }: { highlightDebito?: boolean; onDebitoPress?: () => void }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[10px] items-center min-h-px relative">
       <Frame12 />
@@ -280,7 +303,7 @@ function Frame11() {
       <Frame14 />
       <Frame15 />
       <Frame16 />
-      <Frame17 />
+      <Frame17 highlighted={highlightDebito} onPress={onDebitoPress} />
     </div>
   );
 }
@@ -393,10 +416,15 @@ function Frame25() {
   );
 }
 
-function Frame26() {
+function Frame26({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-[#efc120] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
-      <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full text-[#454545]">
+    <div
+      onClick={onPress}
+      className={`h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors ${
+        highlighted ? 'bg-[#efc120] key-highlighted-blue z-[10] text-white' : 'bg-[#efc120] hover:bg-[#f2ca45] active:bg-[#d9ad0f] text-[#454545]'
+      }`}
+    >
+      <div className="[word-break:break-word] content-stretch flex flex-col gap-[28px] items-start leading-[0] p-[10px] relative size-full">
         <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium justify-center relative shrink-0 text-[14px] w-full">
           <p className="leading-[16px]">M</p>
         </div>
@@ -408,7 +436,7 @@ function Frame26() {
   );
 }
 
-function Frame18({ highlightSangria, onSangriaPress, highlightV, onVPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightV?: boolean; onVPress?: () => void }) {
+function Frame18({ highlightSangria, onSangriaPress, highlightV, onVPress, highlightCredito, onCreditoPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightV?: boolean; onVPress?: () => void; highlightCredito?: boolean; onCreditoPress?: () => void }) {
   const handleVPress = highlightV ? onVPress : onSangriaPress;
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[10px] items-center min-h-px relative">
@@ -417,7 +445,7 @@ function Frame18({ highlightSangria, onSangriaPress, highlightV, onVPress }: { h
       <Frame21 />
       <Frame22 highlighted={highlightSangria || highlightV} onPress={handleVPress} />
       <Frame25 />
-      <Frame26 />
+      <Frame26 highlighted={highlightCredito} onPress={onCreditoPress} />
     </div>
   );
 }
@@ -603,12 +631,17 @@ function Frame38() {
   );
 }
 
-function Frame42() {
+function Frame42({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-[#efc120] flex-[1_0_0] h-full min-w-px relative rounded-[8px] cursor-pointer hover:bg-[#f2ca45] active:bg-[#d9ad0f] transition-colors">
+    <div
+      onClick={onPress}
+      className={`flex-[1_0_0] h-full min-w-px relative rounded-[8px] cursor-pointer transition-colors ${
+        highlighted ? 'bg-[#efc120] key-highlighted-blue z-[10]' : 'bg-[#efc120] hover:bg-[#f2ca45] active:bg-[#d9ad0f]'
+      }`}
+    >
       <div className="flex flex-col items-center justify-center size-full">
         <div className="content-stretch flex flex-col items-center justify-center p-[10px] relative size-full">
-          <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold h-[45px] justify-center leading-[0] relative shrink-0 text-[#454545] text-[16px] text-center w-full">
+          <div className={`[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold h-[45px] justify-center leading-[0] relative shrink-0 text-[16px] text-center w-full ${highlighted ? 'text-white' : 'text-[#454545]'}`}>
             <p className="leading-[6px] mb-[12px]">SUPRIMENTO</p>
             <p className="leading-[6px]">DINHEIRO</p>
           </div>
@@ -618,7 +651,7 @@ function Frame42() {
   );
 }
 
-function Frame27({ highlightK, onKPress }: { highlightK?: boolean; onKPress?: () => void }) {
+function Frame27({ highlightK, onKPress, highlightSuprimentoDinheiro, onSuprimentoDinheiroPress }: { highlightK?: boolean; onKPress?: () => void; highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[10px] items-center min-h-px relative w-full">
       <Frame28 />
@@ -626,7 +659,7 @@ function Frame27({ highlightK, onKPress }: { highlightK?: boolean; onKPress?: ()
       <Frame30 />
       <Frame34 highlighted={highlightK} onPress={onKPress} />
       <Frame38 />
-      <Frame42 />
+      <Frame42 highlighted={highlightSuprimentoDinheiro} onPress={onSuprimentoDinheiroPress} />
     </div>
   );
 }
@@ -655,14 +688,22 @@ function Frame43() {
   );
 }
 
-function Frame7({ highlightSangria, onSangriaPress, highlightV, onVPress, highlightK, onKPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void }) {
+function Frame7({
+  highlightSangria, onSangriaPress, highlightV, onVPress, highlightK, onKPress,
+  highlightVoucher, onVoucherPress, highlightDebito, onDebitoPress, highlightCredito, onCreditoPress,
+  highlightSuprimentoDinheiro, onSuprimentoDinheiroPress,
+}: {
+  highlightSangria?: boolean; onSangriaPress?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void;
+  highlightVoucher?: boolean; onVoucherPress?: () => void; highlightDebito?: boolean; onDebitoPress?: () => void; highlightCredito?: boolean; onCreditoPress?: () => void;
+  highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void;
+}) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] h-[655px] items-start relative shrink-0">
       <Frame2 />
-      <Frame3 />
-      <Frame11 />
-      <Frame18 highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} />
-      <Frame27 highlightK={highlightK} onKPress={onKPress} />
+      <Frame3 highlightVoucher={highlightVoucher} onVoucherPress={onVoucherPress} />
+      <Frame11 highlightDebito={highlightDebito} onDebitoPress={onDebitoPress} />
+      <Frame18 highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} highlightCredito={highlightCredito} onCreditoPress={onCreditoPress} />
+      <Frame27 highlightK={highlightK} onKPress={onKPress} highlightSuprimentoDinheiro={highlightSuprimentoDinheiro} onSuprimentoDinheiroPress={onSuprimentoDinheiroPress} />
       <Frame43 />
     </div>
   );
@@ -701,9 +742,14 @@ function Frame48({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
   );
 }
 
-function Frame49() {
+function Frame49({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-[#ef7121] content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#f28943] active:bg-[#d96412] transition-colors">
+    <div
+      onClick={onPress}
+      className={`content-stretch flex flex-col h-[123px] items-center justify-center p-[10px] relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors ${
+        highlighted ? 'bg-[#ef7121] key-highlighted-blue z-[10]' : 'bg-[#ef7121] hover:bg-[#f28943] active:bg-[#d96412]'
+      }`}
+    >
       <div className="[word-break:break-word] flex flex-col font-['Geist',sans-serif] font-bold justify-center leading-[0] relative shrink-0 text-[16px] text-center text-white w-full">
         <p className="leading-[16px]">SUB TOTAL</p>
       </div>
@@ -711,12 +757,12 @@ function Frame49() {
   );
 }
 
-function Frame46({ highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress }: { highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void }) {
+function Frame46({ highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress, highlightSubTotal, onSubTotalPress }: { highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void; highlightSubTotal?: boolean; onSubTotalPress?: () => void }) {
   return (
     <div className="content-stretch flex gap-[10px] items-center justify-end relative shrink-0 w-full">
       <Frame47 highlighted={highlightMultiplica} onPress={onMultiplicaPress} />
       <Frame48 highlighted={highlightVolta} onPress={onVoltaPress} />
-      <Frame49 />
+      <Frame49 highlighted={highlightSubTotal} onPress={onSubTotalPress} />
     </div>
   );
 }
@@ -945,10 +991,18 @@ function Frame60({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, hig
   );
 }
 
-function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey3, highlightKey0, onKey0Press, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9, highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress }: { highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey3?: boolean; highlightKey0?: boolean; onKey0Press?: () => void; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean; highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void }) {
+function Frame45({
+  highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey3, highlightKey0, onKey0Press,
+  highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9,
+  highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress, highlightSubTotal, onSubTotalPress,
+}: {
+  highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey3?: boolean; highlightKey0?: boolean; onKey0Press?: () => void;
+  highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean;
+  highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void; highlightSubTotal?: boolean; onSubTotalPress?: () => void;
+}) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] items-start relative shrink-0">
-      <Frame46 highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} highlightMultiplica={highlightMultiplica} onMultiplicaPress={onMultiplicaPress} />
+      <Frame46 highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} highlightMultiplica={highlightMultiplica} onMultiplicaPress={onMultiplicaPress} highlightSubTotal={highlightSubTotal} onSubTotalPress={onSubTotalPress} />
       <Frame50 highlightKey7={highlightKey7} highlightKey8={highlightKey8} highlightKey9={highlightKey9} />
       <Frame55 highlightKey4={highlightKey4} highlightKey5={highlightKey5} highlightKey6={highlightKey6} />
       <Frame60 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press} />
@@ -956,8 +1010,20 @@ function Frame45({ highlightEntra, onEntraPress, highlightKey1, onKey1Press, hig
   );
 }
 
-export default function VirtualKeyboard({ highlightSangria, onSangriaPress, highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press, highlightV, onVPress, highlightK, onKPress, highlightKey3, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9, highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress }: { highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void; highlightKey3?: boolean; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean; highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void }) {
-  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK || highlightKey3 || highlightKey4 || highlightKey5 || highlightKey6 || highlightKey7 || highlightKey8 || highlightKey9 || highlightVolta || highlightMultiplica;
+export default function VirtualKeyboard({
+  highlightSangria, onSangriaPress, highlightEntra, onEntraPress, highlightKey1, onKey1Press, highlightKey2, onKey2Press, highlightKey0, onKey0Press,
+  highlightV, onVPress, highlightK, onKPress, highlightKey3, highlightKey4, highlightKey5, highlightKey6, highlightKey7, highlightKey8, highlightKey9,
+  highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress, highlightSubTotal, onSubTotalPress,
+  highlightVoucher, onVoucherPress, highlightDebito, onDebitoPress, highlightCredito, onCreditoPress,
+  highlightSuprimentoDinheiro, onSuprimentoDinheiroPress,
+}: {
+  highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void;
+  highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void; highlightKey3?: boolean; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean;
+  highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void; highlightSubTotal?: boolean; onSubTotalPress?: () => void;
+  highlightVoucher?: boolean; onVoucherPress?: () => void; highlightDebito?: boolean; onDebitoPress?: () => void; highlightCredito?: boolean; onCreditoPress?: () => void;
+  highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void;
+}) {
+  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK || highlightKey3 || highlightKey4 || highlightKey5 || highlightKey6 || highlightKey7 || highlightKey8 || highlightKey9 || highlightVolta || highlightMultiplica || highlightSubTotal || highlightVoucher || highlightDebito || highlightCredito || highlightSuprimentoDinheiro;
   return (
     <>
       <style>{keyHighlightStyle}</style>
@@ -965,8 +1031,16 @@ export default function VirtualKeyboard({ highlightSangria, onSangriaPress, high
         {anyHighlight && (
           <div className="absolute inset-0 bg-black/50 rounded-[12px] z-[5] pointer-events-none" />
         )}
-        <Frame7 highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} highlightK={highlightK} onKPress={onKPress} />
-        <Frame45 highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press} highlightKey4={highlightKey4} highlightKey5={highlightKey5} highlightKey6={highlightKey6} highlightKey7={highlightKey7} highlightKey8={highlightKey8} highlightKey9={highlightKey9} highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} highlightMultiplica={highlightMultiplica} onMultiplicaPress={onMultiplicaPress} />
+        <Frame7
+          highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} highlightK={highlightK} onKPress={onKPress}
+          highlightVoucher={highlightVoucher} onVoucherPress={onVoucherPress} highlightDebito={highlightDebito} onDebitoPress={onDebitoPress} highlightCredito={highlightCredito} onCreditoPress={onCreditoPress}
+          highlightSuprimentoDinheiro={highlightSuprimentoDinheiro} onSuprimentoDinheiroPress={onSuprimentoDinheiroPress}
+        />
+        <Frame45
+          highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press}
+          highlightKey4={highlightKey4} highlightKey5={highlightKey5} highlightKey6={highlightKey6} highlightKey7={highlightKey7} highlightKey8={highlightKey8} highlightKey9={highlightKey9}
+          highlightVolta={highlightVolta} onVoltaPress={onVoltaPress} highlightMultiplica={highlightMultiplica} onMultiplicaPress={onMultiplicaPress} highlightSubTotal={highlightSubTotal} onSubTotalPress={onSubTotalPress}
+        />
       </div>
     </>
   );

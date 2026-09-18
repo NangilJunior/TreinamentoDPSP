@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router";
+import { CheckCircle2, Mail, Printer } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
@@ -20,6 +21,13 @@ import SuprimentoComprovanteScreen from "./SuprimentoComprovanteScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
 import AberturaCaixaLoginScreen from "./AberturaCaixaLoginScreen";
 import EntradaOperadorScreen from "./EntradaOperadorScreen";
+import PagamentoValorScreen, { type MetodoPagamento } from "./PagamentoValorScreen";
+import GavetaTrocoScreen from "./GavetaTrocoScreen";
+import ObrigadoScreen from "./ObrigadoScreen";
+import PixAguardandoScreen from "./PixAguardandoScreen";
+import MaquininhaAguardandoScreen from "./MaquininhaAguardandoScreen";
+import CreditoCategoriasScreen, { CATEGORIAS_PROMOCIONAIS } from "./CreditoCategoriasScreen";
+import CreditoParcelasScreen, { OPCOES_PARCELAS } from "./CreditoParcelasScreen";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
 import iconeEntrar from "../../imports/AberturaCaixaLogin/icone-entrar.svg";
@@ -29,6 +37,12 @@ import iconeTrophy from "../../imports/ClienteCadastrado/icone-trophy.svg";
 import iconeUserRoundMinus from "../../imports/ClienteCadastrado/icone-user-round-minus.svg";
 import iconeArrowLeft from "../../imports/ClienteCadastrado/icone-arrow-left.svg";
 import iconeEscanearProduto from "../../imports/RegistroDeProdutos/icone-escanear-produto.svg";
+import iconeDinheiro from "../../imports/FormasPagamentoIcons/dinheiro.svg";
+import iconePix from "../../imports/FormasPagamentoIcons/pix.svg";
+import iconeDebito from "../../imports/FormasPagamentoIcons/debit.svg";
+import iconeCredito from "../../imports/FormasPagamentoIcons/credit.svg";
+import iconeConvenio from "../../imports/FormasPagamentoIcons/convenio.svg";
+import iconePbm from "../../imports/FormasPagamentoIcons/pbm.svg";
 
 // Mesma imagem de fundo utilizada na categoria "Gestão do Caixa" em /dashboard
 const imgGestaoDoCaixa = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
@@ -72,12 +86,7 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   },
   "formas-de-pagamento": {
     titulo: "Formas de Pagamento",
-    conteudo: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    hasPDV: true
-  },
-  "finalizacao-da-venda": {
-    titulo: "Finalização da Venda",
-    conteudo: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    conteudo: "Na etapa de pagamento, o operador seleciona o método escolhido pelo cliente e realiza o recebimento em dinheiro ou por meio de algum outro método (como crédito, débito ou PIX).",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -227,8 +236,7 @@ const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
   "sangria-de-caixa": "sangria-de-caixa.mp3",
   "cliente-cadastrado-e-nao-cadastrado": "cliente-cadastrado-e-nao-cadastrado.mp3",
   "registro-de-produtos": "registro-de-produtos.mp3",
-  "formas-de-pagamento": "formas-de-pagamento.mp3",
-  "finalizacao-da-venda": "finalizacao-da-venda.mp3"
+  "formas-de-pagamento": "formas-de-pagamento.mp3"
 };
 
 function PDVSimulator({ slug }: { slug?: string }) {
@@ -242,11 +250,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const isSangriaDeCaixa = slug === "sangria-de-caixa";
   const isClienteCadastrado = slug === "cliente-cadastrado-e-nao-cadastrado";
   const isRegistroDeProdutos = slug === "registro-de-produtos";
+  const isFormasDePagamento = slug === "formas-de-pagamento";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
-  // Cadastrado e Não Cadastrado e Registro de Produtos também não devem
-  // exibi-la.
-  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos;
+  // Cadastrado e Não Cadastrado, Registro de Produtos e Formas de Pagamento
+  // também não devem exibi-la.
+  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento;
+  // Próxima etapa após a tela de boas-vindas (step 0): Formas de Pagamento
+  // não reaproveita o step 2 (informativo genérico de Sangria/Registro),
+  // partindo direto para o carrinho de exemplo (step 21).
+  const proximaEtapaAposBoasVindas = isFormasDePagamento ? 21 : pulaTelaLimiteCaixa ? 2 : 1;
   const welcomeTitulo = isSuprimentoInicial
     ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
     : isSuprimentoAdicional
@@ -257,6 +270,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Olá, boas vindas ao tutorial de Cliente Cadastrado e Não Cadastrado."
     : isRegistroDeProdutos
     ? "Olá, boas vindas ao tutorial de Registro de Produtos."
+    : isFormasDePagamento
+    ? "Olá, boas vindas ao tutorial de Formas de Pagamento."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -268,6 +283,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Ao iniciar uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se a identificação do cliente deve ser informada na nota fiscal. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos."
     : isRegistroDeProdutos
     ? "O Registro de Produtos é a etapa em que os itens são adicionados à venda. Para tal, o operador deve utilizar o leitor, posicionando-o sobre o código de barras do produto, ou, alternativamente, digitar o número do código no campo indicado e confirmar a operação. Após a identificação, o item é incluído na venda com suas informações e quantidades correspondentes. O processo deve ser repetido para cada produto da compra."
+    : isFormasDePagamento
+    ? "Após o registro dos produtos, é hora de receber o pagamento do cliente. O sistema aceita várias formas de pagamento, que podem ser selecionadas pelo teclado do PDV. Cada uma possui um fluxo próprio de confirmação. Neste tutorial, vamos cobrir o pagamento feito em dinheiro, PIX, débito e crédito."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -306,6 +323,14 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const [activeInput, setActiveInput] = useState<"cpf" | "sku" | null>(null);
   const [valorRetirada, setValorRetirada] = useState(0);
   const [motivoIndex, setMotivoIndex] = useState(0);
+  // Fluxo de Formas de Pagamento: índice do método sendo demonstrado (0 =
+  // Dinheiro, 1 = PIX, 2 = Débito, 3 = Crédito), valor sendo digitado no
+  // teclado (em centavos) e os índices selecionados nas telas de categoria
+  // promocional e parcelamento do Crédito.
+  const [pagamentoEtapaIndex, setPagamentoEtapaIndex] = useState(0);
+  const [valorPagamento, setValorPagamento] = useState(0);
+  const [categoriaPromocionalIndex, setCategoriaPromocionalIndex] = useState(0);
+  const [parcelaIndex, setParcelaIndex] = useState(0);
   const cpfInputRef = useRef<HTMLInputElement>(null);
   const skuInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -362,6 +387,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setCpf("");
     setActiveInput(null);
     setDemoSemIdentificar(false);
+    setPagamentoEtapaIndex(0);
+    setValorPagamento(0);
+    setCategoriaPromocionalIndex(0);
+    setParcelaIndex(0);
   };
 
   const goToTraining = (slug: string) => {
@@ -480,6 +509,29 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isClienteCadastrado, tutorialStep]);
 
+  // Etapas em que o botão "Exibir Teclado" fica oculto — nenhuma delas
+  // depende do teclado virtual para avançar, então ele nunca deveria
+  // permanecer visível ali (nem mesmo se já estivesse aberto ao chegar
+  // nessas telas, seja avançando ou voltando pelo botão "Anterior").
+  const keyboardOcultoNestaEtapa =
+    !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (
+      tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 ||
+      (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) ||
+      (isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 19 || tutorialStep === 20)) ||
+      (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28))
+    );
+
+  // Garante que o teclado virtual feche automaticamente ao entrar em uma
+  // etapa onde ele não deveria estar disponível, independentemente de como
+  // a navegação ocorreu (avançando, voltando pelo "Anterior", ou por uma
+  // tecla do próprio teclado como [Volta]).
+  useEffect(() => {
+    if (keyboardOcultoNestaEtapa) {
+      setShowKeyboard(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyboardOcultoNestaEtapa]);
+
   const handleKeyPress = (key: string) => {
     // Identificar CPF/CNPJ na nota? — Entra: quer identificar (segue para a
     // pergunta de reaproveitar o CPF). Volta: não quer identificar (pula
@@ -575,6 +627,48 @@ function PDVSimulator({ slug }: { slug?: string }) {
       } else if (!isNaN(Number(key)) || key === "00") {
         setValorRetirada(prev => Math.min(key === "00" ? prev * 100 : prev * 10 + Number(key), 99999999));
       }
+      return;
+    }
+    // Valor do pagamento (passo 23 do fluxo de Formas de Pagamento): aceita
+    // qualquer valor digitado, mas só libera o avanço quando o valor bater
+    // com o alvo do método atual (R$ 50,00 para Dinheiro, R$ 46,54 para
+    // PIX/Débito/Crédito, mesmo valor Total exibido na tela inicial).
+    if (isFormasDePagamento && tutorialStep === 23) {
+      const valorAlvo = pagamentoEtapaIndex === 0 ? 5000 : 4654;
+      const digitosAtuaisPagamento = valorPagamento === 0 ? 0 : String(valorPagamento).length;
+      const digitosAlvoPagamentoLen = String(valorAlvo).length;
+      if (key === "ENTRA" || key === "Enter") {
+        if (valorPagamento === valorAlvo) {
+          setShowKeyboard(false);
+          if (pagamentoEtapaIndex === 0) setTutorialStep(24);
+          else if (pagamentoEtapaIndex === 1) setTutorialStep(27);
+          else if (pagamentoEtapaIndex === 2) setTutorialStep(28);
+          else setTutorialStep(29);
+        }
+      } else if (key === "LIMPA") {
+        setValorPagamento(0);
+      } else if (key === "VOLTA") {
+        setValorPagamento(prev => Math.floor(prev / 10));
+      } else if (key === "00") {
+        if (digitosAtuaisPagamento + 2 <= digitosAlvoPagamentoLen) {
+          setValorPagamento(prev => Math.min(prev * 100, 99999999));
+        }
+      } else if (!isNaN(Number(key))) {
+        if (digitosAtuaisPagamento < digitosAlvoPagamentoLen) {
+          setValorPagamento(prev => Math.min(prev * 10 + Number(key), 99999999));
+        }
+      }
+      return;
+    }
+    // Categoria promocional (passo 29) e parcelamento (passo 30) do Crédito:
+    // a navegação entre opções é feita pelas teclas V/K (ver handleVPress e
+    // handleKPress), Entra apenas confirma a opção já destacada.
+    if (isFormasDePagamento && tutorialStep === 29) {
+      if (key === "ENTRA" || key === "Enter") setTutorialStep(30);
+      return;
+    }
+    if (isFormasDePagamento && tutorialStep === 30) {
+      if (key === "ENTRA" || key === "Enter") { setTutorialStep(28); setShowKeyboard(false); }
       return;
     }
     // Registro manual (passo 16 do fluxo de Registro de Produtos): só aceita
@@ -699,11 +793,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Navegação dos motivos da sangria (step 6) pelas teclas V (↑) e K (↓)
   // do teclado virtual do PDV.
   const handleVPress = useCallback(() => {
+    if (isFormasDePagamento && tutorialStep === 29) { setCategoriaPromocionalIndex((i) => Math.max(0, i - 1)); return; }
+    if (isFormasDePagamento && tutorialStep === 30) { setParcelaIndex((i) => Math.max(0, i - 1)); return; }
     setMotivoIndex((i) => Math.max(0, i - 1));
-  }, []);
+  }, [isFormasDePagamento, tutorialStep]);
   const handleKPress = useCallback(() => {
+    if (isFormasDePagamento && tutorialStep === 29) { setCategoriaPromocionalIndex((i) => Math.min(CATEGORIAS_PROMOCIONAIS.length - 1, i + 1)); return; }
+    if (isFormasDePagamento && tutorialStep === 30) { setParcelaIndex((i) => Math.min(OPCOES_PARCELAS.length - 1, i + 1)); return; }
     setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
-  }, []);
+  }, [isFormasDePagamento, tutorialStep]);
 
   // Próximo dígito do CPF de exemplo a ser destacado no teclado virtual
   // (passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado).
@@ -719,16 +817,76 @@ function PDVSimulator({ slug }: { slug?: string }) {
       ? SKU_MANUAL_EXEMPLO[sku.length]
       : null;
 
+  // Fluxo de Formas de Pagamento: método sendo demonstrado no momento e o
+  // valor (em centavos) que deve ser digitado no passo 23 para aquele
+  // método — R$ 50,00 recebidos em Dinheiro, ou o Total exato da compra
+  // (R$ 46,54) para PIX, Débito e Crédito.
+  const METODOS_PAGAMENTO: MetodoPagamento[] = ["dinheiro", "pix", "debito", "credito"];
+  const metodoPagamentoAtual = METODOS_PAGAMENTO[pagamentoEtapaIndex];
+  const METODO_LABEL_RESUMO: Record<MetodoPagamento, string> = { dinheiro: "Dinheiro", pix: "PIX", debito: "Débito", credito: "Crédito" };
+  const valorAlvoPagamento = pagamentoEtapaIndex === 0 ? 5000 : 4654;
+  // Próximo dígito do valor de pagamento a ser destacado no teclado virtual
+  // (passo 23): calculado a partir da posição do próximo dígito no valor
+  // alvo (ex.: R$ 50,00 → dígitos "5","0","0","0"), não apenas do primeiro,
+  // já que os métodos além do Dinheiro (R$ 46,54) têm dígitos não repetidos.
+  const digitosAlvoPagamento = String(valorAlvoPagamento);
+  const digitosDigitadosPagamento = valorPagamento === 0 ? 0 : String(valorPagamento).length;
+  const proximoDigitoPagamento =
+    isFormasDePagamento && tutorialStep === 23 && digitosDigitadosPagamento < digitosAlvoPagamento.length
+      ? digitosAlvoPagamento[digitosDigitadosPagamento]
+      : null;
+
   // Telas de demonstração do fluxo de Registro de Produtos que reaproveitam
-  // o card do item "Dipirona 500mg" já escaneado (steps 15 a 17).
-  const mostrarCardDipirona = isRegistroDeProdutos && tutorialStep >= 15 && tutorialStep <= 20;
+  // o card do item "Dipirona 500 mg" já escaneado (steps 15 a 17), e telas
+  // do fluxo de Formas de Pagamento que reaproveitam o carrinho completo de
+  // 3 itens (já a partir da tela inicial/pré-visualização — step 0 — e nos
+  // steps 21 e 22, antes da seleção da forma de pagamento), evitando exibir
+  // a tela inicial do sistema com o carrinho vazio.
+  const mostrarCardDipirona =
+    (isRegistroDeProdutos && tutorialStep >= 15 && tutorialStep <= 20) ||
+    (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25));
   const quantidadeCardsDipirona =
-    tutorialStep === 20 ? 3 : tutorialStep === 17 || tutorialStep === 18 || tutorialStep === 19 ? 2 : 1;
+    isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)
+      ? 3
+      : tutorialStep === 20 ? 3 : tutorialStep === 17 || tutorialStep === 18 || tutorialStep === 19 ? 2 : 1;
+  // Formata um número no padrão brasileiro (vírgula como separador decimal).
+  const formatarValorBR = (valor: number) => valor.toFixed(2).replace(".", ",");
   const itensDemoRegistroDeProdutos = [
-    { nome: "Dipirona 500mg", ref: "30039069", cod: "646156", quantidade: 1, precoUnit: "8.50", descontoPct: "-10%", descontoValor: "-R$ 0.85", precoFinal: "8.50" },
-    { nome: "Nimesulida 50 mg", ref: "40051267", cod: "719284", quantidade: 1, precoUnit: "14.90", descontoPct: "-51%", descontoValor: "-R$ 15.56", precoFinal: "14.90" },
-    { nome: "Paracetamol 750 mg", ref: "50062348", cod: "832671", quantidade: 3, precoUnit: "7.99", descontoPct: "-52%", descontoValor: "-R$ 8.74", precoFinal: "23.97" },
+    { nome: "Dipirona 500 mg", ref: "30039069", cod: "646156", quantidade: 1, precoUnit: 8.5, descontoPct: "-10%", desconto: 0.85, precoFinal: 7.65 },
+    { nome: "Nimesulida 50 mg", ref: "40051267", cod: "719284", quantidade: 1, precoUnit: 30.46, descontoPct: "-51%", desconto: 15.54, precoFinal: 14.92 },
+    { nome: "Paracetamol 750 mg", ref: "50062348", cod: "832671", quantidade: 3, precoUnit: 16.65, descontoPct: "-52%", desconto: 8.65, precoFinal: 23.97 },
   ];
+  const itensVisiveisRegistroDeProdutos = mostrarCardDipirona
+    ? itensDemoRegistroDeProdutos.slice(0, quantidadeCardsDipirona)
+    : [];
+  const totalRegistroDeProdutos = itensVisiveisRegistroDeProdutos.reduce((soma, item) => soma + item.precoFinal, 0);
+  const economizouRegistroDeProdutos = itensVisiveisRegistroDeProdutos.reduce((soma, item) => soma + item.desconto, 0);
+  // Subtotal informado individualmente por tela do fluxo de Registro de
+  // Produtos; enquanto uma tela não tiver valor definido aqui, usa o Total
+  // como aproximação temporária.
+  const subtotalPorStepRegistroDeProdutos: Record<number, number> = {
+    15: 8.5,
+    17: 38.96,
+    18: 38.96,
+    19: 38.96,
+    20: 88.91,
+    0: 88.91,
+    21: 88.91,
+    22: 88.91,
+    25: 88.91,
+  };
+  const subtotalRegistroDeProdutos = subtotalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos;
+  // Economizou informado individualmente por tela; enquanto uma tela não
+  // tiver valor definido aqui, usa a soma dos descontos dos itens visíveis.
+  const economizouPorStepRegistroDeProdutos: Record<number, number> = {
+    20: 42.37,
+    0: 42.37,
+    21: 42.37,
+    22: 42.37,
+    25: 42.37,
+  };
+  const economizouExibidoRegistroDeProdutos =
+    economizouPorStepRegistroDeProdutos[tutorialStep] ?? economizouRegistroDeProdutos;
 
   const pdvContent = (
     <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? "h-[800px] overflow-y-auto" : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
@@ -900,10 +1058,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos ? (
+            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento ? (
               /* Cliente já identificado após o CPF informado na etapa anterior
-                 (também usado como tela de fundo do fluxo de Registro de
-                 Produtos, que parte de um cliente já identificado). */
+                 (também usado como tela de fundo dos fluxos de Registro de
+                 Produtos e Formas de Pagamento, que partem de um cliente já
+                 identificado). */
               <div className="flex items-stretch w-full isolate">
                 <div className="bg-[#61bae8] w-[8px] rounded-l-[4px] shrink-0" />
                 <div className="bg-white border border-[#dadada] flex-1 flex items-center justify-between gap-[24px] px-[24px] py-[15px] rounded-r-[4px] flex-wrap">
@@ -1107,7 +1266,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           {/* Items Display */}
           <div className="bg-white flex-1 min-h-[200px]">
             {mostrarCardDipirona ? (
-              /* Item(ns) de exemplo já escaneado(s) (Dipirona 500mg) - telas
+              /* Item(ns) de exemplo já escaneado(s) (Dipirona 500 mg) - telas
                  15 a 17 do fluxo de Registro de Produtos. */
               <div className="p-[20px] relative">
                 {tutorialStep === 15 && (
@@ -1187,7 +1346,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                             Preço Unit.
                           </p>
                           <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#404040] text-right" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            R$ {item.precoUnit}
+                            R$ {formatarValorBR(item.precoUnit)}
                           </p>
                         </div>
                         <div className="flex gap-[8px] items-center justify-end shrink-0 w-[140px]">
@@ -1197,7 +1356,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                             </p>
                           </div>
                           <p className="font-['Nunito_Sans',sans-serif] font-bold text-[14px] text-[#00ae8e] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            {item.descontoValor}
+                            -R$ {formatarValorBR(item.desconto)}
                           </p>
                         </div>
                         <div className="flex flex-col items-end shrink-0 w-[90px]">
@@ -1205,7 +1364,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                             Preço Final
                           </p>
                           <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#404040] text-right" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            R$ {item.precoFinal}
+                            R$ {formatarValorBR(item.precoFinal)}
                           </p>
                         </div>
                       </div>
@@ -1280,7 +1439,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Subtotal:
               </p>
               <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                R$ {(mostrarCardDipirona ? 8.5 : subtotal).toFixed(2)}
+                R$ {mostrarCardDipirona ? formatarValorBR(subtotalRegistroDeProdutos) : subtotal.toFixed(2)}
               </p>
             </div>
 
@@ -1291,7 +1450,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Total:
               </p>
               <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                R$ {(mostrarCardDipirona ? 8.5 : subtotal).toFixed(2)}
+                R$ {mostrarCardDipirona ? formatarValorBR(totalRegistroDeProdutos) : subtotal.toFixed(2)}
               </p>
             </div>
 
@@ -1301,38 +1460,172 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Economizou
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#00ae8e]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  R$ 0.85
+                  R$ {formatarValorBR(economizouExibidoRegistroDeProdutos)}
                 </p>
               </div>
+            )}
+
+            {isFormasDePagamento && tutorialStep === 25 && (
+              <>
+                <div className="h-px bg-[#bdbdbd]" />
+                <div className="flex justify-between">
+                  <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    {METODO_LABEL_RESUMO[metodoPagamentoAtual]}:
+                  </p>
+                  <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    R$ {formatarValorBR(valorAlvoPagamento / 100)}
+                  </p>
+                </div>
+              </>
             )}
           </div>
 
           <div className="h-px bg-[#bdbdbd]" />
 
-          <div className="flex flex-col items-center justify-center py-[15px]">
-            <button className="bg-[#2258e6] flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[53px] rounded-[8px] w-[460px] hover:bg-[#1a47b8] transition-colors">
-              <div className="overflow-clip relative shrink-0 size-[24px]">
-                <div className="absolute inset-[5.21%_13.54%]">
-                  <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.5 21.4997">
-                    <g>
-                      <path d={pdvSvgPaths.p3851fa80} fill="white" />
-                      <path d={pdvSvgPaths.p25478480} fill="white" />
-                      <path d={pdvSvgPaths.pae5ba00} fill="white" />
-                      <path d={pdvSvgPaths.p8335080} fill="white" />
-                    </g>
-                  </svg>
+          {isFormasDePagamento && tutorialStep === 22 ? (
+            /* Grade de formas de pagamento - passo 22 do fluxo de Formas de
+               Pagamento. Substitui o botão "Totalizar Venda" após o
+               operador pressionar [SUB TOTAL] no teclado virtual. Layout e
+               opções replicam o node 1559:24104 do Figma (2 colunas x 3
+               linhas: Dinheiro/PIX, Débito/Crédito, Convênio/PBM) — Convênio
+               e PBM aparecem para refletir o PDV real, mas não fazem parte
+               deste tutorial (não são clicáveis nem destacáveis). */
+            <div className="flex flex-col gap-[12px] p-[16px]">
+              {[
+                [
+                  { metodo: "dinheiro" as MetodoPagamento | null, label: "Dinheiro", subtitulo: "Recebimento em espécie", icone: iconeDinheiro, bg: "#f2fbf9" },
+                  { metodo: "pix" as MetodoPagamento | null, label: "PIX", subtitulo: "Pagamento instantâneo", icone: iconePix, bg: "#f2f7fb" },
+                ],
+                [
+                  { metodo: "debito" as MetodoPagamento | null, label: "Débito", subtitulo: "Cartão", icone: iconeDebito, bg: "#f2f8fb" },
+                  { metodo: "credito" as MetodoPagamento | null, label: "Crédito", subtitulo: "Cartão", icone: iconeCredito, bg: "#fbf2f8" },
+                ],
+                [
+                  { metodo: null, label: "Convênio", subtitulo: "Benefício corporativo", icone: iconeConvenio, bg: "#f6fbf2" },
+                  { metodo: null, label: "PBM", subtitulo: "Benefício empresarial", icone: iconePbm, bg: "#f2fbf6" },
+                ],
+              ].map((linha, linhaIdx) => (
+                <div key={linhaIdx} className="flex gap-[12px] items-start">
+                  {linha.map((opcao) => (
+                    <div
+                      key={opcao.label}
+                      className="flex-1 flex items-center gap-[24px] px-[12px] py-[8px] rounded-[8px] border border-[#e5e5e5] bg-white"
+                    >
+                      <div className="shrink-0 flex items-center justify-center p-[10px] rounded-[8px]" style={{ backgroundColor: opcao.bg }}>
+                        <img src={opcao.icone} alt="" className="size-[32px]" />
+                      </div>
+                      <div className="flex flex-col gap-[4px] items-start min-w-0">
+                        <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[18px] leading-[1.2] text-[#1a1a1a]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                          {opcao.label}
+                        </p>
+                        <p className="font-['Nunito_Sans',sans-serif] text-[10.8px] leading-[1.2] text-[#747474] whitespace-nowrap" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                          {opcao.subtitulo}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : isFormasDePagamento && tutorialStep === 25 ? (
+            /* Pagamento realizado - passo 25 do fluxo de Formas de
+               Pagamento (node 1559:24598 do Figma). Substitui o botão
+               "Totalizar Venda" com a confirmação de sucesso e as ações de
+               comprovante — meramente ilustrativas neste tutorial, já que o
+               avanço real acontece ao pressionar [Volta] no teclado virtual. */
+            <div className="flex flex-col items-center justify-center gap-[36px] p-[16px]">
+              <div className="flex flex-col gap-[12px] items-center">
+                <div className="relative">
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[460px] pointer-events-none z-[45]">
+                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
+                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
+                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                      <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        As opções de emissão de comprovantes são exibidas. Caso não queira nenhum, basta clicar em <span className="font-bold text-white">[Volta]</span> no teclado virtual.
+                      </p>
+                    </div>
+                    <div className="flex justify-center mt-0">
+                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
+                    </div>
+                  </div>
+                  <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
+                    <CheckCircle2 size={32} className="text-[#00ae8e]" strokeWidth={1.8} />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-[6px] items-center text-center">
+                  <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#1a1a1a] text-[20px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    Pagamento realizado
+                  </p>
+                  <p className="font-['Nunito_Sans',sans-serif] text-[#747474] text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    A transação foi realizada com sucesso
+                  </p>
                 </div>
               </div>
-              <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                Totalizar Venda
-              </p>
-              <div className="bg-[rgba(255,255,255,0.2)] px-[8px] py-[4px] rounded-[4px]">
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  SUB TOTAL
-                </p>
+              <div className="flex flex-col gap-[12px] items-start w-full">
+                <div className="bg-white flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
+                  <div className="flex gap-[8px] items-center">
+                    <Mail size={24} className="text-[#2258e6]" />
+                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      Enviar por e-mail
+                    </p>
+                  </div>
+                  <div className="bg-[#d3defa] px-[8px] py-[4px] rounded-[4px]">
+                    <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#2258e6]">1</p>
+                  </div>
+                </div>
+                <div className="bg-white flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
+                  <div className="flex gap-[8px] items-center">
+                    <Printer size={24} className="text-[#2258e6]" />
+                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      Imprimir
+                    </p>
+                  </div>
+                  <div className="bg-[#d3defa] px-[8px] py-[4px] rounded-[4px]">
+                    <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#2258e6]">2</p>
+                  </div>
+                </div>
+                <div className="bg-white flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
+                  <div className="flex gap-[8px] items-center">
+                    <Mail size={24} className="text-[#2258e6]" />
+                    <Printer size={24} className="text-[#2258e6]" />
+                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      Enviar por e-mail e imprimir
+                    </p>
+                  </div>
+                  <div className="bg-[#d3defa] px-[8px] py-[4px] rounded-[4px]">
+                    <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#2258e6]">3</p>
+                  </div>
+                </div>
               </div>
-            </button>
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-[15px]">
+              <button className="bg-[#2258e6] flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[53px] rounded-[8px] w-[460px] hover:bg-[#1a47b8] transition-colors">
+                <div className="overflow-clip relative shrink-0 size-[24px]">
+                  <div className="absolute inset-[5.21%_13.54%]">
+                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 17.5 21.4997">
+                      <g>
+                        <path d={pdvSvgPaths.p3851fa80} fill="white" />
+                        <path d={pdvSvgPaths.p25478480} fill="white" />
+                        <path d={pdvSvgPaths.pae5ba00} fill="white" />
+                        <path d={pdvSvgPaths.p8335080} fill="white" />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Totalizar Venda
+                </p>
+                <div className="bg-[rgba(255,255,255,0.2)] px-[8px] py-[4px] rounded-[4px]">
+                  <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    SUB TOTAL
+                  </p>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1412,6 +1705,44 @@ function PDVSimulator({ slug }: { slug?: string }) {
           ) : (
             <ComprovanteScreen valorCents={100000} saldoAnteriorCents={125000} />
           )}
+        </div>
+      )}
+
+      {/* Fluxo de Formas de Pagamento - telas de tela cheia (steps 23 a 30) */}
+      {isFormasDePagamento && tutorialStep === 23 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <PagamentoValorScreen valorCents={valorPagamento} valorAlvoCents={valorAlvoPagamento} metodo={metodoPagamentoAtual} />
+        </div>
+      )}
+      {isFormasDePagamento && tutorialStep === 24 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <GavetaTrocoScreen valorRecebidoCents={valorPagamento} totalCents={4654} />
+        </div>
+      )}
+      {isFormasDePagamento && tutorialStep === 26 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <ObrigadoScreen />
+        </div>
+      )}
+      {isFormasDePagamento && tutorialStep === 27 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <PixAguardandoScreen />
+        </div>
+      )}
+      {isFormasDePagamento && tutorialStep === 28 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <PagamentoValorScreen valorCents={valorPagamento} valorAlvoCents={valorAlvoPagamento} metodo={metodoPagamentoAtual} mostrarTooltip={false} />
+          <MaquininhaAguardandoScreen metodo={pagamentoEtapaIndex === 2 ? "debito" : "credito"} />
+        </div>
+      )}
+      {isFormasDePagamento && tutorialStep === 29 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <CreditoCategoriasScreen selectedIndex={categoriaPromocionalIndex} />
+        </div>
+      )}
+      {isFormasDePagamento && tutorialStep === 30 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <CreditoParcelasScreen selectedIndex={parcelaIndex} />
         </div>
       )}
 
@@ -1709,7 +2040,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Tutorial Box - Positioned at bottom of PDV */}
         <div className={`absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20 transition-opacity duration-700 ease-in-out ${showTutorial || showAberturaLogin ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           <Inicio
-            onNext={() => { stopAudio(); setTutorialStep(pulaTelaLimiteCaixa ? 2 : 1); setShowTutorial(false); }}
+            onNext={() => { stopAudio(); setTutorialStep(proximaEtapaAposBoasVindas); setShowTutorial(false); }}
             titulo={welcomeTitulo}
             descricao={welcomeDescricao}
           />
@@ -1741,7 +2072,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Step 2 - Informativo Sangria (não se aplica aos fluxos de Cliente
             Cadastrado e Não Cadastrado e Registro de Produtos, que
             reaproveitam este simulador como placeholder) */}
-        {tutorialStep === 2 && !isClienteCadastrado && !isRegistroDeProdutos && (
+        {tutorialStep === 2 && !isClienteCadastrado && !isRegistroDeProdutos && !isFormasDePagamento && (
           <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
             <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
               {/* Ícone */}
@@ -1857,6 +2188,179 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
         )}
 
+        {/* Formas de Pagamento - passo 21: instrui o operador a pressionar
+            [SUB TOTAL] no teclado virtual para iniciar o pagamento. */}
+        {isFormasDePagamento && tutorialStep === 21 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Iniciando o pagamento
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Pressione a tecla <span className="font-bold text-white">[SUB TOTAL]</span> no teclado virtual para visualizar as formas de pagamento disponíveis.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formas de Pagamento - passo 22: instrui o operador a selecionar a
+            forma de pagamento do método atual, pressionando a tecla
+            correspondente no teclado virtual. */}
+        {isFormasDePagamento && tutorialStep === 22 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  {pagamentoEtapaIndex === 0 ? "Selecione a forma de pagamento" : pagamentoEtapaIndex === 1 ? "Pagamento por PIX" : pagamentoEtapaIndex === 2 ? "Pagamento no Débito" : "Pagamento no Crédito"}
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  {pagamentoEtapaIndex === 0 && (
+                    <>As formas de pagamento disponíveis são exibidas. Para este exemplo, vamos começar recebendo um pagamento em dinheiro. Selecione a opção <span className="font-bold text-white">[Suprimento Dinheiro]</span> no teclado virtual.</>
+                  )}
+                  {pagamentoEtapaIndex === 1 && (
+                    <>Agora vamos simular um pagamento via PIX. Pressione a tecla <span className="font-bold text-white">[Voucher]</span> no teclado virtual.</>
+                  )}
+                  {pagamentoEtapaIndex === 2 && (
+                    <>Agora vamos simular um pagamento no cartão de Débito. Pressione a tecla <span className="font-bold text-white">[Débito]</span> no teclado virtual.</>
+                  )}
+                  {pagamentoEtapaIndex === 3 && (
+                    <>Por fim, vamos simular um pagamento no cartão de Crédito. Pressione a tecla <span className="font-bold text-white">[Crédito]</span> no teclado virtual.</>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formas de Pagamento - passo 23: instrui a digitação do valor de
+            pagamento correspondente ao método atual. */}
+        {isFormasDePagamento && tutorialStep === 23 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  {pagamentoEtapaIndex === 0 ? "Informe o valor recebido" : "Informe o valor da compra"}
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  {pagamentoEtapaIndex === 0 && (
+                    <>Informe o valor recebido do cliente para o pagamento em dinheiro. Neste exemplo, o cliente entregou <span className="font-bold text-white">R$ 50,00</span>. Digite o valor no teclado virtual e pressione <span className="font-bold text-white">[Entra]</span> para continuar.</>
+                  )}
+                  {pagamentoEtapaIndex === 1 && (
+                    <>Informe o valor exato da compra para gerar a cobrança via PIX. Neste exemplo, digite <span className="font-bold text-white">R$ 46,54</span> e pressione <span className="font-bold text-white">[Entra]</span> para continuar.</>
+                  )}
+                  {pagamentoEtapaIndex === 2 && (
+                    <>Informe o valor exato da compra a ser cobrado no cartão de débito. Neste exemplo, digite <span className="font-bold text-white">R$ 46,54</span> e pressione <span className="font-bold text-white">[Entra]</span> para continuar.</>
+                  )}
+                  {pagamentoEtapaIndex === 3 && (
+                    <>Informe o valor exato da compra a ser cobrado no cartão de crédito. Neste exemplo, digite <span className="font-bold text-white">R$ 46,54</span> e pressione <span className="font-bold text-white">[Entra]</span> para continuar.</>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formas de Pagamento - passo 29: categorias promocionais do
+            Crédito. */}
+        {isFormasDePagamento && tutorialStep === 29 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Categorias Promocionais
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Alguns cartões de crédito possuem parcerias com a loja e oferecem condições especiais de parcelamento sem juros. Use as teclas <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓) para navegar entre as categorias e pressione <span className="font-bold text-white">[Entra]</span> para confirmar a categoria destacada.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formas de Pagamento - passo 30: parcelamento do Crédito. */}
+        {isFormasDePagamento && tutorialStep === 30 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Parcelamento no Cartão de Crédito
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  O cartão de crédito permite dividir o valor da compra em várias parcelas. Muitos clientes desconhecem que, dependendo da categoria promocional escolhida, o parcelamento pode ser feito sem juros — o custo é absorvido pela loja, e não pelo cliente. Use <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓) para navegar e <span className="font-bold text-white">[Entra]</span> para confirmar a quantidade de parcelas.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Formas de Pagamento - passo 26: conclusão do pagamento (tela
+            "Obrigado pela preferência"). Mesmo posicionamento sobreposto do
+            banner do passo 21 (bottom-[-100px]); z-[50] para ficar acima do
+            ObrigadoScreen (z-40) que cobre a tela nesta etapa. */}
+        {isFormasDePagamento && tutorialStep === 26 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-[50]">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Conclusão do pagamento
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  {pagamentoEtapaIndex === 0 && (
+                    <>O pagamento com dinheiro foi concluído. Em seguida, vamos explorar outros métodos.</>
+                  )}
+                  {pagamentoEtapaIndex === 1 && (
+                    <>O pagamento com PIX foi concluído. Em seguida, vamos explorar outros métodos.</>
+                  )}
+                  {pagamentoEtapaIndex === 2 && (
+                    <>O pagamento no débito foi concluído. Em seguida, vamos explorar outros métodos.</>
+                  )}
+                  {pagamentoEtapaIndex === 3 && (
+                    <>O pagamento no crédito foi concluído. Você chegou ao fim do exemplo de todas as formas de pagamento disponíveis no PDV.</>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Step 7 - Tooltip Valor da Retirada */}
         {tutorialStep === 7 && (
           <div className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '185px', left: '128px', right: '128px' }}>
@@ -1928,6 +2432,67 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
         </>)}
 
+        {/* Formas de Pagamento - passo 24: Gaveta Aberta (Dinheiro) */}
+        {isFormasDePagamento && tutorialStep === 24 && (
+          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
+            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
+              <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
+              <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[2px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Gaveta Aberta
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Guarde o dinheiro recebido do cliente e retire o troco correspondente e, para prosseguir, feche a gaveta.
+                </p>
+              </div>
+              <button
+                onClick={() => setTutorialStep(25)}
+                className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer border border-white/20"
+                style={{
+                  boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
+                  animation: 'pulse-subtle 2s ease-in-out infinite'
+                }}
+              >
+                <svg className="w-[20px] h-[20px]" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest whitespace-nowrap">Fechar Gaveta</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Formas de Pagamento - passo 27: Aguardando pagamento PIX */}
+        {isFormasDePagamento && tutorialStep === 27 && (
+          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
+            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
+              <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
+              <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="white" strokeWidth="1.6" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="white" strokeWidth="1.6" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="white" strokeWidth="1.6" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[2px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Aguardando o pagamento
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  O cliente escaneia o QR Code e realiza o pagamento no seu app bancário. Após o processamento do pagamento, o sistema avança automaticamente.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) */}
         {(tutorialStep === 9 || showAberturaIdentificacao) && (
           <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
@@ -1953,7 +2518,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
 
         {/* Navegação do tutorial - plataforma de treinamentos */}
-        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 || showAberturaIdentificacao ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-30 flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 || showAberturaIdentificacao || (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 27)) ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-[60] flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             onClick={() => {
@@ -1983,6 +2548,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
               else if (tutorialStep === 8) setTutorialStep(7);
               else if (tutorialStep === 9) setTutorialStep(8);
+              else if (isFormasDePagamento && tutorialStep === 21) { setTutorialStep(0); setShowTutorial(true); setPagamentoEtapaIndex(0); }
+              else if (isFormasDePagamento && tutorialStep === 22) {
+                if (pagamentoEtapaIndex === 0) { setTutorialStep(21); }
+                else { setPagamentoEtapaIndex((i) => i - 1); setTutorialStep(26); }
+              }
+              else if (isFormasDePagamento && tutorialStep === 23) { setTutorialStep(22); setValorPagamento(0); setShowKeyboard(false); }
+              else if (isFormasDePagamento && tutorialStep === 24) { setTutorialStep(23); }
+              else if (isFormasDePagamento && tutorialStep === 25) { setTutorialStep(pagamentoEtapaIndex === 0 ? 24 : pagamentoEtapaIndex === 1 ? 27 : 28); }
+              else if (isFormasDePagamento && tutorialStep === 26) { setTutorialStep(25); }
+              else if (isFormasDePagamento && tutorialStep === 27) { setTutorialStep(23); setValorPagamento(0); }
+              else if (isFormasDePagamento && tutorialStep === 28) { setTutorialStep(pagamentoEtapaIndex === 3 ? 30 : 23); if (pagamentoEtapaIndex !== 3) { setValorPagamento(0); } }
+              else if (isFormasDePagamento && tutorialStep === 29) { setTutorialStep(23); setValorPagamento(0); }
+              else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(29); }
               else { setTutorialStep(0); setShowTutorial(true); }
             }}
             className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || (tutorialStep === 0 && !(isAberturaDeCaixa && showTutorial))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
@@ -2008,7 +2586,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 setShowAberturaIdentificacao(false);
                 setTutorialStep(10);
               }
-              else if (showTutorial) { stopAudio(); setTutorialStep(pulaTelaLimiteCaixa ? 2 : 1); setShowTutorial(false); }
+              else if (showTutorial) { stopAudio(); setTutorialStep(proximaEtapaAposBoasVindas); setShowTutorial(false); }
               else if (isClienteCadastrado && tutorialStep === 12) { setCpf(""); setTutorialStep(2); setDemoSemIdentificar(true); }
               else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
               else if (tutorialStep === 1) setTutorialStep(2);
@@ -2016,11 +2594,26 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isRegistroDeProdutos && tutorialStep === 15) setTutorialStep(16);
               else if (isRegistroDeProdutos && tutorialStep === 17) setTutorialStep(18);
               else if (isRegistroDeProdutos && tutorialStep === 20) setTutorialStep(10);
+              else if (isFormasDePagamento && tutorialStep === 26) {
+                if (pagamentoEtapaIndex === 3) {
+                  setTutorialStep(10);
+                } else {
+                  // [SUB TOTAL] já foi pressionado uma vez para revelar a
+                  // grade de formas de pagamento; nas próximas voltas do
+                  // ciclo, "Próximo" leva direto às instruções do método
+                  // seguinte (passo 22), sem repetir o passo 21.
+                  setValorPagamento(0);
+                  setPagamentoEtapaIndex((i) => i + 1);
+                  setTutorialStep(22);
+                }
+              }
+              else if (isFormasDePagamento && tutorialStep === 27) { setTutorialStep(25); }
+              else if (isFormasDePagamento && tutorialStep === 28) { setTutorialStep(25); }
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20))) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28))) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
-              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : "Próximo"}
+              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3 ? "Concluir" : "Próximo"}
             </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -2038,9 +2631,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
           }
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
-          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) ? 'animate-pulse-subtle' : ''
-        } ${!showEntradaOperadorMatricula && !showEntradaOperadorSenha && (tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 19 || tutorialStep === 20))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) ? {
+          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) ? 'animate-pulse-subtle' : ''
+        } ${keyboardOcultoNestaEtapa ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
         } : {}}
@@ -2209,6 +2802,35 @@ function PDVSimulator({ slug }: { slug?: string }) {
               return;
             }
           }
+          if (isFormasDePagamento && tutorialStep === 23) {
+            const valorAlvo = pagamentoEtapaIndex === 0 ? 5000 : 4654;
+            const digitosAtuaisPagamento = valorPagamento === 0 ? 0 : String(valorPagamento).length;
+            const digitosAlvoPagamentoLen = String(valorAlvo).length;
+            if (buttonText === "LIMPA") { setValorPagamento(0); return; }
+            if (buttonText === "VOLTA") { setValorPagamento(prev => Math.floor(prev / 10)); return; }
+            if (buttonText === "ENTRA") {
+              if (valorPagamento === valorAlvo) {
+                setShowKeyboard(false);
+                if (pagamentoEtapaIndex === 0) setTutorialStep(24);
+                else if (pagamentoEtapaIndex === 1) setTutorialStep(27);
+                else if (pagamentoEtapaIndex === 2) setTutorialStep(28);
+                else setTutorialStep(29);
+              }
+              return;
+            }
+            if (buttonText === "00") {
+              if (digitosAtuaisPagamento + 2 <= digitosAlvoPagamentoLen) {
+                setValorPagamento(prev => Math.min(prev * 100, 99999999));
+              }
+              return;
+            }
+            if (buttonText && !isNaN(Number(buttonText))) {
+              if (digitosAtuaisPagamento < digitosAlvoPagamentoLen) {
+                setValorPagamento(prev => Math.min(prev * 10 + Number(buttonText), 99999999));
+              }
+              return;
+            }
+          }
           if (buttonText && ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "00"].includes(buttonText)) {
             handleKeyPress(buttonText);
           } else if (buttonText === "ENTRA") {
@@ -2224,12 +2846,28 @@ function PDVSimulator({ slug }: { slug?: string }) {
           key={tutorialStep}
           highlightSangria={tutorialStep === 2 && !isClienteCadastrado}
           onSangriaPress={tutorialStep === 2 && !isClienteCadastrado ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length)}
-          highlightVolta={isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar}
-          onVoltaPress={isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar ? () => handleKeyPress("VOLTA") : undefined}
+          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30))}
+          highlightVolta={(isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar) || (isFormasDePagamento && tutorialStep === 25)}
+          onVoltaPress={
+            isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar
+              ? () => handleKeyPress("VOLTA")
+              : isFormasDePagamento && tutorialStep === 25
+              ? () => setTutorialStep(26)
+              : undefined
+          }
           highlightMultiplica={isRegistroDeProdutos && tutorialStep === 18 && sku === "3"}
           onMultiplicaPress={isRegistroDeProdutos && tutorialStep === 18 && sku === "3" ? () => { setShowKeyboard(false); setSku(""); setTutorialStep(19); } : undefined}
-          onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6)) ? () => {
+          highlightSubTotal={isFormasDePagamento && tutorialStep === 21}
+          onSubTotalPress={isFormasDePagamento && tutorialStep === 21 ? () => { setTutorialStep(22); setShowKeyboard(false); } : undefined}
+          highlightSuprimentoDinheiro={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0}
+          onSuprimentoDinheiroPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
+          highlightVoucher={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 1}
+          onVoucherPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 1 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
+          highlightDebito={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 2}
+          onDebitoPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 2 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
+          highlightCredito={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 3}
+          onCreditoPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 3 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
+          onEntraPress={(tutorialStep === 3 || tutorialStep === 6 || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30))) ? () => {
             if (tutorialStep === 3) { setTutorialStep(4); setShowKeyboard(false); }
             else if (tutorialStep === 6) { setTutorialStep(7); setShowKeyboard(false); }
             else if (tutorialStep === 7 && valorRetirada === valorAlvo) { setTutorialStep(8); setShowKeyboard(false); if (!isSuprimentoAdicional) setValorRetirada(0); }
@@ -2245,24 +2883,36 @@ function PDVSimulator({ slug }: { slug?: string }) {
               setOperadorSenha("");
               setShowAberturaIdentificacao(true);
             }
+            else if (isFormasDePagamento && tutorialStep === 23 && valorPagamento === valorAlvoPagamento) {
+              setShowKeyboard(false);
+              if (pagamentoEtapaIndex === 0) setTutorialStep(24);
+              else if (pagamentoEtapaIndex === 1) setTutorialStep(27);
+              else if (pagamentoEtapaIndex === 2) setTutorialStep(28);
+              else setTutorialStep(29);
+            }
+            else if (isFormasDePagamento && tutorialStep === 29) {
+              setShowKeyboard(false);
+              setTutorialStep(30);
+            }
+            else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(28); setShowKeyboard(false); }
           } : undefined}
-          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1"}
+          highlightKey1={(tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1"}
           onKey1Press={tutorialStep === 5 && !isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2"}
+          highlightKey2={(tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2" || proximoDigitoPagamento === "2"}
           onKey2Press={tutorialStep === 5 && isSuprimentoAdicional ? () => { setTutorialStep(6); setShowKeyboard(false); } : undefined}
-          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0"}
+          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0" || proximoDigitoPagamento === "0"}
           onKey0Press={undefined}
-          highlightKey3={proximoDigitoCpf === "3" || proximoDigitoSkuManual === "3" || (isRegistroDeProdutos && tutorialStep === 18 && sku.length === 0)}
-          highlightKey4={proximoDigitoCpf === "4"}
-          highlightKey5={proximoDigitoCpf === "5"}
-          highlightKey6={proximoDigitoCpf === "6"}
-          highlightKey7={proximoDigitoCpf === "7"}
-          highlightKey8={proximoDigitoCpf === "8"}
-          highlightKey9={proximoDigitoCpf === "9"}
-          highlightV={tutorialStep === 6}
-          onVPress={tutorialStep === 6 ? handleVPress : undefined}
-          highlightK={tutorialStep === 6}
-          onKPress={tutorialStep === 6 ? handleKPress : undefined}
+          highlightKey3={proximoDigitoCpf === "3" || proximoDigitoSkuManual === "3" || (isRegistroDeProdutos && tutorialStep === 18 && sku.length === 0) || proximoDigitoPagamento === "3"}
+          highlightKey4={proximoDigitoCpf === "4" || proximoDigitoPagamento === "4"}
+          highlightKey5={proximoDigitoCpf === "5" || proximoDigitoPagamento === "5"}
+          highlightKey6={proximoDigitoCpf === "6" || proximoDigitoPagamento === "6"}
+          highlightKey7={proximoDigitoCpf === "7" || proximoDigitoPagamento === "7"}
+          highlightKey8={proximoDigitoCpf === "8" || proximoDigitoPagamento === "8"}
+          highlightKey9={proximoDigitoCpf === "9" || proximoDigitoPagamento === "9"}
+          highlightV={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30))}
+          onVPress={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) ? handleVPress : undefined}
+          highlightK={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30))}
+          onKPress={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) ? handleKPress : undefined}
         />
       </div>
 
@@ -2286,7 +2936,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : "Agora você está pronto para realizar essa operação no PDV."}
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : "Agora você está pronto para realizar essa operação no PDV."}
                 </p>
               </div>
             </div>

@@ -40,13 +40,8 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       },
       {
         titulo: "Formas de Pagamento",
-        descricao: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        descricao: "Na etapa de pagamento, o operador seleciona o método escolhido pelo cliente e realiza o recebimento em dinheiro ou por meio de algum outro método (como crédito, débito ou PIX).",
         slug: "formas-de-pagamento"
-      },
-      {
-        titulo: "Finalização da Venda",
-        descricao: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        slug: "finalizacao-da-venda"
       }
     ]
   },
