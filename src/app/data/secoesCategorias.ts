@@ -75,7 +75,7 @@ export const secoesCategorias: CategoriaSecaoData[] = [
     cards: [
       {
         titulo: "Convênios",
-        descricao: "Quando o cliente possui um convênio, o operador pode identificá-lo pelo CPF ou carteirinha para aplicar os benefícios contratados na venda.",
+        descricao: "Para que as condições do Convênio, como promoções e descontos, sejam aplicadas à venda, é necessário realizar uma autenticação com o provedor.",
         slug: "convenio"
       },
       { titulo: "PBM" },
