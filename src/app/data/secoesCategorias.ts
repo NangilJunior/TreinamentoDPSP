@@ -42,12 +42,46 @@ export const secoesCategorias: CategoriaSecaoData[] = [
         titulo: "Formas de Pagamento",
         descricao: "Na etapa de pagamento, o operador seleciona o método escolhido pelo cliente e realiza o recebimento em dinheiro ou por meio de algum outro método (como crédito, débito ou PIX).",
         slug: "formas-de-pagamento"
+      },
+      {
+        titulo: "Envio e Impressão de Cupom",
+        descricao: "Ao finalizar a venda, o operador pode selecionar a forma de emissão do cupom fiscal, que pode ser enviado para o e-mail cadastrado do cliente ou impresso na hora.",
+        slug: "envio-e-impressao-de-cupom"
       }
     ]
   },
-  { titulo: "Resgate de Pedido Balcão", cards: [{ titulo: "Localizar Cesta Criada no Balcão" }, { titulo: "Resgatar Atendimento" }, { titulo: "Finalizar Pagamento" }] },
-  { titulo: "Resgate de Pedido Delivery", cards: [{ titulo: "Localizar Pedido Online" }, { titulo: "Conferir Produtos" }, { titulo: "Faturar Pedido" }, { titulo: "Finalizar Atendimento" }] },
-  { titulo: "Programas e Benefícios", cards: [{ titulo: "Convênios" }, { titulo: "PBM" }, { titulo: "Farmácia Popular" }] },
+  {
+    titulo: "Resgate de Pedido Balcão",
+    cards: [
+      {
+        titulo: "Registro de Itens de Pedidos",
+        descricao: "Quando os produtos do pedido já foram registrados pelo farmacêutico, o operador consegue carregá-los no caixa para realizar o pagamento, sem a necessidade de escaneá-los.",
+        slug: "registro-de-itens-de-pedidos"
+      }
+    ]
+  },
+  {
+    titulo: "Resgate de Pedido Delivery",
+    cards: [
+      {
+        titulo: "Localizar Pedido do Delivery",
+        descricao: "Quando entregadores se dirigem ao caixa para fazer uma retirada, eles informam o número da ordem de venda, que permite localizar os dados do pedido.",
+        slug: "localizar-pedido-do-delivery"
+      }
+    ]
+  },
+  {
+    titulo: "Programas e Benefícios",
+    cards: [
+      {
+        titulo: "Convênios",
+        descricao: "Quando o cliente possui um convênio, o operador pode identificá-lo pelo CPF ou carteirinha para aplicar os benefícios contratados na venda.",
+        slug: "convenio"
+      },
+      { titulo: "PBM" },
+      { titulo: "Farmácia Popular" }
+    ]
+  },
   { titulo: "Medicamentos Controlados", cards: [{ titulo: "Resgate de Receita Digital" }, { titulo: "Liberação Manual" }, { titulo: "Finalização da Venda" }] },
   { titulo: "Experiência do Cliente", cards: [{ titulo: "Encantômetro" }] },
   { titulo: "Ajustes durante a Venda", cards: [{ titulo: "Consulta de Preço" }, { titulo: "Cancelamento Parcial" }, { titulo: "Cancelamento Total" }, { titulo: "DDG (Desconto Gerencial)" }] },
