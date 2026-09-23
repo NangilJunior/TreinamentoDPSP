@@ -2219,13 +2219,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
 
           {/* Modal bottom sheet */}
-          <div
-            className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)]"
-            onClick={(e) => {
-              const text = (e.target as HTMLElement).closest('[data-name="Button"]')?.querySelector('p')?.textContent?.trim();
-              if (text === "Volta") setTutorialStep(2);
-            }}
-          >
+          <div className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)]">
             <Frame19591 />
           </div>
         </>
@@ -2248,14 +2242,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
 
           {/* Modal bottom sheet */}
-          <div
-            className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)] bg-white flex flex-col gap-[32px] px-[40px] py-[32px]"
-            onClick={(e) => {
-              const text = (e.target as HTMLElement).closest('[data-name="Button"]')?.querySelector('p')?.textContent?.trim();
-              if (text === "Entra") { setShowKeyboard(false); setTutorialStep(13); }
-              else if (text === "Volta") { setShowKeyboard(false); setTutorialStep(12); }
-            }}
-          >
+          <div className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)] bg-white flex flex-col gap-[32px] px-[40px] py-[32px]">
             <div className="flex gap-[32px] items-center w-full">
               <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full shrink-0">
                 <img alt="" className="size-[32px]" src={iconeIdCard} />
@@ -2270,7 +2257,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
             </div>
             <div className="flex items-center justify-between w-full">
-              <div data-name="Button" className="bg-white border border-[#d4d4d4] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[185px] cursor-pointer">
+              <div data-name="Button" className="bg-white border border-[#d4d4d4] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[185px]">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M15 18l-6-6 6-6" stroke="#ed403d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -2296,14 +2283,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <div className="fade-in-delay absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
 
           {/* Modal bottom sheet */}
-          <div
-            className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)] bg-white flex flex-col gap-[32px] px-[40px] py-[32px]"
-            onClick={(e) => {
-              const text = (e.target as HTMLElement).closest('[data-name="Button"]')?.querySelector('p')?.textContent?.trim();
-              if (text === "Entra") { setShowKeyboard(false); setTutorialStep(14); }
-              else if (text === "Volta") { setShowKeyboard(false); setTutorialStep(11); }
-            }}
-          >
+          <div className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden shadow-[0_-8px_40px_rgba(0,0,0,0.25)] bg-white flex flex-col gap-[32px] px-[40px] py-[32px]">
             <div className="flex gap-[32px] items-center w-full">
               <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full shrink-0">
                 <img alt="" className="size-[32px]" src={iconeIdCard} />
@@ -2318,7 +2298,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
             </div>
             <div className="flex items-center justify-between w-full">
-              <div data-name="Button" className="bg-white border border-[#d4d4d4] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[185px] cursor-pointer">
+              <div data-name="Button" className="bg-white border border-[#d4d4d4] flex gap-[8px] h-[72px] items-center justify-center px-[24px] rounded-[8px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] w-[185px]">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M15 18l-6-6 6-6" stroke="#ed403d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
