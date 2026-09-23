@@ -2100,7 +2100,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {/* Valor da Retirada - step 7 */}
       {(isTrainingMode && tutorialStep === 7) && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} /> : <ValorRetiradaScreen valorCents={valorRetirada} />}
+          {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} isSuprimentoInicial={isSuprimentoInicial} /> : <ValorRetiradaScreen valorCents={valorRetirada} />}
         </div>
       )}
 
@@ -2969,7 +2969,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {tutorialStep === 8 && (
           <>
             <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-              {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta /> : <Home6 />}
+              {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta isSuprimentoInicial={isSuprimentoInicial} /> : <Home6 />}
             </div>
             <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"

@@ -144,7 +144,7 @@ export function PDVHeader() {
   );
 }
 
-export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false }: { valorCents: number; gavetaAberta?: boolean }) {
+export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false, isSuprimentoInicial = false }: { valorCents: number; gavetaAberta?: boolean; isSuprimentoInicial?: boolean }) {
   const showValue = valorCents > 0;
   const isValidValue = valorCents === 20000;
 
@@ -245,7 +245,7 @@ export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false
                       <span className="font-semibold">{"confirmar o valor. "}</span>
                       {"A "}
                       <span className="font-bold">gaveta do caixa abrirá</span>
-                      {" para a realização do suprimento inicial."}
+                      {isSuprimentoInicial ? " para a realização do suprimento inicial." : " para a realização do suprimento complementar."}
                     </p>
                   </div>
                 </div>
