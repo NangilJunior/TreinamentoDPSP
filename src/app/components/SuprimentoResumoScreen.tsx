@@ -10,7 +10,7 @@ const bankNoteArrowDownPaths = [
 ];
 
 export const MOTIVOS_SUPRIMENTO = [
-  { label: "Suprimento Inicial", value: "R$ 100,00" },
+  { label: "Suprimento Inicial", value: "R$ 200,00" },
   { label: "Suprimento Complementar", value: "R$ 0,00" },
   { label: "Valores de Venda em Dinheiro", value: "R$ 0,00" },
   { label: "Valores de Venda em Cheque", value: "R$ 0,00" },

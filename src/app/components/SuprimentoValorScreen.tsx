@@ -15,6 +15,12 @@ const inboxIconPaths = [
   "M21.25 12.1777L17.8779 5.44336C17.7745 5.23535 17.6154 5.05996 17.418 4.9375C17.2697 4.84555 17.1042 4.78578 16.9326 4.76172L16.7598 4.75H7.24023C7.00774 4.75015 6.77962 4.81497 6.58203 4.9375C6.3846 5.05996 6.22554 5.23535 6.12207 5.44336L6.12109 5.44629L6.12012 5.44531L2.75 12.1777V18C2.75 18.3315 2.88179 18.6494 3.11621 18.8838C3.35063 19.1182 3.66848 19.25 4 19.25H20C20.3315 19.25 20.6494 19.1182 20.8838 18.8838C21.1182 18.6494 21.25 18.3315 21.25 18V12.1777ZM22.75 18C22.75 18.7293 22.4601 19.4286 21.9443 19.9443C21.4286 20.4601 20.7293 20.75 20 20.75H4C3.27065 20.75 2.57139 20.4601 2.05566 19.9443C1.53994 19.4286 1.25 18.7293 1.25 18V12C1.25 11.8834 1.2769 11.7683 1.3291 11.6641L4.7793 4.77441C5.00699 4.31706 5.35778 3.93235 5.79199 3.66309C6.22668 3.39354 6.72778 3.25034 7.23926 3.25H16.7607L16.9521 3.25684C17.3966 3.28814 17.8277 3.42727 18.208 3.66309C18.6422 3.93235 18.993 4.31706 19.2207 4.77441L22.6709 11.6641C22.7231 11.7683 22.75 11.8834 22.75 12V18Z",
 ];
 
+const archiveIconPaths = [
+  "M20 1.75C20 1.61193 19.8881 1.5 19.75 1.5H1.75C1.61193 1.5 1.5 1.61193 1.5 1.75V4.75C1.5 4.88807 1.61193 5 1.75 5H19.75C19.8881 5 20 4.88807 20 4.75V1.75ZM21.5 4.75C21.5 5.7165 20.7165 6.5 19.75 6.5H1.75C0.783502 6.5 0 5.7165 0 4.75V1.75C0 0.783502 0.783502 0 1.75 0H19.75C20.7165 0 21.5 0.783502 21.5 1.75V4.75Z",
+  "M2 16.75V5.75C2 5.33579 2.33579 5 2.75 5C3.16421 5 3.5 5.33579 3.5 5.75V16.75C3.5 17.0815 3.63179 17.3994 3.86621 17.6338C4.10063 17.8682 4.41848 18 4.75 18H16.75C17.0815 18 17.3994 17.8682 17.6338 17.6338C17.8682 17.3994 18 17.0815 18 16.75V5.75C18 5.33579 18.3358 5 18.75 5C19.1642 5 19.5 5.33579 19.5 5.75V16.75C19.5 17.4793 19.2101 18.1786 18.6943 18.6943C18.1786 19.2101 17.4793 19.5 16.75 19.5H4.75C4.02065 19.5 3.32139 19.2101 2.80566 18.6943C2.28994 18.1786 2 17.4793 2 16.75Z",
+  "M12.75 9C13.1642 9 13.5 9.33579 13.5 9.75C13.5 10.1642 13.1642 10.5 12.75 10.5H8.75C8.33579 10.5 8 10.1642 8 9.75C8 9.33579 8.33579 9 8.75 9H12.75Z",
+];
+
 export function PDVHeader() {
   return (
     <>
@@ -199,27 +205,51 @@ export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false
                 </div>
               </div>
 
-              {/* Info note 1/2 */}
-              <div className="flex items-start w-full">
-                <div className="bg-[#ed403d] h-[72px] mr-[-1px] rounded-bl-[4px] rounded-tl-[4px] shrink-0 w-[8px] z-[2]" />
-                <div className="bg-white flex gap-[24px] items-center p-[24px] relative rounded-br-[4px] rounded-tr-[4px] flex-1 border border-[#dadada]">
-                  <p className="font-['Inter',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">1/2</p>
-                  <div className="overflow-clip relative shrink-0 size-[24px]">
-                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-                      {inboxIconPaths.map((d) => (
-                        <path key={d} d={d} fill="#ED403D" />
-                      ))}
-                    </svg>
+              {/* Info note 1/2 or 2/2 */}
+              {gavetaAberta ? (
+                <div className="flex items-start w-full">
+                  <div className="bg-[#31a66b] h-[72px] mr-[-1px] rounded-bl-[4px] rounded-tl-[4px] shrink-0 w-[8px] z-[2]" />
+                  <div className="bg-white flex gap-[24px] items-center p-[24px] relative rounded-br-[4px] rounded-tr-[4px] flex-1 border border-[#dadada]">
+                    <p className="font-['Inter',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">2/2</p>
+                    <div className="overflow-clip relative shrink-0 size-[24px]">
+                      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 19.5">
+                        {archiveIconPaths.map((d) => (
+                          <path key={d} d={d} fill="#31A66B" />
+                        ))}
+                      </svg>
+                    </div>
+                    <p className="text-[#565354] text-[16px] leading-[1.5]">
+                      <span className="font-semibold">{"Insira o valor "}</span>
+                      {"e "}
+                      <span className="font-semibold">feche a gaveta</span>
+                      {" do caixa. Ao finalizar, "}
+                      <span className="font-semibold">seu comprovante será impresso</span>
+                      {" automaticamente."}
+                    </p>
                   </div>
-                  <p className="text-[#565354] text-[16px] leading-[1.5]">
-                    {"Após "}
-                    <span className="font-semibold">{"confirmar o valor. "}</span>
-                    {"A "}
-                    <span className="font-bold">gaveta do caixa abrirá</span>
-                    {" para a realização do suprimento complementar."}
-                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-start w-full">
+                  <div className="bg-[#ed403d] h-[72px] mr-[-1px] rounded-bl-[4px] rounded-tl-[4px] shrink-0 w-[8px] z-[2]" />
+                  <div className="bg-white flex gap-[24px] items-center p-[24px] relative rounded-br-[4px] rounded-tr-[4px] flex-1 border border-[#dadada]">
+                    <p className="font-['Inter',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">1/2</p>
+                    <div className="overflow-clip relative shrink-0 size-[24px]">
+                      <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
+                        {inboxIconPaths.map((d) => (
+                          <path key={d} d={d} fill="#ED403D" />
+                        ))}
+                      </svg>
+                    </div>
+                    <p className="text-[#565354] text-[16px] leading-[1.5]">
+                      {"Após "}
+                      <span className="font-semibold">{"confirmar o valor. "}</span>
+                      {"A "}
+                      <span className="font-bold">gaveta do caixa abrirá</span>
+                      {" para a realização do suprimento inicial."}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

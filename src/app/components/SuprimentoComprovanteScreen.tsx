@@ -54,7 +54,7 @@ export default function SuprimentoComprovanteScreen({
           </div>
           <div className="flex flex-col gap-[8px] items-center whitespace-nowrap">
             <p className="font-['Nunito_Sans',sans-serif] font-bold leading-[1.2] text-[#333] text-[31.248px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-              Suprimento complementar realizado
+              Suprimento de caixa realizado
             </p>
             <p className="font-['Geist',sans-serif] font-medium leading-[20px] text-[#747474] text-[14px] tracking-[3px]">
               OPERAÇÃO REALIZADA COM SUCESSO
