@@ -86,7 +86,7 @@ export const secoesCategorias: CategoriaSecaoData[] = [
     titulo: "Medicamentos Controlados",
     cards: [
       {
-        titulo: "Liberação com receita",
+        titulo: "Liberação com Receita",
         descricao: "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda.",
         slug: "liberacao-com-receita"
       },

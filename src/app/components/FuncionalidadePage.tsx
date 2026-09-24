@@ -113,7 +113,7 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
     hasPDV: true
   },
   "liberacao-com-receita": {
-    titulo: "Liberação com receita",
+    titulo: "Liberação com Receita",
     conteudo: "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda.",
     hasPDV: true
   },
