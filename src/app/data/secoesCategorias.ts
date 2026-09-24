@@ -82,7 +82,21 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       { titulo: "Farmácia Popular" }
     ]
   },
-  { titulo: "Medicamentos Controlados", cards: [{ titulo: "Liberação com receita" }, { titulo: "Liberação Manual" }] },
+  {
+    titulo: "Medicamentos Controlados",
+    cards: [
+      {
+        titulo: "Liberação com receita",
+        descricao: "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda.",
+        slug: "liberacao-com-receita"
+      },
+      {
+        titulo: "Liberação Manual",
+        descricao: "Quando um medicamento controlado não possui receita, sua liberação no PDV depende da autorização de um gerente antes que o item possa ser adicionado à venda.",
+        slug: "liberacao-manual"
+      }
+    ]
+  },
   { titulo: "Experiência do Cliente", cards: [{ titulo: "Encantômetro" }] },
   { titulo: "Ajustes durante a Venda", cards: [{ titulo: "Consulta de Preço" }, { titulo: "Cancelamento Parcial" }, { titulo: "Cancelamento Total" }, { titulo: "DDG (Desconto Gerencial)" }] },
   { titulo: "Pós-Venda", cards: [{ titulo: "Estorno" }, { titulo: "Troca de Mercadoria" }, { titulo: "Reimpressão de Cupom" }, { titulo: "Reimpressão de Comprovantes" }, { titulo: "Reimpressão Farmácia Popular" }] },

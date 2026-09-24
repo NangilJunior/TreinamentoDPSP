@@ -112,6 +112,16 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
     conteudo: "Para que as condições do Convênio, como promoções e descontos, sejam aplicadas à venda, é necessário realizar uma autenticação com o provedor.",
     hasPDV: true
   },
+  "liberacao-com-receita": {
+    titulo: "Liberação com receita",
+    conteudo: "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda.",
+    hasPDV: true
+  },
+  "liberacao-manual": {
+    titulo: "Liberação Manual",
+    conteudo: "Quando um medicamento controlado não possui receita, sua liberação no PDV depende da autorização de um gerente antes que o item possa ser adicionado à venda.",
+    hasPDV: true
+  },
   "entrada-saida-operador": {
     titulo: "Entrada/Saída de Operador",
     conteudo: "O processo de Entrada e Saída de Operador é fundamental para o controle e rastreabilidade das operações no sistema. Permite identificar qual operador está utilizando cada terminal e registrar horários de início e término de turnos."
@@ -298,12 +308,14 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const isRegistroDeItensDePedidos = slug === "registro-de-itens-de-pedidos";
   const isLocalizarPedidoDoDelivery = slug === "localizar-pedido-do-delivery";
   const isConvenio = slug === "convenio";
+  const isLiberacaoComReceita = slug === "liberacao-com-receita";
+  const isLiberacaoManual = slug === "liberacao-manual";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
   // Cadastrado e Não Cadastrado, Registro de Produtos, Formas de Pagamento,
   // Registro de Itens de Pedidos e Localizar Pedido do Delivery também não
   // devem exibi-la.
-  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento || isRegistroDeItensDePedidos || isLocalizarPedidoDoDelivery || isConvenio;
+  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento || isRegistroDeItensDePedidos || isLocalizarPedidoDoDelivery || isConvenio || isLiberacaoComReceita || isLiberacaoManual;
   // Próxima etapa após a tela de boas-vindas (step 0): Formas de Pagamento
   // não reaproveita o step 2 (informativo genérico de Sangria/Registro),
   // partindo direto para o carrinho de exemplo (step 21). Registro de itens
@@ -330,6 +342,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Olá, boas vindas ao tutorial de Localizar Pedido do Delivery."
     : isConvenio
     ? "Olá, boas vindas ao tutorial de Convênios."
+    : isLiberacaoComReceita
+    ? "Olá, boas vindas ao tutorial de Liberação com Receita."
+    : isLiberacaoManual
+    ? "Olá, boas vindas ao tutorial de Liberação Manual."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -351,6 +367,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Quando o entregador chegar à loja para retirar um pedido de Delivery, ele deve informar ao operador o número da ordem de venda. O operador digita o número para localizar o pedido. Após a identificação, os dados do cliente e os itens da venda são carregados automaticamente na tela, permitindo conferir as informações e prosseguir com a retirada do pedido."
     : isConvenio
     ? "Quando o cliente quiser informar o seu convênio no pedido, é necessário identificá-lo pelo CPF ou número da carteirinha. O sistema realiza a autenticação junto ao provedor e, após a validação, os descontos são automaticamente aplicados aos itens da venda."
+    : isLiberacaoComReceita
+    ? "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda."
+    : isLiberacaoManual
+    ? "Quando um medicamento controlado não possui receita, sua liberação no PDV depende da autorização de um gerente antes que o item possa ser adicionado à venda."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -3646,7 +3666,8 @@ const PROXIMO_TREINAMENTO_POR_CATEGORIA: Record<string, string> = {
   "Início da Operação": "cliente-cadastrado-e-nao-cadastrado",
   "Atendimento e Vendas": "registro-de-itens-de-pedidos",
   "Resgate de Pedido Balcão": "localizar-pedido-do-delivery",
-  "Resgate de Pedido Delivery": "convenio"
+  "Resgate de Pedido Delivery": "convenio",
+  "Programas e Benefícios": "liberacao-com-receita"
 };
 
 function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSecaoData; slugAtual?: string }) {
