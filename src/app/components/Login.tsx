@@ -2,15 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import Frame19675 from "../../imports/Frame19675/Frame19675.tsx";
 import { useFitScale } from "./ScaleToFit";
-import imgFotoLogin from "../../imports/Login/foto-farmacia.png";
-
-function PainelFoto() {
-  return (
-    <div className="relative w-[646px] h-full overflow-hidden shrink-0">
-      <img alt="" className="absolute inset-0 size-full object-cover" src={imgFotoLogin} />
-    </div>
-  );
-}
+import { PainelFoto } from "./AberturaCaixaLoginScreen";
 
 function Frame11() {
   return (
