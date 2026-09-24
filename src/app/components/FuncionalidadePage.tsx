@@ -368,9 +368,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
     : isConvenio
     ? "Quando o cliente quiser informar o seu convênio no pedido, é necessário identificá-lo pelo CPF ou número da carteirinha. O sistema realiza a autenticação junto ao provedor e, após a validação, os descontos são automaticamente aplicados aos itens da venda."
     : isLiberacaoComReceita
-    ? "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda."
+    ? "Ao registrar um medicamento controlado, o sistema solicita o número da receita. O operador deve informar o número indicado no documento e aguardar a autenticação. Se a receita for autorizada, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
     : isLiberacaoManual
-    ? "Quando um medicamento controlado não possui receita, sua liberação no PDV depende da autorização de um gerente antes que o item possa ser adicionado à venda."
+    ? "Ao registrar um medicamento controlado sem receita, o sistema solicitará a liberação por um gerente. O operador deve acionar o responsável para que ele realize a autorização necessária. Após a liberação, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
