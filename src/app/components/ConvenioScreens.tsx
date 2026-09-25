@@ -6,7 +6,7 @@ import iconeRotateCcwKey from "../../imports/ConvenioIcons/rotate-ccw-key.svg";
 // mesmo padrão de bottom sheet branco sobre o PDV escurecido/desfocado ao
 // fundo — o mesmo já usado em MaquininhaAguardandoScreen.tsx — em vez de
 // substituir a tela inteira como InformeOVScreen/SelecionePedidoScreen.
-function ConvenioBottomSheet({
+export function ConvenioBottomSheet({
   iconBg,
   icon,
   titulo,
@@ -85,7 +85,7 @@ function ConvenioBottomSheet({
   );
 }
 
-function BottomSheetFooter({ entraAtivo }: { entraAtivo: boolean }) {
+export function BottomSheetFooter({ entraAtivo }: { entraAtivo: boolean }) {
   return (
     <div className="flex items-center justify-between w-full">
       <div className="bg-[rgba(255,255,255,0.1)] flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px]">
