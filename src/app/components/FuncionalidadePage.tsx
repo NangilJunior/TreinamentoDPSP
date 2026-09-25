@@ -33,6 +33,7 @@ import InformeOVScreen from "./InformeOVScreen";
 import { ConvenioEscolhaScreen, OutrosConveniosScreen, ConvenioCpfScreen, ConvenioCarregandoScreen, ConvenioAguardandoScreen } from "./ConvenioScreens";
 import { ReceitaScreen } from "./LiberacaoReceitaScreens";
 import AutorizacaoGerenteMedicamentoScreen from "./LiberacaoManualScreens";
+import { ConsultaValorInputScreen, ConsultaValorResultadoScreen } from "./ConsultaPrecoScreens";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
 import iconeEntrar from "../../imports/AberturaCaixaLogin/icone-entrar.svg";
@@ -122,6 +123,11 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   "liberacao-manual": {
     titulo: "Liberação de Medicamento Controlado Sem Receita",
     conteudo: "Quando um medicamento controlado não possui receita, sua liberação no PDV depende da autorização de um gerente antes que o item possa ser adicionado à venda.",
+    hasPDV: true
+  },
+  "consulta-de-preco": {
+    titulo: "Consulta de Preço",
+    conteudo: "Permite verificar o preço e as informações de um produto a partir da leitura ou digitação do seu código de barras, sem adicioná-lo à venda.",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -316,12 +322,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const isConvenio = slug === "convenio";
   const isLiberacaoComReceita = slug === "liberacao-com-receita";
   const isLiberacaoManual = slug === "liberacao-manual";
+  const isConsultaDePreco = slug === "consulta-de-preco";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
   // Cadastrado e Não Cadastrado, Registro de Produtos, Formas de Pagamento,
   // Registro de Itens de Pedidos e Localizar Pedido do Delivery também não
   // devem exibi-la.
-  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento || isRegistroDeItensDePedidos || isLocalizarPedidoDoDelivery || isConvenio || isLiberacaoComReceita || isLiberacaoManual;
+  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento || isRegistroDeItensDePedidos || isLocalizarPedidoDoDelivery || isConvenio || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco;
   // Próxima etapa após a tela de boas-vindas (step 0): Formas de Pagamento
   // não reaproveita o step 2 (informativo genérico de Sangria/Registro),
   // partindo direto para o carrinho de exemplo (step 21). Registro de itens
@@ -352,6 +359,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Olá, boas vindas ao tutorial de Liberação de Medicamento Controlado com Receita."
     : isLiberacaoManual
     ? "Olá, boas vindas ao tutorial de Liberação de Medicamento Controlado Sem Receita."
+    : isConsultaDePreco
+    ? "Olá, boas vindas ao tutorial de Consulta de Preço."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -377,6 +386,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Ao registrar um medicamento controlado, o sistema solicita o número da receita. O operador deve informar o número indicado no documento e aguardar a autenticação. Se a receita for autorizada, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
     : isLiberacaoManual
     ? "Ao registrar um medicamento controlado sem receita, o sistema solicitará a autorização da gerência. O operador deve acionar o/a responsável para que realize a autorização necessária. Após a liberação, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
+    : isConsultaDePreco
+    ? "Para consultar um produto, o operador deve selecionar Consulta Item no teclado e, em seguida, escanear ou digitar seu código de barras. O sistema exibirá na tela as informações e o preço do produto consultado. A consulta não adiciona o produto à venda."
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -647,6 +658,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       (isLocalizarPedidoDoDelivery && ((tutorialStep === 38 && showTutorial) || tutorialStep === 40)) ||
       (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) ||
       ((isLiberacaoComReceita || isLiberacaoManual) && (tutorialStep === 2 || tutorialStep === 48)) ||
+      (isConsultaDePreco && (tutorialStep === 49 || tutorialStep === 51)) ||
       showAberturaGerenteMatricula || showAberturaGerenteSenha
     );
 
@@ -821,6 +833,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
     if (isLiberacaoManual && tutorialStep === 47 && !showAberturaGerenteMatricula && !showAberturaGerenteSenha) {
       if (key === "VOLTA") {
         setShowAberturaGerenteMatricula(true);
+      }
+      return;
+    }
+    // Consulta de Preço (passo 50) — a consulta não altera a venda; pressionar
+    // [Limpa] encerra a consulta e retorna a uma tela igual à inicial (passo
+    // 2), agora já marcando o fluxo como concluído (passo 51).
+    if (isConsultaDePreco && tutorialStep === 50) {
+      if (key === "LIMPA") {
+        setTutorialStep(51);
       }
       return;
     }
@@ -1155,7 +1176,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     (isRegistroDeItensDePedidos && tutorialStep === 37) ||
     (isLocalizarPedidoDoDelivery && tutorialStep === 40) ||
     (isConvenio && tutorialStep === 46) ||
-    ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48);
+    ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) ||
+    (isConsultaDePreco && (tutorialStep === 0 || tutorialStep === 2 || tutorialStep === 51));
   const quantidadeCardsDipirona =
     (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)) || (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31))
       ? 3
@@ -1163,6 +1185,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       : isLocalizarPedidoDoDelivery && tutorialStep === 40 ? 1
       : isConvenio && tutorialStep === 46 ? 4
       : (isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48 ? 1
+      : isConsultaDePreco && (tutorialStep === 0 || tutorialStep === 2 || tutorialStep === 51) ? 1
       : tutorialStep === 20 ? 3 : tutorialStep === 17 || tutorialStep === 18 || tutorialStep === 19 ? 2 : 1;
   // Formata um número no padrão brasileiro (vírgula como separador decimal).
   const formatarValorBR = (valor: number) => valor.toFixed(2).replace(".", ",");
@@ -1208,6 +1231,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? itensDemoConvenio
     : isLiberacaoComReceita || isLiberacaoManual
     ? itensDemoLiberacaoComReceita
+    : isConsultaDePreco
+    ? itensDemoLocalizarPedidoDoDelivery
     : itensDemoRegistroDeProdutos;
   const itensVisiveisRegistroDeProdutos = mostrarCardDipirona
     ? itensParaCardGenerico.slice(0, quantidadeCardsDipirona)
@@ -1233,7 +1258,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
     46: 44.9,
     48: 8.13,
   };
-  const subtotalRegistroDeProdutos = subtotalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos;
+  // Consulta de Preço reaproveita o step 0 (compartilhado com Formas de
+  // Pagamento/Envio e Impressão de Cupom) apenas para exibir o carrinho já
+  // no banner de boas-vindas — os valores de exemplo (Dipirona x2) não têm
+  // relação com os das outras tabelas indexadas por step, por isso usa
+  // sempre o total calculado a partir dos itens visíveis.
+  const subtotalRegistroDeProdutos = isConsultaDePreco ? totalRegistroDeProdutos : (subtotalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos);
   // Economizou informado individualmente por tela; enquanto uma tela não
   // tiver valor definido aqui, usa a soma dos descontos dos itens visíveis.
   const economizouPorStepRegistroDeProdutos: Record<number, number> = {
@@ -1248,8 +1278,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
     46: 3.68,
     48: 0.9,
   };
-  const economizouExibidoRegistroDeProdutos =
-    economizouPorStepRegistroDeProdutos[tutorialStep] ?? economizouRegistroDeProdutos;
+  const economizouExibidoRegistroDeProdutos = isConsultaDePreco
+    ? economizouRegistroDeProdutos
+    : (economizouPorStepRegistroDeProdutos[tutorialStep] ?? economizouRegistroDeProdutos);
   // Total informado individualmente por tela; enquanto uma tela não tiver
   // valor definido aqui, usa a soma do preço final dos itens visíveis.
   const totalPorStepRegistroDeProdutos: Record<number, number> = {
@@ -1431,7 +1462,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || isEnvioImpressaoCupom || (isRegistroDeItensDePedidos && tutorialStep === 37) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || isLiberacaoComReceita || isLiberacaoManual ? (
+            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || isEnvioImpressaoCupom || (isRegistroDeItensDePedidos && tutorialStep === 37) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco ? (
               /* Cliente já identificado após o CPF informado na etapa anterior
                  (também usado como tela de fundo dos fluxos de Registro de
                  Produtos, Formas de Pagamento, Liberação de Medicamento
@@ -2265,6 +2296,31 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <ReceitaScreen numero={receitaNumero} numeroCompleto={receitaNumero.length === RECEITA_EXEMPLO.length} semReceita={isLiberacaoManual} />
         </div>
       )}
+      {isConsultaDePreco && tutorialStep === 49 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <ConsultaValorInputScreen />
+          <div className="fade-in-delay absolute bottom-[112px] left-0 right-0 px-[32px]">
+            <div className="bg-[rgba(15,15,15,0.88)] flex gap-[20px] items-center px-[28px] py-[18px] rounded-[10px] w-full border border-white/8 shadow-[0_4px_24px_rgba(0,0,0,0.4)]" style={{ backdropFilter: 'blur(8px)' }}>
+              <div className="shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <span className="font-bold text-white">Escaneie o produto para consulta.</span>
+                <br />
+                Neste exemplo, vamos simular o uso do leitor para escanear o código de barras do produto. Clique no botão abaixo para seguir.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {isConsultaDePreco && tutorialStep === 50 && (
+        <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+          <ConsultaValorResultadoScreen />
+        </div>
+      )}
       {isFormasDePagamento && tutorialStep === 27 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
           <PixAguardandoScreen />
@@ -2603,7 +2659,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Step 2 - Informativo Sangria (não se aplica aos fluxos de Cliente
             Cadastrado e Não Cadastrado e Registro de Produtos, que
             reaproveitam este simulador como placeholder) */}
-        {tutorialStep === 2 && !isClienteCadastrado && !isRegistroDeProdutos && !isFormasDePagamento && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && (
+        {tutorialStep === 2 && !isClienteCadastrado && !isRegistroDeProdutos && !isFormasDePagamento && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco && (
           <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
             <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
               {/* Ícone */}
@@ -2720,6 +2776,38 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
                 <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">R</div>
                 <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">CONVÊNIO</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2 - Informativo Consulta de Preço: instrui o operador a
+            pressionar a tecla [L] Consulta Item para consultar um produto
+            sem adicioná-lo à venda em andamento. */}
+        {tutorialStep === 2 && isConsultaDePreco && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              {/* Ícone */}
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              {/* Texto */}
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Consulte o preço de um produto
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Para consultar as informações de um produto, sem adicioná-lo à venda, pressione a tecla <span className="font-bold text-white">[L] Consulta Item</span> no teclado virtual.
+                </p>
+              </div>
+              {/* Botão Consulta Item ilustração */}
+              <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">L</div>
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">CONSULTA ITEM</div>
               </div>
             </div>
           </div>
@@ -3169,7 +3257,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         )}
 
         {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) / step 46 (Convênio) */}
-        {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48)) && (
+        {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51)) && (
           <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
             <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
@@ -3184,7 +3272,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Parabéns!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : "A sangria de caixa foi realizada e concluída com sucesso."}
+                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
             </div>
@@ -3193,7 +3281,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
 
         {/* Navegação do tutorial - plataforma de treinamentos */}
-        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 || showAberturaIdentificacao || (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 27)) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-[60] flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 || showAberturaIdentificacao || (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 27)) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-[60] flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             onClick={() => {
@@ -3256,6 +3344,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isConvenio && tutorialStep === 46) { setTutorialStep(45); }
               else if ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 47) { setReceitaNumero(""); setShowKeyboard(false); setSku(""); setTutorialStep(2); }
               else if ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) { setTutorialStep(47); }
+              else if (isConsultaDePreco && tutorialStep === 49) { setTutorialStep(2); }
+              else if (isConsultaDePreco && tutorialStep === 50) { setTutorialStep(49); }
+              else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(50); }
               else { setTutorialStep(0); setShowTutorial(true); }
             }}
             className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaGerenteMatricula || showAberturaGerenteSenha) || (!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || (tutorialStep === 0 && !(isAberturaDeCaixa && showTutorial)) || (isEnvioImpressaoCupom && tutorialStep === 31 && showTutorial) || (isRegistroDeItensDePedidos && tutorialStep === 35 && showTutorial) || (isLocalizarPedidoDoDelivery && tutorialStep === 38 && showTutorial))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
@@ -3317,11 +3408,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isConvenio && tutorialStep === 45) { setTutorialStep(46); }
               else if (isConvenio && tutorialStep === 46) { setTutorialStep(10); }
               else if ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) { setTutorialStep(10); }
+              else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(10); }
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48)) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51)) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
-              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) ? "Concluir" : "Próximo"}
+              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) ? "Concluir" : "Próximo"}
             </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -3382,11 +3474,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
-      {((isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 2)) && (
+      {((isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 2) || (isConsultaDePreco && tutorialStep === 49)) && (
         <button
           onClick={() => {
             setSku("");
             if (isLiberacaoComReceita || isLiberacaoManual) { setTutorialStep(47); return; }
+            if (isConsultaDePreco) { setTutorialStep(50); return; }
             setTutorialStep(tutorialStep === 2 ? 15 : 20);
           }}
           className="absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] animate-pulse-subtle"
@@ -3483,7 +3576,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           const target = e.target as HTMLElement;
           const buttonText = target.textContent?.trim();
 
-          if (tutorialStep === 2 && buttonText === "SANGRIA" && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual) {
+          if (tutorialStep === 2 && buttonText === "SANGRIA" && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco) {
             setTutorialStep(3);
             setShowKeyboard(false);
             return;
@@ -3553,8 +3646,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
       >
         <VirtualKeyboard
           key={tutorialStep}
-          highlightSangria={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual}
-          onSangriaPress={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
+          highlightSangria={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco}
+          onSangriaPress={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
           highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && ((tutorialStep === 35 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 36 && pedidoSelecionado))) || (isLocalizarPedidoDoDelivery && tutorialStep === 39 && ovNumero.length === OV_EXEMPLO.length) || (isConvenio && ((tutorialStep === 42 && convenioCodigo.length === CONVENIO_CODIGO_EXEMPLO.length) || (tutorialStep === 43 && convenioCpf.length === CPF_EXEMPLO.length))) || (isLiberacaoComReceita && tutorialStep === 47 && receitaNumero.length === RECEITA_EXEMPLO.length)}
           highlightVolta={(isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar) || (isFormasDePagamento && tutorialStep === 25) || (isLiberacaoManual && tutorialStep === 47 && !showAberturaGerenteMatricula && !showAberturaGerenteSenha)}
           onVoltaPress={
@@ -3582,6 +3675,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
           onDeliveryPress={isLocalizarPedidoDoDelivery && tutorialStep === 38 ? () => { setTutorialStep(39); setShowKeyboard(false); } : undefined}
           highlightConvenio={isConvenio && tutorialStep === 2}
           onConvenioPress={isConvenio && tutorialStep === 2 ? () => { setTutorialStep(41); setShowKeyboard(false); } : undefined}
+          highlightConsultaItem={isConsultaDePreco && tutorialStep === 2}
+          onConsultaItemPress={isConsultaDePreco && tutorialStep === 2 ? () => { setTutorialStep(49); setShowKeyboard(false); } : undefined}
+          highlightLimpa={isConsultaDePreco && tutorialStep === 50}
           highlightVoucher={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 1}
           onVoucherPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 1 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
           highlightDebito={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 2}
@@ -3670,7 +3766,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Treinamento concluído!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : "Agora você está pronto para realizar essa operação no PDV."}
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : isConsultaDePreco ? "Consulta de Preço" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : isConsultaDePreco ? "Agora você está pronto para consultar o preço e as informações de um produto sem adicioná-lo à venda." : "Agora você está pronto para realizar essa operação no PDV."}
                 </p>
               </div>
             </div>
@@ -3773,7 +3869,8 @@ const PROXIMO_TREINAMENTO_POR_CATEGORIA: Record<string, string> = {
   "Atendimento e Vendas": "registro-de-itens-de-pedidos",
   "Resgate de Pedido Balcão": "localizar-pedido-do-delivery",
   "Resgate de Pedido Delivery": "convenio",
-  "Programas e Benefícios": "liberacao-com-receita"
+  "Programas e Benefícios": "liberacao-com-receita",
+  "Medicamentos Controlados": "consulta-de-preco"
 };
 
 function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSecaoData; slugAtual?: string }) {

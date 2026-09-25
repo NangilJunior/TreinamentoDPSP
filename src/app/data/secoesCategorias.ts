@@ -98,7 +98,19 @@ export const secoesCategorias: CategoriaSecaoData[] = [
     ]
   },
   { titulo: "Experiência do Cliente", cards: [{ titulo: "Encantômetro" }] },
-  { titulo: "Ajustes durante a Venda", cards: [{ titulo: "Consulta de Preço" }, { titulo: "Cancelamento Parcial" }, { titulo: "Cancelamento Total" }, { titulo: "DDG (Desconto Gerencial)" }] },
+  {
+    titulo: "Ajustes durante a Venda",
+    cards: [
+      {
+        titulo: "Consulta de Preço",
+        descricao: "Permite verificar o preço e as informações de um produto a partir da leitura ou digitação do seu código de barras, sem adicioná-lo à venda.",
+        slug: "consulta-de-preco"
+      },
+      { titulo: "Cancelamento Parcial" },
+      { titulo: "Cancelamento Total" },
+      { titulo: "DDG (Desconto Gerencial)" }
+    ]
+  },
   { titulo: "Pós-Venda", cards: [{ titulo: "Estorno" }, { titulo: "Troca de Mercadoria" }, { titulo: "Reimpressão de Cupom" }, { titulo: "Reimpressão de Comprovantes" }, { titulo: "Reimpressão Farmácia Popular" }] },
   {
     titulo: "Gestão do Caixa",
