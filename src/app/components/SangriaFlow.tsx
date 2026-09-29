@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import svgH from "../../imports/Home-1/svg-o2mimlgt7x";
 import svgH3 from "../../imports/Home-3/svg-1kscj51chh";
+import { TutorialTooltip } from "./TutorialTooltip";
 
 const MATRICULA = "5732465";
 const SENHA_DOTS = 7;
@@ -272,11 +273,10 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
           <div className="relative">
             {/* Tooltip */}
             {!isSuprimentoAdicional && (
-              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none whitespace-nowrap flex flex-col items-center">
-                <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none">
+                <TutorialTooltip fitContent>
                   Para realizar a <span className="font-bold">Sangria de Caixa</span>, pressione a tecla <span className="font-bold">[1]</span> no teclado do PDV.
-                </div>
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
+                </TutorialTooltip>
               </div>
             )}
             <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
@@ -307,11 +307,10 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
           <div className="relative">
             {/* Tooltip */}
             {isSuprimentoAdicional && (
-              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none whitespace-nowrap flex flex-col items-center">
-                <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none">
+                <TutorialTooltip fitContent>
                   Para realizar o <span className="font-bold">{isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}</span>, pressione a tecla <span className="font-bold">[2]</span> no teclado do PDV.
-                </div>
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
+                </TutorialTooltip>
               </div>
             )}
             <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">

@@ -1,5 +1,6 @@
 import { X, LogIn, FileSpreadsheet } from "lucide-react";
 import { PDVHeader, formatCurrency } from "./ValorRetiradaScreen";
+import { TutorialTooltip } from "./TutorialTooltip";
 import iconeDinheiro from "../../imports/FormasPagamentoIcons/dinheiro.svg";
 import iconePix from "../../imports/FormasPagamentoIcons/pix.svg";
 import iconeDebito from "../../imports/FormasPagamentoIcons/debit.svg";
@@ -83,23 +84,14 @@ export default function PagamentoValorScreen({
 
           <div className="relative border border-[#e5e5e5] rounded-[8px] px-[12px] py-[18px] flex flex-col gap-[24px]">
             {mostrarTooltip && (
-              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
-                <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                    <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                  <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                    {metodo === "dinheiro" ? (
-                      <>Insira no teclado o valor fornecido pelo cliente. Para este exemplo, digite <span className="font-bold text-white">R$ {formatCurrency(valorAlvoCents)}</span>.</>
-                    ) : (
-                      <>Insira no teclado o valor total da compra. Para este exemplo, <span className="font-bold text-white">R$ {formatCurrency(valorAlvoCents)}</span>.</>
-                    )}
-                  </p>
-                </div>
-                <div className="flex justify-center mt-0">
-                  <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                </div>
+              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                <TutorialTooltip width={480}>
+                  {metodo === "dinheiro" ? (
+                    <>Insira no teclado o valor fornecido pelo cliente. Para este exemplo, digite <span className="font-bold">R$ {formatCurrency(valorAlvoCents)}</span>.</>
+                  ) : (
+                    <>Insira no teclado o valor total da compra. Para este exemplo, <span className="font-bold">R$ {formatCurrency(valorAlvoCents)}</span>.</>
+                  )}
+                </TutorialTooltip>
               </div>
             )}
             <div className="flex gap-[12px] items-center">

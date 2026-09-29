@@ -1,6 +1,7 @@
 import { FileSpreadsheet } from "lucide-react";
 import { PDVHeader, formatCurrency } from "./ValorRetiradaScreen";
 import iconeCredito from "../../imports/FormasPagamentoIcons/credit.svg";
+import { TutorialTooltip } from "./TutorialTooltip";
 
 // Parcelamento sem juros sobre o total da compra (R$ 46,54).
 export const TOTAL_PAGAMENTO_CENTS = 4654;
@@ -52,19 +53,10 @@ export default function CreditoParcelasScreen({ selectedIndex }: { selectedIndex
           </div>
 
           <div className="relative border border-[#e5e5e5] rounded-[20px] p-[20px]">
-            <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
-              <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                  <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                  <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Selecione a forma de parcelamento desejada e pressione <span className="font-bold text-white">[Entra]</span> para confirmar a quantidade de parcelas.
-                </p>
-              </div>
-              <div className="flex justify-center mt-0">
-                <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-              </div>
+            <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+              <TutorialTooltip width={480}>
+                Selecione a forma de parcelamento desejada e pressione <span className="font-bold">[Entra]</span> para confirmar a quantidade de parcelas.
+              </TutorialTooltip>
             </div>
             <div className="h-[195px] overflow-y-auto flex flex-col">
               {OPCOES_PARCELAS.map((n, idx) => {

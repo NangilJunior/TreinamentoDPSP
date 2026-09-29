@@ -69,14 +69,16 @@ export function ScaleToFit({
 export function useFitScale(
   designWidth: number,
   designHeight: number,
-  opts?: { paddingX?: number; paddingY?: number; max?: number },
+  opts?: { paddingX?: number; paddingY?: number; paddingTop?: number; paddingBottom?: number; max?: number },
 ) {
-  const { paddingX = 48, paddingY = 48, max = 1 } = opts ?? {};
+  const { paddingX = 48, paddingY = 48, paddingTop, paddingBottom, max = 1 } = opts ?? {};
+  const top = paddingTop ?? paddingY;
+  const bottom = paddingBottom ?? paddingY;
 
   const compute = () => {
     if (typeof window === "undefined") return max;
     const availW = window.innerWidth - paddingX * 2;
-    const availH = window.innerHeight - paddingY * 2;
+    const availH = window.innerHeight - top - bottom;
     return Math.max(0, Math.min(max, availW / designWidth, availH / designHeight));
   };
 
@@ -88,7 +90,7 @@ export function useFitScale(
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [designWidth, designHeight, paddingX, paddingY, max]);
+  }, [designWidth, designHeight, paddingX, top, bottom, max]);
 
   return scale;
 }

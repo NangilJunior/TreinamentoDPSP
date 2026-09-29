@@ -35,6 +35,7 @@ import { ReceitaScreen } from "./LiberacaoReceitaScreens";
 import AutorizacaoGerenteMedicamentoScreen from "./LiberacaoManualScreens";
 import { ConsultaValorInputScreen, ConsultaValorResultadoScreen } from "./ConsultaPrecoScreens";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
+import { TutorialTooltip } from "./TutorialTooltip";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
 import iconeEntrar from "../../imports/AberturaCaixaLogin/icone-entrar.svg";
 import iconeIdCard from "../../imports/ClienteCadastrado/icone-id-card.svg";
@@ -62,6 +63,16 @@ interface FuncionalidadeContent {
 const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   "suprimento-inicial": {
     titulo: "Suprimento Inicial",
+    conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
+    hasPDV: true
+  },
+  "suprimento-inicial-teste-1": {
+    titulo: "Suprimento Inicial Teste 1",
+    conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
+    hasPDV: true
+  },
+  "suprimento-inicial-teste-2": {
+    titulo: "Suprimento Inicial Teste 2",
     conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
     hasPDV: true
   },
@@ -293,6 +304,8 @@ function formatCpf(digitos: string): string {
 const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
   "abertura-de-caixa": "abertura-de-caixa.mp3",
   "suprimento-inicial": "suprimento-inicial.mp3",
+  "suprimento-inicial-teste-1": "suprimento-inicial.mp3",
+  "suprimento-inicial-teste-2": "suprimento-inicial.mp3",
   "suprimento-complementar": "suprimento-complementar.mp3",
   "sangria-de-caixa": "sangria-de-caixa.mp3",
   "cliente-cadastrado-e-nao-cadastrado": "cliente-cadastrado-e-nao-cadastrado.mp3",
@@ -306,7 +319,7 @@ const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
 
 function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
-  const isSuprimentoInicial = slug === "suprimento-inicial";
+  const isSuprimentoInicial = slug === "suprimento-inicial" || slug === "suprimento-inicial-teste-1" || slug === "suprimento-inicial-teste-2";
   const isSuprimentoAdicional = slug === "suprimento-complementar" || isSuprimentoInicial;
   const isAberturaDeCaixa = slug === "abertura-de-caixa";
   // Aviso de limite de valores/recomendação de sangria só faz sentido no
@@ -323,6 +336,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const isLiberacaoComReceita = slug === "liberacao-com-receita";
   const isLiberacaoManual = slug === "liberacao-manual";
   const isConsultaDePreco = slug === "consulta-de-preco";
+  // Layout experimental: tela + teclado virtual lado a lado (em vez do
+  // teclado sobrepor a tela), testado isoladamente neste fluxo antes de uma
+  // possível adoção nos demais.
+  const isSuprimentoInicialTeste1 = slug === "suprimento-inicial-teste-1";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
   // Cadastrado e Não Cadastrado, Registro de Produtos, Formas de Pagamento,
@@ -395,6 +412,21 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // resoluções menores. A folga vertical (paddingY) garante espaço para o card
   // de tutorial que aparece abaixo do PDV.
   const trainingScale = useFitScale(1280, 800, { paddingX: 32, paddingY: 90 });
+  // Layout experimental (teste 1): a tela ocupa a parte de cima da viewport,
+  // e o teclado virtual (reduzido a 70% do seu tamanho atual, de 0.5 para
+  // scale-[0.35]) é posicionado logo abaixo dela — a posição do teclado é
+  // CALCULADA a partir da altura real da tela (não é um valor independente
+  // "adivinhado"), garantindo que um sempre fique embaixo do outro, nessa
+  // ordem, sem se sobrepor.
+  const KEYBOARD_SPLIT_GAP = 16;
+  const KEYBOARD_SPLIT_NATURAL_HEIGHT = 735; // altura natural (sem escala) do VirtualKeyboard
+  const keyboardSplitHeight = KEYBOARD_SPLIT_NATURAL_HEIGHT * 0.35;
+  const splitScreenScale = useFitScale(1280, 800, {
+    paddingX: 32,
+    paddingTop: KEYBOARD_SPLIT_GAP,
+    paddingBottom: keyboardSplitHeight + KEYBOARD_SPLIT_GAP * 2,
+  });
+  const splitKeyboardTop = KEYBOARD_SPLIT_GAP + 800 * splitScreenScale + KEYBOARD_SPLIT_GAP;
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [keyboardReady, setKeyboardReady] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -417,6 +449,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // direto na tela "Pagamento realizado" (passo 31), então a pré-visualização
   // (antes de "Iniciar Treinamento") já deve nascer nesse passo.
   const [tutorialStep, setTutorialStep] = useState(isEnvioImpressaoCupom ? 31 : 0);
+  // Ativa o layout experimental nos passos em que o operador precisa
+  // localizar uma tecla no teclado virtual (Sangria no passo 2, Entra no
+  // passo 3), e só depois de abri-lo.
+  const isKeyboardSplitTeste1 = isSuprimentoInicialTeste1 && showKeyboard && [2, 3, 5, 6, 7].includes(tutorialStep);
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [cpf, setCpf] = useState("");
   // Número da OV (pedido) digitado no fluxo de Localizar Pedido do Delivery
@@ -1100,6 +1136,68 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
   }, [isFormasDePagamento, isRegistroDeItensDePedidos, tutorialStep]);
 
+  // Atalhos de teclado físico (teste 1): com o teclado virtual dividido em
+  // tela, cada passo tem uma tecla física equivalente à tecla virtual que o
+  // avança — [V] (Sangria) no passo 2, [Enter] (Entra) no passo 3, [2]
+  // (Consultar Suprimento) no passo 5, [Enter] (Entra) + [V]/[K] ou
+  // setas ↑/↓ (navegar motivos) no passo 6, dígitos + [Enter] (Entra) no
+  // passo 7 (digitação do valor). Nota: o listener físico
+  // genérico do restante do app (mais abaixo, "handleKeyboard") fica preso
+  // ao tutorialStep do momento em que o treinamento começou (closure
+  // obsoleta, dependências [isTrainingMode]), então não reage corretamente a
+  // mudanças de passo — por isso o passo 7 precisa da própria lógica aqui,
+  // com as dependências corretas.
+  useEffect(() => {
+    if (!isKeyboardSplitTeste1) return;
+    const handleShortcut = (e: KeyboardEvent) => {
+      if (tutorialStep === 2 && e.key.toLowerCase() === "v") {
+        e.preventDefault();
+        setTutorialStep(3);
+        setShowKeyboard(false);
+      } else if (tutorialStep === 3 && e.key === "Enter") {
+        e.preventDefault();
+        setTutorialStep(4);
+        setShowKeyboard(false);
+      } else if (tutorialStep === 5 && e.key === "2") {
+        e.preventDefault();
+        setTutorialStep(6);
+        setShowKeyboard(false);
+      } else if (tutorialStep === 6) {
+        if (e.key === "Enter" && motivoIndex === 0) {
+          e.preventDefault();
+          setTutorialStep(7);
+          setShowKeyboard(false);
+        } else if (e.key.toLowerCase() === "v" || e.key === "ArrowUp") {
+          e.preventDefault();
+          handleVPress();
+        } else if (e.key.toLowerCase() === "k" || e.key === "ArrowDown") {
+          e.preventDefault();
+          handleKPress();
+        }
+      } else if (tutorialStep === 7) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (valorRetirada === valorAlvo) {
+            setTutorialStep(8);
+            setShowKeyboard(false);
+            if (!isSuprimentoAdicional) setValorRetirada(0);
+          }
+        } else if (e.key === "Backspace") {
+          e.preventDefault();
+          setValorRetirada((prev) => Math.floor(prev / 10));
+        } else if (e.key === "Delete") {
+          e.preventDefault();
+          setValorRetirada(0);
+        } else if (!isNaN(Number(e.key))) {
+          e.preventDefault();
+          setValorRetirada((prev) => Math.min(prev * 10 + Number(e.key), 99999999));
+        }
+      }
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [isKeyboardSplitTeste1, tutorialStep, motivoIndex, valorRetirada, valorAlvo, isSuprimentoAdicional, handleVPress, handleKPress]);
+
   // Próximo dígito do CPF de exemplo a ser destacado no teclado virtual
   // (passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado).
   const proximoDigitoCpf =
@@ -1519,21 +1617,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <div className="relative flex gap-[8px] items-center justify-center px-[32px] py-[14px] w-[256px]">
                     {/* Tooltip - step 2 (revisita) do fluxo de Cliente Cadastrado e Não Cadastrado, exemplo de venda sem identificar o cliente */}
                     {tutorialStep === 2 && isClienteCadastrado && demoSemIdentificar && (
-                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
-                        <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                            <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                            <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                          </svg>
-                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            Para seguir sem identificar o cliente, clique em{" "}
-                            <span className="font-bold text-white">[Volta]</span> no teclado virtual. Outra opção é clicar em{" "}
-                            <span className="font-bold text-white">[Entra]</span> sem ter informado o número do CPF.
-                          </p>
-                        </div>
-                        <div className="flex justify-center mt-0">
-                          <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                        </div>
+                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                        <TutorialTooltip width={480}>
+                          Para seguir sem identificar o cliente, clique em{" "}
+                          <span className="font-bold">[Volta]</span> no teclado virtual. Outra opção é clicar em{" "}
+                          <span className="font-bold">[Entra]</span> sem ter informado o número do CPF.
+                        </TutorialTooltip>
                       </div>
                     )}
                     <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">Sem Identificação</p>
@@ -1545,37 +1634,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <div className="relative flex-1">
                     {/* Tooltip - step 2 (primeira visita) do fluxo de Cliente Cadastrado e Não Cadastrado */}
                     {tutorialStep === 2 && isClienteCadastrado && !demoSemIdentificar && (
-                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
-                        <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                            <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                            <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                          </svg>
-                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            Informe o CPF do cliente. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
-                            <span className="font-bold text-white">[Entra]</span> para continuar.
-                          </p>
-                        </div>
-                        <div className="flex justify-center mt-0">
-                          <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                        </div>
+                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                        <TutorialTooltip width={480}>
+                          Informe o CPF do cliente. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
+                          <span className="font-bold">[Entra]</span> para continuar.
+                        </TutorialTooltip>
                       </div>
                     )}
                     {tutorialStep === 35 && isRegistroDeItensDePedidos && !showTutorial && (
-                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[480px] pointer-events-none z-[45]">
-                        <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                            <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                            <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                          </svg>
-                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            Informe o CPF do cliente para localizar o pedido registrado pelo farmacêutico. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
-                            <span className="font-bold text-white">[Entra]</span> para continuar.
-                          </p>
-                        </div>
-                        <div className="flex justify-center mt-0">
-                          <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                        </div>
+                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                        <TutorialTooltip width={480}>
+                          Informe o CPF do cliente para localizar o pedido registrado pelo farmacêutico. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
+                          <span className="font-bold">[Entra]</span> para continuar.
+                        </TutorialTooltip>
                       </div>
                     )}
                     <input
@@ -1700,35 +1771,17 @@ function PDVSimulator({ slug }: { slug?: string }) {
                  15 a 17 do fluxo de Registro de Produtos. */
               <div className="p-[20px] relative">
                 {tutorialStep === 15 && (
-                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[380px] pointer-events-none z-[45]">
-                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                      <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        O item escaneado ficará listado aqui.
-                      </p>
-                    </div>
-                    <div className="flex justify-center mt-0">
-                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                    </div>
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                    <TutorialTooltip width={380}>
+                      O item escaneado ficará listado aqui.
+                    </TutorialTooltip>
                   </div>
                 )}
                 {tutorialStep === 17 && (
-                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[380px] pointer-events-none z-[45]">
-                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                      <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        Se o código inserido estiver correto, o item entrará na lista.
-                      </p>
-                    </div>
-                    <div className="flex justify-center mt-0">
-                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                    </div>
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                    <TutorialTooltip width={380}>
+                      Se o código inserido estiver correto, o item entrará na lista.
+                    </TutorialTooltip>
                   </div>
                 )}
                 <div className="space-y-[12px]">
@@ -1738,35 +1791,17 @@ function PDVSimulator({ slug }: { slug?: string }) {
                     return (
                     <div key={idx} className="relative">
                       {isRegistroDeItensDePedidos && tutorialStep === 37 && idx === 0 && (
-                        <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[420px] pointer-events-none z-[45]">
-                          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                              Os itens do pedido foram carregados automaticamente, sem a necessidade de leitura ou digitação dos códigos de barras. Pressione <span className="font-bold text-white">[Sub Total]</span> para seguir com o pagamento.
-                            </p>
-                          </div>
-                          <div className="flex justify-center mt-0">
-                            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                          </div>
+                        <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                          <TutorialTooltip width={420}>
+                            Os itens do pedido foram carregados automaticamente, sem a necessidade de leitura ou digitação dos códigos de barras. Pressione <span className="font-bold">[Sub Total]</span> para seguir com o pagamento.
+                          </TutorialTooltip>
                         </div>
                       )}
                       {tutorialStep === 20 && idx === 2 && (
-                        <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[380px] pointer-events-none z-[45]">
-                          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                              O item é inserido com a quantidade informada
-                            </p>
-                          </div>
-                          <div className="flex justify-center mt-0">
-                            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                          </div>
+                        <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                          <TutorialTooltip width={380}>
+                            O item é inserido com a quantidade informada
+                          </TutorialTooltip>
                         </div>
                       )}
                       <div className="bg-white border border-[#dddddd] flex items-stretch justify-between overflow-hidden rounded-[8px] w-full">
@@ -2010,46 +2045,30 @@ function PDVSimulator({ slug }: { slug?: string }) {
               <div className="flex flex-col gap-[12px] items-center">
                 <div className="relative">
                   {isFormasDePagamento && tutorialStep === 25 && (
-                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[460px] pointer-events-none z-[45]">
-                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                      <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        As opções de emissão de comprovantes são exibidas. Caso não queira nenhum, basta clicar em <span className="font-bold text-white">[Volta]</span> no teclado virtual.
-                      </p>
-                    </div>
-                    <div className="flex justify-center mt-0">
-                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                    </div>
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                    <TutorialTooltip width={460}>
+                      As opções de emissão de comprovantes são exibidas. Caso não queira nenhum, basta clicar em <span className="font-bold">[Volta]</span> no teclado virtual.
+                    </TutorialTooltip>
                   </div>
                   )}
                   {isEnvioImpressaoCupom && tutorialStep === 31 && !showTutorial && isTrainingMode && (
-                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] w-[460px] pointer-events-none z-[45]">
-                    <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                        <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                        <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
+                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                    <TutorialTooltip width={460}>
                       {cupomEtapaIndex === 0 ? (
                         <div className="flex flex-col gap-[12px]">
-                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            No teclado, ao pressionar <span className="font-bold text-white">[1]</span> o cupom é enviado por e-mail, <span className="font-bold text-white">[2]</span> a impressão é realizada na hora e <span className="font-bold text-white">[3]</span> faz ambos. <span className="font-bold text-white">[Volta]</span> encerra a operação sem escolher nenhuma das opções.
+                          <p>
+                            No teclado, ao pressionar <span className="font-bold">[1]</span> o cupom é enviado por e-mail, <span className="font-bold">[2]</span> a impressão é realizada na hora e <span className="font-bold">[3]</span> faz ambos. <span className="font-bold">[Volta]</span> encerra a operação sem escolher nenhuma das opções.
                           </p>
-                          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                            Para este exemplo, pressione <span className="font-bold text-white">[2]</span> no teclado virtual para imprimir o cupom.
+                          <p>
+                            Para este exemplo, pressione <span className="font-bold">[2]</span> no teclado virtual para imprimir o cupom.
                           </p>
                         </div>
                       ) : (
-                        <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                          Agora vamos simular o envio por e-mail. Pressione <span className="font-bold text-white">[1]</span> no teclado virtual.
+                        <p>
+                          Agora vamos simular o envio por e-mail. Pressione <span className="font-bold">[1]</span> no teclado virtual.
                         </p>
                       )}
-                    </div>
-                    <div className="flex justify-center mt-0">
-                      <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-                    </div>
+                    </TutorialTooltip>
                   </div>
                   )}
                   <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
@@ -2155,14 +2174,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {/* Footer na base do PDV */}
       <div className={`transition-all duration-500 ${isTrainingMode && tutorialStep === 1 ? 'relative z-10 ring-2 ring-[#F59E0B] shadow-[0_0_24px_4px_rgba(245,158,11,0.35)]' : ''}`}>
         {isTrainingMode && tutorialStep === 1 && (
-          <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-[560px] pointer-events-none">
-            <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-3 pointer-events-none">
+            <TutorialTooltip width={560}>
               Quando o valor em caixa atingir o limite configurado para a unidade, o PDV exibirá um aviso discreto ao operador solicitando a realização da Sangria de Caixa. A mensagem foi projetada para informar a necessidade da operação sem evidenciar que o caixa está com elevado volume de numerário.
-            </div>
-            {/* Triângulo apontando para baixo */}
-            <div className="flex justify-center">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
-            </div>
+            </TutorialTooltip>
           </div>
         )}
         {isSangriaDeCaixa && <Frame19557 />}
@@ -2355,13 +2370,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <div className="fade-in-delay absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
 
           {/* Tooltip acima do modal */}
-          <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
-            <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
+            <TutorialTooltip width={700}>
               Será exibido um modal informando que a realização d{isSuprimentoInicial ? "o Suprimento Inicial" : isSuprimentoAdicional ? "o Suprimento Complementar" : "a Sangria de Caixa"} requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
-            </div>
-            <div className="flex justify-center">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
-            </div>
+            </TutorialTooltip>
           </div>
 
           {/* Modal bottom sheet */}
@@ -2378,13 +2390,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <div className="fade-in-delay absolute inset-0 bg-black/50 backdrop-blur-sm rounded-[20px] z-[20]" />
 
           {/* Tooltip acima do modal */}
-          <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 w-[700px] z-[35] pointer-events-none">
-            <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+          <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
+            <TutorialTooltip width={700}>
               Será exibido um modal perguntando se o cliente deseja que o CPF/CNPJ seja identificado na nota fiscal. Pressione a tecla <span className="font-bold">[Entra]</span> para confirmar a identificação ou <span className="font-bold">[Volta]</span> para prosseguir sem identificação.
-            </div>
-            <div className="flex justify-center">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[#111]" />
-            </div>
+            </TutorialTooltip>
           </div>
 
           {/* Modal bottom sheet */}
@@ -2526,7 +2535,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
       </button>
 
       {/* PDV - Centralizado verticalmente (escalado para caber em telas menores) */}
-      <div className="absolute top-[42%] left-1/2 z-10" style={{ transform: `translate(-50%, -50%) scale(${trainingScale})` }}>
+      <div
+        className={`absolute left-1/2 z-10 transition-all duration-500 ease-in-out ${isKeyboardSplitTeste1 ? 'top-[16px]' : 'top-[42%]'}`}
+        style={{
+          transform: `translate(-50%, ${isKeyboardSplitTeste1 ? '0' : '-50%'}) scale(${isKeyboardSplitTeste1 ? splitScreenScale : trainingScale})`,
+          transformOrigin: isKeyboardSplitTeste1 ? 'top center' : 'center center',
+        }}
+      >
 
 
         {isLiberacaoManual && (showAberturaGerenteMatricula || showAberturaGerenteSenha) ? (
@@ -2550,77 +2565,30 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Tooltip - Autorização do Gerente (tela intermediária) */}
         {showAberturaAutorizacao && (
           <div className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '227px', left: '678px', right: '32px' }}>
-            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[14px] items-start px-[20px] py-[14px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8 border-b-0" style={{ backdropFilter: 'blur(10px)' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                Esta operação requer autorização do gerente. Após a introdução das credenciais, você poderá continuar.
-              </p>
-            </div>
-            {/* Triângulo apontando para baixo (em direção ao input) */}
-            <div className="flex justify-center mt-0">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-            </div>
+            <TutorialTooltip>
+              Esta operação requer autorização do gerente. Após a introdução das credenciais, você poderá continuar.
+            </TutorialTooltip>
           </div>
         )}
 
         {/* Tooltip - Matrícula/Senha do Operador */}
         {(showEntradaOperadorMatricula || showEntradaOperadorSenha) && (
           <div key={showEntradaOperadorSenha ? "senha" : "matricula"} className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '120px', left: '240px', right: '240px' }}>
-            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8 border-b-0" style={{ backdropFilter: 'blur(10px)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                {showEntradaOperadorSenha ? (
-                  <>
-                    Agora informe sua senha. Neste exemplo, digite o número{" "}
-                    <span className="font-bold text-white">000000</span> no teclado virtual e pressione{" "}
-                    <span className="font-bold text-white">[Entra]</span> para continuar.
-                  </>
-                ) : (
-                  <>
-                    Informe no teclado a sua matrícula. Neste exemplo, digite o número{" "}
-                    <span className="font-bold text-white">000000</span> no teclado virtual e pressione{" "}
-                    <span className="font-bold text-white">[Entra]</span> para continuar.
-                  </>
-                )}
-              </p>
-            </div>
-            {/* Triângulo apontando para baixo (em direção ao input) */}
-            <div className="flex justify-center mt-0">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-            </div>
-          </div>
-        )}
-
-        {/* Banner Ação do Gerente - abaixo do PDV */}
-        {(tutorialStep === 4 || showAberturaGerenteMatricula || showAberturaGerenteSenha) && (
-          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-              style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
-              <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
-              <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white" />
-                </svg>
-              </div>
-              <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Ação do Gerente
-                </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Esta operação requer a presença e autenticação do gerente responsável pela loja.
-                </p>
-              </div>
-              <div className="shrink-0 ml-auto flex items-center gap-[7px] rounded-full px-[14px] py-[7px] bg-white/10 border border-white/20">
-                <div className="w-[6px] h-[6px] rounded-full bg-white animate-pulse" />
-                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[11px] text-white uppercase tracking-widest">Aguardando</span>
-              </div>
-            </div>
+            <TutorialTooltip>
+              {showEntradaOperadorSenha ? (
+                <>
+                  Agora informe sua senha. Neste exemplo, digite o número{" "}
+                  <span className="font-bold">000000</span> no teclado virtual e pressione{" "}
+                  <span className="font-bold">[Entra]</span> para continuar.
+                </>
+              ) : (
+                <>
+                  Informe no teclado a sua matrícula. Neste exemplo, digite o número{" "}
+                  <span className="font-bold">000000</span> no teclado virtual e pressione{" "}
+                  <span className="font-bold">[Entra]</span> para continuar.
+                </>
+              )}
+            </TutorialTooltip>
           </div>
         )}
 
@@ -3127,42 +3095,65 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Step 7 - Tooltip Valor da Retirada */}
         {tutorialStep === 7 && (
           <div className="fade-in-delay absolute pointer-events-none z-[45]" style={{ top: '185px', left: '128px', right: '128px' }}>
-            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8 border-b-0" style={{ backdropFilter: 'blur(10px)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                {isSuprimentoAdicional ? (
-                  <>
-                    Informe o valor que será adicionado. Neste exemplo, será realizado um suprimento no valor de{" "}
-                    <span className="font-bold text-white">R$ 200,00</span>. Digite utilizando o teclado virtual e pressione{" "}
-                    <span className="font-bold text-white">[Entra]</span> para continuar.
-                  </>
-                ) : (
-                  <>
-                    Informe o valor que será retirado. Neste exemplo, será realizada uma sangria no valor de{" "}
-                    <span className="font-bold text-white">R$ 1.000,00</span>. Digite utilizando o teclado virtual e pressione{" "}
-                    <span className="font-bold text-white">[Entra]</span> para continuar.
-                  </>
-                )}
-              </p>
-            </div>
-            {/* Triângulo apontando para baixo (em direção ao input) */}
-            <div className="flex justify-center mt-0">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-            </div>
+            <TutorialTooltip>
+              {isSuprimentoAdicional ? (
+                <>
+                  Informe o valor que será adicionado. Neste exemplo, será realizado um suprimento no valor de{" "}
+                  <span className="font-bold">R$ 200,00</span>. Digite utilizando o teclado virtual e pressione{" "}
+                  <span className="font-bold">[Entra]</span> para continuar.
+                </>
+              ) : (
+                <>
+                  Informe o valor que será retirado. Neste exemplo, será realizada uma sangria no valor de{" "}
+                  <span className="font-bold">R$ 1.000,00</span>. Digite utilizando o teclado virtual e pressione{" "}
+                  <span className="font-bold">[Entra]</span> para continuar.
+                </>
+              )}
+            </TutorialTooltip>
           </div>
         )}
 
         {/* Step 8 - Gaveta Aberta / Retirada */}
         {tutorialStep === 8 && (
-          <>
-            <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-              {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta isSuprimentoInicial={isSuprimentoInicial} /> : <Home6 />}
+          <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
+            {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta isSuprimentoInicial={isSuprimentoInicial} /> : <Home6 />}
+          </div>
+        )}
+
+        {/* Faixa abaixo da tela: banner (quando houver) + navegação, todos
+            empilhados com o mesmo espaçamento padrão de 16px entre si.
+            Ocultada no layout experimental (teste 1), que não usa Anterior/
+            Próximo enquanto o teclado dividido estiver em tela. */}
+        {!isKeyboardSplitTeste1 && (
+        <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50] flex flex-col gap-[16px]">
+          {/* Banner Ação do Gerente - abaixo do PDV */}
+          {(tutorialStep === 4 || showAberturaGerenteMatricula || showAberturaGerenteSenha) && (
+            <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+              style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
+              <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
+              <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[2px]">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Ação do Gerente
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Esta operação requer a presença e autenticação do gerente responsável pela loja.
+                </p>
+              </div>
+              <div className="shrink-0 ml-auto flex items-center gap-[7px] rounded-full px-[14px] py-[7px] bg-white/10 border border-white/20">
+                <div className="w-[6px] h-[6px] rounded-full bg-white animate-pulse" />
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[11px] text-white uppercase tracking-widest">Aguardando</span>
+              </div>
             </div>
-            <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+          )}
+
+          {/* Step 8 - Gaveta Aberta / Retirada */}
+          {tutorialStep === 8 && (
+            <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
@@ -3174,7 +3165,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Gaveta Aberta
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Nesta etapa, a gaveta do caixa ser&aacute; aberta. {isSuprimentoAdicional ? "Adicione o valor informado" : "Retire o valor indicado"} e, para prosseguir, feche a gaveta.
                 </p>
               </div>
@@ -3192,13 +3183,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest whitespace-nowrap">Fechar Gaveta</span>
               </button>
             </div>
-          </div>
-        </>)}
+          )}
 
-        {/* Formas de Pagamento - passo 24: Gaveta Aberta (Dinheiro) */}
-        {isFormasDePagamento && tutorialStep === 24 && (
-          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+          {/* Formas de Pagamento - passo 24: Gaveta Aberta (Dinheiro) */}
+          {isFormasDePagamento && tutorialStep === 24 && (
+            <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
@@ -3210,7 +3199,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Gaveta Aberta
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Guarde o dinheiro recebido do cliente e retire o troco correspondente e, para prosseguir, feche a gaveta.
                 </p>
               </div>
@@ -3228,13 +3217,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest whitespace-nowrap">Fechar Gaveta</span>
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Formas de Pagamento - passo 27: Aguardando pagamento PIX */}
-        {isFormasDePagamento && tutorialStep === 27 && (
-          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+          {/* Formas de Pagamento - passo 27: Aguardando pagamento PIX */}
+          {isFormasDePagamento && tutorialStep === 27 && (
+            <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
@@ -3248,18 +3235,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Aguardando o pagamento
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   O cliente escaneia o QR Code e realiza o pagamento no seu app bancário. Após o processamento do pagamento, o sistema avança automaticamente.
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) / step 46 (Convênio) */}
-        {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51)) && (
-          <div className="fade-in-delay absolute top-[calc(100%+16px)] left-0 right-0 z-[50]">
-            <div className="relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+          {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) / step 46 (Convênio) */}
+          {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51)) && (
+            <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
@@ -3271,17 +3256,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Parabéns!
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-
-        {/* Navegação do tutorial - plataforma de treinamentos */}
-        <div className={`absolute ${tutorialStep === 8 || tutorialStep === 9 || showAberturaIdentificacao || (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 27)) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) ? 'bottom-[-160px]' : 'bottom-[-56px]'} left-0 right-0 z-[60] flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          {/* Navegação do tutorial - plataforma de treinamentos */}
+          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             onClick={() => {
@@ -3420,6 +3403,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
             </svg>
           </button>
         </div>
+        </div>
+        )}
       </div>
 
       {/* Toggle Keyboard Button - Fixo na parte inferior */}
@@ -3432,7 +3417,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
           isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) ? 'animate-pulse-subtle' : ''
-        } ${keyboardOcultoNestaEtapa ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        } ${keyboardOcultoNestaEtapa || isKeyboardSplitTeste1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
@@ -3456,21 +3441,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
           também no passo 19 (leva ao passo 20, com o item multiplicado). */}
       {isRegistroDeProdutos && tutorialStep === 19 && (
         <div
-          className="fade-in-delay absolute bottom-[160px] left-1/2 w-[380px] pointer-events-none z-[45]"
+          className="fade-in-delay absolute bottom-[160px] left-1/2 pointer-events-none z-[45]"
           style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
         >
-          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-              Agora clique em Escanear Produtos
-            </p>
-          </div>
-          <div className="flex justify-center mt-0">
-            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-          </div>
+          <TutorialTooltip width={380}>
+            Agora clique em Escanear Produtos
+          </TutorialTooltip>
         </div>
       )}
 
@@ -3525,21 +3501,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
           Registro de Produtos) */}
       {showKeyboard && isRegistroDeProdutos && tutorialStep === 16 && (
         <div
-          className="fade-in-delay absolute bottom-[520px] left-1/2 w-[480px] pointer-events-none z-[45]"
+          className="fade-in-delay absolute bottom-[520px] left-1/2 pointer-events-none z-[45]"
           style={{ transform: `translateX(calc(-50% + 228px)) scale(${trainingScale})`, transformOrigin: "bottom center" }}
         >
-          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-              Insira o código de barras 11122233
-            </p>
-          </div>
-          <div className="flex justify-center mt-0">
-            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-          </div>
+          <TutorialTooltip width={480}>
+            Insira o código de barras 11122233
+          </TutorialTooltip>
         </div>
       )}
 
@@ -3547,31 +3514,25 @@ function PDVSimulator({ slug }: { slug?: string }) {
           fluxo de Registro de Produtos) */}
       {showKeyboard && isRegistroDeProdutos && tutorialStep === 18 && (
         <div
-          className="fade-in-delay absolute bottom-[520px] left-1/2 w-[480px] pointer-events-none z-[45]"
+          className="fade-in-delay absolute bottom-[520px] left-1/2 pointer-events-none z-[45]"
           style={{ transform: `translateX(calc(-50% + 228px)) scale(${trainingScale})`, transformOrigin: "bottom center" }}
         >
-          <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-              <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-              Neste exemplo, vamos multiplicar o produto que será registrado por 3.
-            </p>
-          </div>
-          <div className="flex justify-center mt-0">
-            <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-          </div>
+          <TutorialTooltip width={480}>
+            Neste exemplo, vamos multiplicar o produto que será registrado por 3.
+          </TutorialTooltip>
         </div>
       )}
 
       {/* Virtual Keyboard - Posicionado embaixo com animação */}
       <div
-        className={`absolute left-1/2 -translate-x-1/2 z-20 transform scale-[0.5] ${
-          keyboardReady ? "transition-all duration-500 ease-in-out" : ""
+        className={`absolute left-1/2 -translate-x-1/2 z-20 transform ${
+          isKeyboardSplitTeste1 ? "scale-[0.35]" : "scale-[0.5]"
         } ${
-          showKeyboard ? "bottom-[-40px]" : "bottom-[-600px]"
+          keyboardReady || isSuprimentoInicialTeste1 ? "transition-all duration-500 ease-in-out" : ""
+        } ${
+          isKeyboardSplitTeste1 ? "" : showKeyboard ? "bottom-[-40px]" : "bottom-[-600px]"
         }`}
+        style={isKeyboardSplitTeste1 ? { top: `${splitKeyboardTop}px`, transformOrigin: "top center" } : undefined}
         onClick={(e) => {
           const target = e.target as HTMLElement;
           const buttonText = target.textContent?.trim();
@@ -3763,7 +3724,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               <div className="flex flex-col gap-[12px] items-center">
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[40px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Treinamento concluído!
+                  Etapa concluída!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : isConsultaDePreco ? "Consulta de Preço" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : isConsultaDePreco ? "Agora você está pronto para consultar o preço e as informações de um produto sem adicioná-lo à venda." : "Agora você está pronto para realizar essa operação no PDV."}

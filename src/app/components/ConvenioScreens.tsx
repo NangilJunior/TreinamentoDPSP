@@ -1,6 +1,7 @@
 import { Handshake, MoreHorizontal, ChevronRight } from "lucide-react";
 import iconeFileBadge from "../../imports/ConvenioIcons/file-badge.svg";
 import iconeRotateCcwKey from "../../imports/ConvenioIcons/rotate-ccw-key.svg";
+import { TutorialTooltip } from "./TutorialTooltip";
 
 // Todas as telas do fluxo de Convênio (nodes 2210:xxxxx do Figma) usam o
 // mesmo padrão de bottom sheet branco sobre o PDV escurecido/desfocado ao
@@ -39,19 +40,10 @@ export function ConvenioBottomSheet({
         style={{ gap: `${gapPx}px`, minHeight: minHeightPx ? `${minHeightPx}px` : undefined, paddingBottom: `${paddingBottomPx}px` }}
       >
         {tooltip && (
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[16px] pointer-events-none" style={{ width: `${tooltipWidthPx}px` }}>
-            <div className="bg-[rgba(15,15,15,0.92)] flex gap-[16px] items-start px-[24px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.5)] border border-white/8" style={{ backdropFilter: 'blur(10px)' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="shrink-0 mt-[2px]">
-                <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" />
-                <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                {tooltip}
-              </p>
-            </div>
-            <div className="flex justify-center mt-0">
-              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[10px] border-t-[rgba(15,15,15,0.92)]" />
-            </div>
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[16px] pointer-events-none">
+            <TutorialTooltip width={tooltipWidthPx}>
+              {tooltip}
+            </TutorialTooltip>
           </div>
         )}
         {centered ? (
