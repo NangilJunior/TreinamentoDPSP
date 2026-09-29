@@ -2058,7 +2058,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                             No teclado, ao pressionar <span className="font-bold">[1]</span> o cupom é enviado por e-mail, <span className="font-bold">[2]</span> a impressão é realizada na hora e <span className="font-bold">[3]</span> faz ambos.
                           </p>
                           <p>
-                            Para este exemplo, pressione <span className="font-bold">[1]</span> no teclado virtual para enviar o cupom por e-mail.
+                            O envio por e-mail é prioritário e a impressão só deve ser realizada se o cliente solicitar. Pressione <span className="font-bold">[1]</span> no teclado virtual para prosseguir.
                           </p>
                         </div>
                       ) : (
