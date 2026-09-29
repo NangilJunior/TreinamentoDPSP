@@ -15,7 +15,7 @@ import SangriaFlow from "./SangriaFlow";
 import Home4, { MOTIVOS_SANGRIA } from "../../imports/Home-4/index";
 import Home6 from "../../imports/Home-6/index";
 import ValorRetiradaScreen from "./ValorRetiradaScreen";
-import SuprimentoResumoScreen from "./SuprimentoResumoScreen";
+import SuprimentoResumoScreen, { MOTIVOS_SUPRIMENTO } from "./SuprimentoResumoScreen";
 import SuprimentoValorScreen from "./SuprimentoValorScreen";
 import SuprimentoComprovanteScreen from "./SuprimentoComprovanteScreen";
 import ComprovanteScreen from "./ComprovanteScreen";
@@ -340,6 +340,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // teclado sobrepor a tela), testado isoladamente neste fluxo antes de uma
   // possível adoção nos demais.
   const isSuprimentoInicialTeste1 = slug === "suprimento-inicial-teste-1";
+  const isSuprimentoInicialTeste2 = slug === "suprimento-inicial-teste-2";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
   // Cadastrado e Não Cadastrado, Registro de Produtos, Formas de Pagamento,
@@ -485,6 +486,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // operador) — as duas opções guiadas pelo tutorial, na tela de escolha do
   // comprovante (passo 31).
   const [cupomEtapaIndex, setCupomEtapaIndex] = useState(0);
+  // Voltar ao passo 5 pelo "Anterior" remonta o SangriaFlow, que reexibe a
+  // animação do gerente já com tutorialStep === 5; a tecla [2] do Teste 2 só
+  // aparece depois que a animação chega à tela de seleção.
+  const [sangriaSelecaoPronta, setSangriaSelecaoPronta] = useState(false);
+  useEffect(() => {
+    if (tutorialStep !== 5) setSangriaSelecaoPronta(false);
+  }, [tutorialStep]);
+  // Teste 2: o "Anterior" do passo 6 volta direto à tela de seleção do
+  // passo 5, sem repetir a animação do gerente.
+  const [pularAnimacaoGerente, setPularAnimacaoGerente] = useState(false);
+  useEffect(() => {
+    if (tutorialStep < 4) setPularAnimacaoGerente(false);
+  }, [tutorialStep]);
   // Fluxo de Registro de Itens de Pedidos: indica se o Pedido #4521 já foi
   // marcado na tela "Selecione o Pedido" (passo 36), habilitando o [Entra]
   // para carregar seus itens no carrinho.
@@ -687,6 +701,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const keyboardOcultoNestaEtapa =
     !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (
       tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 ||
+      (isSuprimentoInicialTeste2 && tutorialStep >= 2 && tutorialStep <= 7) ||
       (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) ||
       (isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 19 || tutorialStep === 20)) ||
       (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) ||
@@ -954,6 +969,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
         setValorRetirada(0);
       } else if (key === "VOLTA") {
         setValorRetirada(prev => Math.floor(prev / 10));
+      } else if (isSuprimentoInicialTeste2) {
+        // Teste 2: só aceita o próximo dígito de R$ 200,00, para que um
+        // clique acidental não preencha o campo com outro valor.
+        const digitados = valorRetirada === 0 ? "" : String(valorRetirada);
+        if (String(valorAlvo)[digitados.length] === key) setValorRetirada(Number(digitados + key));
       } else if (!isNaN(Number(key)) || key === "00") {
         setValorRetirada(prev => Math.min(key === "00" ? prev * 100 : prev * 10 + Number(key), 99999999));
       }
@@ -1147,24 +1167,33 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // com as dependências corretas.
   useEffect(() => {
     if (!isKeyboardSplitTeste1) return;
+    // Como o botão "Exibir Teclado" fica focado (clique do mouse) quando o
+    // teclado é aberto, avançar de etapa via atalho físico deixava esse
+    // foco "preso" nele — reaparecendo com o anel de foco do navegador na
+    // próxima tela. Tirar o foco a cada avanço evita isso.
+    const blurActiveElement = () => (document.activeElement as HTMLElement | null)?.blur();
     const handleShortcut = (e: KeyboardEvent) => {
       if (tutorialStep === 2 && e.key.toLowerCase() === "v") {
         e.preventDefault();
         setTutorialStep(3);
         setShowKeyboard(false);
+        blurActiveElement();
       } else if (tutorialStep === 3 && e.key === "Enter") {
         e.preventDefault();
         setTutorialStep(4);
         setShowKeyboard(false);
+        blurActiveElement();
       } else if (tutorialStep === 5 && e.key === "2") {
         e.preventDefault();
         setTutorialStep(6);
         setShowKeyboard(false);
+        blurActiveElement();
       } else if (tutorialStep === 6) {
         if (e.key === "Enter" && motivoIndex === 0) {
           e.preventDefault();
           setTutorialStep(7);
           setShowKeyboard(false);
+          blurActiveElement();
         } else if (e.key.toLowerCase() === "v" || e.key === "ArrowUp") {
           e.preventDefault();
           handleVPress();
@@ -1179,6 +1208,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             setTutorialStep(8);
             setShowKeyboard(false);
             if (!isSuprimentoAdicional) setValorRetirada(0);
+            blurActiveElement();
           }
         } else if (e.key === "Backspace") {
           e.preventDefault();
@@ -2183,7 +2213,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
       {/* Fluxo animado de Sangria (telas do gerente) */}
       {isTrainingMode && tutorialStep >= 4 && tutorialStep <= 5 && (
-        <SangriaFlow onReachSelection={() => setTutorialStep(5)} isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} />
+        <SangriaFlow onReachSelection={() => { setTutorialStep(5); setSangriaSelecaoPronta(true); }} isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} startAtSelection={isSuprimentoInicialTeste2 && pularAnimacaoGerente} />
       )}
 
       {/* Motivos Sangria - step 6 */}
@@ -2641,14 +2671,18 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   {isSuprimentoInicial ? "O Suprimento Inicial inicia no botão de Sangria" : isSuprimentoAdicional ? "O Suprimento Complementar inicia no botão de Sangria" : "Iniciando a Sangria de Caixa"}
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoAdicional ? (
+                  {isSuprimentoInicialTeste2 ? (
+                    <>Para iniciar o processo de Suprimento Inicial, pressione a tecla <span className="font-bold text-white">[V] Sangria</span>.</>
+                  ) : isSuprimentoAdicional ? (
                     <>Para iniciar o processo de {isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
                   ) : (
                     <>Para iniciar o processo de Sangria de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
                   )}
                 </p>
               </div>
-              {/* Botão Sangria ilustração */}
+              {/* Botão Sangria ilustração — no Teste 2 ele sai do banner e vira
+                  o botão clicável no lugar do "Exibir Teclado". */}
+              {!isSuprimentoInicialTeste2 && (
               <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
                 <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
                 <div className="flex flex-col items-start w-full gap-[4px]">
@@ -2661,6 +2695,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </div>
                 <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">SANGRIA</div>
               </div>
+              )}
             </div>
           </div>
         )}
@@ -3097,7 +3132,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               {isSuprimentoAdicional ? (
                 <>
                   Informe o valor que será adicionado. Neste exemplo, será realizado um suprimento no valor de{" "}
-                  <span className="font-bold">R$ 200,00</span>. Digite utilizando o teclado virtual e pressione{" "}
+                  <span className="font-bold">R$ 200,00</span>. {isSuprimentoInicialTeste2 ? "Digite abaixo" : "Digite utilizando o teclado virtual"} e pressione{" "}
                   <span className="font-bold">[Entra]</span> para continuar.
                 </>
               ) : (
@@ -3114,7 +3149,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {/* Step 8 - Gaveta Aberta / Retirada */}
         {tutorialStep === 8 && (
           <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-            {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta isSuprimentoInicial={isSuprimentoInicial} /> : <Home6 />}
+            {isSuprimentoAdicional ? <SuprimentoValorScreen valorCents={valorRetirada} gavetaAberta isSuprimentoInicial={isSuprimentoInicial} campoInativo={isSuprimentoInicialTeste2} /> : <Home6 />}
           </div>
         )}
 
@@ -3169,9 +3204,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               <button
                 onClick={() => { setTutorialStep(9); setValorRetirada(0); }}
-                className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer border border-white/20"
+                className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] rounded-full transition-all cursor-pointer bg-[#2258e6] hover:bg-[#1a47b8] shadow-[0_4px_14px_rgba(34,88,230,0.5)]"
                 style={{
-                  boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
                   animation: 'pulse-subtle 2s ease-in-out infinite'
                 }}
               >
@@ -3203,9 +3237,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               <button
                 onClick={() => setTutorialStep(25)}
-                className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer border border-white/20"
+                className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] rounded-full transition-all cursor-pointer bg-[#2258e6] hover:bg-[#1a47b8] shadow-[0_4px_14px_rgba(34,88,230,0.5)]"
                 style={{
-                  boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
                   animation: 'pulse-subtle 2s ease-in-out infinite'
                 }}
               >
@@ -3293,6 +3326,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (tutorialStep === 12) { setTutorialStep(11); setShowKeyboard(false); }
               else if (tutorialStep === 11) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(false); }
               else if (tutorialStep === 5) setTutorialStep(3);
+              else if (tutorialStep === 6 && isSuprimentoInicialTeste2) { setPularAnimacaoGerente(true); setTutorialStep(5); }
               else if (tutorialStep === 6) setTutorialStep(5);
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
               else if (tutorialStep === 8) setTutorialStep(7);
@@ -3440,6 +3474,138 @@ function PDVSimulator({ slug }: { slug?: string }) {
           {showKeyboard ? "Ocultar Teclado" : "Exibir Teclado"}
         </span>
       </button>
+
+      {/* Suprimento Inicial Teste 2 - passo 2: a tecla Sangria substitui o
+          "Exibir Teclado" e leva direto ao modal de Sangria/Suprimento. */}
+      {isSuprimentoInicialTeste2 && tutorialStep === 2 && (
+        <button
+          onClick={() => { setShowKeyboard(false); setTutorialStep(3); }}
+          className="absolute bottom-[40px] left-1/2 z-[30] cursor-pointer"
+          style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div
+            className="bg-[#2258e6] hover:bg-[#1a47b8] transition-colors flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px]"
+            style={{ animation: 'pulse-subtle 2s ease-in-out infinite' }}
+          >
+            <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+            <div className="flex flex-col items-start w-full gap-[4px]">
+              <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">V</div>
+              <div className="flex items-center justify-center w-full">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12l7-7 7 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            </div>
+            <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">SANGRIA</div>
+          </div>
+        </button>
+      )}
+
+      {/* Suprimento Inicial Teste 2 - passo 3: a tecla Entra substitui o
+          "Exibir Teclado" e confirma o modal de Sangria/Suprimento. */}
+      {isSuprimentoInicialTeste2 && tutorialStep === 3 && (
+        <button
+          onClick={() => { setShowKeyboard(false); setTutorialStep(4); }}
+          className="absolute bottom-[40px] left-1/2 z-[30] cursor-pointer"
+          style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div
+            className="bg-[#2ebb62] hover:bg-[#4fc878] transition-colors flex items-center justify-center h-[123px] p-[10px] relative rounded-[8px] w-[256px]"
+            style={{ animation: 'pulse-subtle 2s ease-in-out infinite' }}
+          >
+            <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+            <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">ENTRA</div>
+          </div>
+        </button>
+      )}
+
+      {/* Suprimento Inicial Teste 2 - passo 5: a tecla numérica 2 substitui
+          o "Exibir Teclado" e seleciona o Suprimento de Caixa. */}
+      {isSuprimentoInicialTeste2 && tutorialStep === 5 && sangriaSelecaoPronta && (
+        <button
+          onClick={() => { setShowKeyboard(false); setTutorialStep(6); }}
+          className="absolute bottom-[40px] left-1/2 z-[30] cursor-pointer"
+          style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div
+            className="bg-white hover:bg-[#f5f5f5] transition-colors flex items-center justify-center h-[123px] p-[10px] relative rounded-[8px] w-[142px]"
+            style={{ animation: 'pulse-subtle 2s ease-in-out infinite' }}
+          >
+            <p className="font-['Nunito_Sans',sans-serif] font-black text-[#2d2d2d] text-[28px] leading-[1.2] text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>2</p>
+          </div>
+        </button>
+      )}
+
+      {/* Suprimento Inicial Teste 2 - passo 6: [V]/[K] navegam na lista de
+          motivos e [Entra] confirma — só avança com "Suprimento Inicial"
+          (índice 0) selecionado, como orienta o banner. */}
+      {isSuprimentoInicialTeste2 && tutorialStep === 6 && (
+        <div
+          className="absolute bottom-[40px] left-1/2 z-[30] flex items-end gap-[60px]"
+          style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div className="flex gap-[6px]">
+            {[
+              { tecla: "V", rotulo: "SANGRIA", seta: "M12 19V5M5 12l7-7 7 7", onClick: () => setMotivoIndex((i) => Math.max(0, i - 1)) },
+              { tecla: "K", rotulo: "FECHAMENTO", seta: "M12 5v14M5 12l7 7 7-7", onClick: () => setMotivoIndex((i) => Math.min(MOTIVOS_SUPRIMENTO.length - 1, i + 1)) },
+            ].map((t) => (
+              <button
+                key={t.tecla}
+                onClick={t.onClick}
+                className="bg-[#2258e6] hover:bg-[#1a47b8] transition-colors flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] cursor-pointer"
+              >
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <div className="flex flex-col items-start w-full gap-[4px]">
+                  <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">{t.tecla}</div>
+                  <div className="flex items-center justify-center w-full">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d={t.seta} stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">{t.rotulo}</div>
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => { if (motivoIndex === 0) { setShowKeyboard(false); setTutorialStep(7); } }}
+            className={`bg-[#2ebb62] transition-all flex items-center justify-center h-[123px] p-[10px] relative rounded-[8px] w-[256px] ${motivoIndex === 0 ? "hover:bg-[#4fc878] cursor-pointer" : "opacity-40 cursor-not-allowed"}`}
+            style={motivoIndex === 0 ? { animation: 'pulse-subtle 2s ease-in-out infinite' } : undefined}
+          >
+            <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+            <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">ENTRA</div>
+          </button>
+        </div>
+      )}
+
+      {/* Suprimento Inicial Teste 2 - passo 7: teclas [2] e [0] para digitar
+          R$ 200,00 e [Entra] para confirmar o valor. */}
+      {isSuprimentoInicialTeste2 && tutorialStep === 7 && (
+        <div
+          className="absolute bottom-[40px] left-1/2 z-[30] flex items-end gap-[60px]"
+          style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
+        >
+          <div className="flex gap-[6px]">
+            {["2", "0"].map((digito) => (
+              <button
+                key={digito}
+                onClick={() => handleKeyPress(digito)}
+                className="bg-white hover:bg-[#f5f5f5] transition-colors flex items-center justify-center h-[123px] p-[10px] relative rounded-[8px] w-[142px] cursor-pointer"
+              >
+                <p className="font-['Nunito_Sans',sans-serif] font-black text-[#2d2d2d] text-[28px] leading-[1.2] text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>{digito}</p>
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => handleKeyPress("ENTRA")}
+            className="bg-[#2ebb62] hover:bg-[#4fc878] transition-colors flex items-center justify-center h-[123px] p-[10px] relative rounded-[8px] w-[256px] cursor-pointer"
+            style={valorRetirada === valorAlvo ? { animation: 'pulse-subtle 2s ease-in-out infinite' } : undefined}
+          >
+            <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+            <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">ENTRA</div>
+          </button>
+        </div>
+      )}
 
       {/* Botão Escanear Produto - substitui o "Exibir Teclado" na segunda
           tela do fluxo de Registro de Produtos (leva à terceira tela) e

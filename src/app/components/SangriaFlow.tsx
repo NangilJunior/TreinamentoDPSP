@@ -345,8 +345,8 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean }) {
-  const [screen, setScreen] = useState<Screen>(1);
+export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial, startAtSelection }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean; startAtSelection?: boolean }) {
+  const [screen, setScreen] = useState<Screen>(startAtSelection ? 3 : 1);
   const [opacity, setOpacity] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [dotCount, setDotCount] = useState(0);
@@ -363,6 +363,11 @@ export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, i
       await w(80);
       if (cancelledRef.current) return;
       setOpacity(1);
+
+      if (startAtSelection) {
+        onReachSelection?.();
+        return;
+      }
 
       // ── Screen 1: Matrícula ───────────────────────
       await w(1200);
