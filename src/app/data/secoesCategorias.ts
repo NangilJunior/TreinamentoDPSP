@@ -173,6 +173,25 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       }
     ]
   },
-  { titulo: "Consultas e Relatórios", cards: [{ titulo: "Venda Detalhe" }, { titulo: "Relatório do Operador" }, { titulo: "Relatório do Dia" }] },
+  {
+    titulo: "Consultas e Relatórios",
+    cards: [
+      {
+        titulo: "Detalhe da Venda",
+        descricao: "A Fita Detalhe permite consultar as vendas realizadas em um PDV em uma determinada data, incluindo seus itens, valores e formas de pagamento.",
+        slug: "detalhe-da-venda"
+      },
+      {
+        titulo: "Relatório do Operador",
+        descricao: "O Relatório do Operador apresenta o resumo das operações realizadas pelo operador no PDV, como vendas, sangrias e suprimentos, auxiliando na conferência do caixa.",
+        slug: "relatorio-do-operador"
+      },
+      {
+        titulo: "Relatório do Dia",
+        descricao: "O Relatório do Dia reúne os totais movimentados no PDV ao longo do dia, organizados por forma de pagamento e tipo de operação, facilitando o acompanhamento e o fechamento.",
+        slug: "relatorio-do-dia"
+      }
+    ]
+  },
   { titulo: "Encerramento da Operação", cards: [{ titulo: "Saída do Operador" }, { titulo: "Fechamento de Caixa" }, { titulo: "Fechamento Z" }] },
 ];

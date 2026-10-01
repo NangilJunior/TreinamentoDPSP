@@ -265,8 +265,9 @@ function ReciboFitaDetalhe() {
 
 // Passo 106 (node 5952:71200) — extrato das operações do PDV na data
 // informada, em uma área rolável. A barra de rolagem nativa fica oculta e o
-// indicador do Figma, à direita, acompanha a posição da rolagem.
-export function FitaDetalheCupomScreen({ trilha }: { trilha: string }) {
+// indicador do Figma, à direita, acompanha a posição da rolagem. A tooltip
+// opcional fica no topo da área do extrato, sem cobrir o rodapé.
+export function FitaDetalheCupomScreen({ trilha, tooltip }: { trilha: string; tooltip?: ReactNode }) {
   const [progressoRolagem, setProgressoRolagem] = useState(0);
   const atualizarRolagem = (el: HTMLDivElement) => {
     const maximo = el.scrollHeight - el.clientHeight;
@@ -275,7 +276,12 @@ export function FitaDetalheCupomScreen({ trilha }: { trilha: string }) {
   return (
     <div className="absolute inset-0 bg-white rounded-[20px] overflow-hidden flex flex-col">
       <CabecalhoReimpressao trilha={trilha} titulo="Cupom" etapa={3} />
-      <div className="flex flex-1 min-h-0 mt-[20px]">
+      <div className="relative flex flex-1 min-h-0 mt-[20px]">
+        {tooltip && (
+          <div className="fade-in-delay absolute top-[-135px] left-1/2 -translate-x-1/2 pointer-events-none z-[45]">
+            {tooltip}
+          </div>
+        )}
         <div
           onScroll={(e) => atualizarRolagem(e.currentTarget)}
           className="bg-[#eee] flex flex-1 min-w-0 flex-col items-end overflow-y-auto overflow-x-hidden px-[240px] py-[32px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
