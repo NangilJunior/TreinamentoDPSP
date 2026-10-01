@@ -5,7 +5,7 @@ import { TutorialTooltip } from "./TutorialTooltip";
 // Rodapé Volta/Entra — mesmo padrão (com ícones) usado no rodapé real das
 // telas de Home (ex.: Frame22 em src/imports/Home-4/index.tsx), reaproveitado
 // aqui para manter a navegação decorativa consistente com o restante do PDV.
-function RodapeVoltaEntra({ entraAtivo }: { entraAtivo: boolean }) {
+export function RodapeVoltaEntra({ entraAtivo }: { entraAtivo: boolean }) {
   return (
     <div className="flex items-center justify-between px-[24px] py-[20px]">
       <div className="bg-[rgba(255,255,255,0.1)] flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px]">

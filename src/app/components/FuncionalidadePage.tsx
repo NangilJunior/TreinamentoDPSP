@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { CheckCircle2, Mail, Printer, FileBadge2 } from "lucide-react";
+import { CheckCircle2, Mail, Printer, FileBadge2, Coins } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
@@ -34,6 +34,8 @@ import { ConvenioEscolhaScreen, OutrosConveniosScreen, ConvenioCpfScreen, Conven
 import { ReceitaScreen } from "./LiberacaoReceitaScreens";
 import AutorizacaoGerenteMedicamentoScreen from "./LiberacaoManualScreens";
 import { ConsultaValorInputScreen, ConsultaValorResultadoScreen } from "./ConsultaPrecoScreens";
+import { DdgMotivoScreen, DdgModoScreen, DdgValorScreen, MOTIVOS_DDG, ITENS_VENDA_COM_DDG, VALOR_DDG_EXEMPLO_CENTS } from "./DdgScreens";
+import { CancelamentoVendaScreen, CancelamentoItemModal, CancelamentoMotivoScreen, ITENS_CANCELAMENTO_PARCIAL, CODIGO_CANCELAMENTO_EXEMPLO, MOTIVOS_CANCELAMENTO, MOTIVOS_CANCELAMENTO_VENDA, filtrarItensCancelamento } from "./CancelamentoParcialScreens";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { TutorialTooltip } from "./TutorialTooltip";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
@@ -139,6 +141,21 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   "consulta-de-preco": {
     titulo: "Consulta de Preço",
     conteudo: "Permite verificar o preço e as informações de um produto a partir da leitura ou digitação do seu código de barras, sem adicioná-lo à venda.",
+    hasPDV: true
+  },
+  "cancelamento-parcial": {
+    titulo: "Cancelamento Parcial",
+    conteudo: "O Cancelamento Parcial permite remover um produto específico de uma venda que ainda não foi finalizada, mantendo os demais itens registrados.",
+    hasPDV: true
+  },
+  "ddg": {
+    titulo: "DDG (Desconto Gerencial)",
+    conteudo: "O DDG permite que o gerente aplique descontos diretamente no PDV, dentro dos limites definidos, para responder a situações comerciais durante a venda.",
+    hasPDV: true
+  },
+  "cancelamento-total": {
+    titulo: "Cancelamento Total",
+    conteudo: "O Cancelamento Total permite remover todos os itens registrados e encerrar uma venda que ainda não foi finalizada, mediante autorização do gerente.",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -336,6 +353,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const isLiberacaoComReceita = slug === "liberacao-com-receita";
   const isLiberacaoManual = slug === "liberacao-manual";
   const isConsultaDePreco = slug === "consulta-de-preco";
+  const isCancelamentoParcial = slug === "cancelamento-parcial";
+  const isCancelamentoTotal = slug === "cancelamento-total";
+  const isDdg = slug === "ddg";
   // Layout experimental: tela + teclado virtual lado a lado (em vez do
   // teclado sobrepor a tela), testado isoladamente neste fluxo antes de uma
   // possível adoção nos demais.
@@ -346,13 +366,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Cadastrado e Não Cadastrado, Registro de Produtos, Formas de Pagamento,
   // Registro de Itens de Pedidos e Localizar Pedido do Delivery também não
   // devem exibi-la.
-  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento || isRegistroDeItensDePedidos || isLocalizarPedidoDoDelivery || isConvenio || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco;
+  const pulaTelaLimiteCaixa = isSuprimentoAdicional || isClienteCadastrado || isRegistroDeProdutos || isFormasDePagamento || isRegistroDeItensDePedidos || isLocalizarPedidoDoDelivery || isConvenio || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || isCancelamentoParcial || isCancelamentoTotal || isDdg;
   // Próxima etapa após a tela de boas-vindas (step 0): Formas de Pagamento
   // não reaproveita o step 2 (informativo genérico de Sangria/Registro),
   // partindo direto para o carrinho de exemplo (step 21). Registro de itens
   // de pedidos reserva o step 35, e Localizar Pedido do Delivery o step 38,
   // ambos ainda a serem detalhados.
-  const proximaEtapaAposBoasVindas = isFormasDePagamento ? 21 : isEnvioImpressaoCupom ? 31 : isRegistroDeItensDePedidos ? 35 : isLocalizarPedidoDoDelivery ? 38 : pulaTelaLimiteCaixa ? 2 : 1;
+  // Cancelamento Parcial reserva os steps 52 a 62, Cancelamento Total os
+  // steps 63 a 67, e DDG os steps 68 a 75.
+  const proximaEtapaAposBoasVindas = isCancelamentoParcial ? 52 : isCancelamentoTotal ? 63 : isDdg ? 68 : isFormasDePagamento ? 21 : isEnvioImpressaoCupom ? 31 : isRegistroDeItensDePedidos ? 35 : isLocalizarPedidoDoDelivery ? 38 : pulaTelaLimiteCaixa ? 2 : 1;
   const welcomeTitulo = isSuprimentoInicial
     ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
     : isSuprimentoAdicional
@@ -379,6 +401,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Olá, boas vindas ao tutorial de Liberação de Medicamento Controlado Sem Receita."
     : isConsultaDePreco
     ? "Olá, boas vindas ao tutorial de Consulta de Preço."
+    : isCancelamentoParcial
+    ? "Olá, boas vindas ao tutorial de Cancelamento Parcial."
+    : isCancelamentoTotal
+    ? "Olá, boas vindas ao tutorial de Cancelamento Total."
+    : isDdg
+    ? "Olá, boas vindas ao tutorial de DDG (Desconto Gerencial)."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -406,6 +434,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
     ? "Ao registrar um medicamento controlado sem receita, o sistema solicitará a autorização da gerência. O operador deve acionar o/a responsável para que realize a autorização necessária. Após a liberação, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
     : isConsultaDePreco
     ? "Para consultar um produto, o operador deve selecionar Consulta Item no teclado e, em seguida, escanear ou digitar seu código de barras. O sistema exibirá na tela as informações e o preço do produto consultado. A consulta não adiciona o produto à venda."
+    : isCancelamentoParcial
+    ? "O Cancelamento Parcial permite excluir um produto específico de uma venda que ainda está em andamento. Esse recurso pode ser utilizado quando o cliente desiste de um produto, quando um item é registrado por engano ou quando é necessário corrigir um produto incluído incorretamente na venda. Os demais itens permanecem registrados."
+    : isCancelamentoTotal
+    ? "O Cancelamento Total remove todos os produtos registrados em uma venda que ainda não foi finalizada, encerrando a operação de uma só vez. Essa opção pode ser utilizada quando o cliente desiste da compra ou quando ocorre algum problema que impede a conclusão da venda. Por cancelar todos os itens, a operação exige a autorização do gerente."
+    : isDdg
+    ? <>O <span className="font-bold text-white">Desconto do Gerente (DDG)</span> permite aplicar um desconto manual a um produto durante a venda, mediante autenticação do gerente. O recurso pode ser utilizado em situações como igualar a oferta de um concorrente, compensar uma avaria ou facilitar a venda de produtos próximos da validade. O desconto respeita os limites definidos para a operação.</>
     : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
@@ -503,6 +537,17 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // marcado na tela "Selecione o Pedido" (passo 36), habilitando o [Entra]
   // para carregar seus itens no carrinho.
   const [pedidoSelecionado, setPedidoSelecionado] = useState(true);
+  // Fluxo de Cancelamento Parcial: código digitado no campo "Cancelar
+  // Produto" (passo 59) e motivo destacado na tela de motivos (passo 61).
+  const [cancelamentoCodigo, setCancelamentoCodigo] = useState("");
+  const [motivoCancelamentoIndex, setMotivoCancelamentoIndex] = useState(0);
+  // Fluxo de Cancelamento Total: motivo destacado na tela de motivos (passo 66).
+  const [motivoCancelamentoVendaIndex, setMotivoCancelamentoVendaIndex] = useState(0);
+  // Fluxo de DDG: item destacado na lista (passo 71), motivo destacado
+  // (passo 72) e novo preço digitado em centavos (passo 74).
+  const [ddgItemIndex, setDdgItemIndex] = useState(0);
+  const [ddgMotivoIndex, setDdgMotivoIndex] = useState(0);
+  const [ddgValorCents, setDdgValorCents] = useState(0);
   const cpfInputRef = useRef<HTMLInputElement>(null);
   const skuInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -569,6 +614,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setValorPagamento(0);
     setCategoriaPromocionalIndex(0);
     setParcelaIndex(0);
+    setCancelamentoCodigo("");
+    setMotivoCancelamentoIndex(0);
+    setMotivoCancelamentoVendaIndex(0);
+    setDdgItemIndex(0);
+    setDdgMotivoIndex(0);
+    setDdgValorCents(0);
   };
 
   const goToTraining = (slug: string) => {
@@ -711,6 +762,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
       (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) ||
       ((isLiberacaoComReceita || isLiberacaoManual) && (tutorialStep === 2 || tutorialStep === 48)) ||
       (isConsultaDePreco && (tutorialStep === 49 || tutorialStep === 51)) ||
+      (isCancelamentoParcial && [54, 56, 57, 58, 62].includes(tutorialStep)) ||
+      (isCancelamentoTotal && (tutorialStep === 65 || tutorialStep === 67)) ||
+      (isDdg && (tutorialStep === 70 || tutorialStep === 75)) ||
       showAberturaGerenteMatricula || showAberturaGerenteSenha
     );
 
@@ -726,6 +780,49 @@ function PDVSimulator({ slug }: { slug?: string }) {
   }, [keyboardOcultoNestaEtapa]);
 
   const handleKeyPress = (key: string) => {
+    // Cancelamento Parcial: [Entra] confirma o modal de autorização (passo
+    // 53), o item filtrado (passo 60) e o motivo destacado (passo 61). No
+    // passo 59 só o próximo dígito de "300" é aceito, e o teclado fecha
+    // sozinho ao completar o código.
+    if (isCancelamentoParcial) {
+      const entra = key === "ENTRA" || key === "Enter";
+      if (tutorialStep === 53 && entra) { setShowKeyboard(false); setTutorialStep(54); }
+      else if (tutorialStep === 59 && key === CODIGO_CANCELAMENTO_EXEMPLO[cancelamentoCodigo.length]) {
+        const novoCodigo = cancelamentoCodigo + key;
+        setCancelamentoCodigo(novoCodigo);
+        if (novoCodigo.length === CODIGO_CANCELAMENTO_EXEMPLO.length) { setShowKeyboard(false); setTutorialStep(60); }
+      }
+      else if (tutorialStep === 60 && entra) { setShowKeyboard(false); setTutorialStep(61); }
+      else if (tutorialStep === 61 && entra) { setShowKeyboard(false); setTutorialStep(62); }
+      return;
+    }
+    // DDG: [Entra] confirma o modal (passo 69), o item — só a Dipirona,
+    // usada no restante do exemplo (passo 71) — e o motivo (passo 72); [3]
+    // escolhe o Preço Final (passo 73); no passo 74 só o próximo dígito de
+    // R$ 7,80 é aceito, e [Entra] confirma o valor completo.
+    if (isDdg) {
+      const entra = key === "ENTRA" || key === "Enter";
+      if (tutorialStep === 69 && entra) { setShowKeyboard(false); setTutorialStep(70); }
+      else if (tutorialStep === 71 && entra && ddgItemIndex === 0) { setShowKeyboard(false); setTutorialStep(72); }
+      else if (tutorialStep === 72 && entra) { setShowKeyboard(false); setTutorialStep(73); }
+      else if (tutorialStep === 73 && key === "3") { setShowKeyboard(false); setTutorialStep(74); }
+      else if (tutorialStep === 74) {
+        if (entra) {
+          if (ddgValorCents === VALOR_DDG_EXEMPLO_CENTS) { setShowKeyboard(false); setTutorialStep(75); }
+        } else if (key === String(VALOR_DDG_EXEMPLO_CENTS)[ddgValorCents === 0 ? 0 : String(ddgValorCents).length]) {
+          setDdgValorCents(Number(String(ddgValorCents === 0 ? "" : ddgValorCents) + key));
+        }
+      }
+      return;
+    }
+    // Cancelamento Total: [Entra] confirma o modal de autorização (passo 64)
+    // e o motivo destacado (passo 66) — qualquer motivo é aceito.
+    if (isCancelamentoTotal) {
+      const entra = key === "ENTRA" || key === "Enter";
+      if (tutorialStep === 64 && entra) { setShowKeyboard(false); setTutorialStep(65); }
+      else if (tutorialStep === 66 && entra) { setShowKeyboard(false); setTutorialStep(67); }
+      return;
+    }
     // Identificar CPF/CNPJ na nota? — Entra: quer identificar (segue para a
     // pergunta de reaproveitar o CPF). Volta: não quer identificar (pula
     // direto para a tela padrão, sem modal).
@@ -1143,16 +1240,26 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Navegação dos motivos da sangria (step 6) pelas teclas V (↑) e K (↓)
   // do teclado virtual do PDV.
   const handleVPress = useCallback(() => {
+    if (isCancelamentoParcial && tutorialStep === 55) { setShowKeyboard(false); setTutorialStep(56); return; }
+    if (isCancelamentoParcial && tutorialStep === 61) { setMotivoCancelamentoIndex((i) => Math.max(0, i - 1)); return; }
+    if (isCancelamentoTotal && tutorialStep === 66) { setMotivoCancelamentoVendaIndex((i) => Math.max(0, i - 1)); return; }
+    if (isDdg && tutorialStep === 71) { setDdgItemIndex((i) => Math.max(0, i - 1)); return; }
+    if (isDdg && tutorialStep === 72) { setDdgMotivoIndex((i) => Math.max(0, i - 1)); return; }
     if (isFormasDePagamento && tutorialStep === 29) { setCategoriaPromocionalIndex((i) => Math.max(0, i - 1)); return; }
     if (isFormasDePagamento && tutorialStep === 30) { setParcelaIndex((i) => Math.max(0, i - 1)); return; }
     setMotivoIndex((i) => Math.max(0, i - 1));
-  }, [isFormasDePagamento, tutorialStep]);
+  }, [isFormasDePagamento, isCancelamentoParcial, isCancelamentoTotal, isDdg, tutorialStep]);
   const handleKPress = useCallback(() => {
+    if (isCancelamentoParcial && tutorialStep === 55) { setShowKeyboard(false); setTutorialStep(56); return; }
+    if (isCancelamentoParcial && tutorialStep === 61) { setMotivoCancelamentoIndex((i) => Math.min(MOTIVOS_CANCELAMENTO.length - 1, i + 1)); return; }
+    if (isCancelamentoTotal && tutorialStep === 66) { setMotivoCancelamentoVendaIndex((i) => Math.min(MOTIVOS_CANCELAMENTO_VENDA.length - 1, i + 1)); return; }
+    if (isDdg && tutorialStep === 71) { setDdgItemIndex((i) => Math.min(ITENS_CANCELAMENTO_PARCIAL.length - 1, i + 1)); return; }
+    if (isDdg && tutorialStep === 72) { setDdgMotivoIndex((i) => Math.min(MOTIVOS_DDG.length - 1, i + 1)); return; }
     if (isRegistroDeItensDePedidos && tutorialStep === 36) { setPedidoSelecionado(true); return; }
     if (isFormasDePagamento && tutorialStep === 29) { setCategoriaPromocionalIndex((i) => Math.min(CATEGORIAS_PROMOCIONAIS.length - 1, i + 1)); return; }
     if (isFormasDePagamento && tutorialStep === 30) { setParcelaIndex((i) => Math.min(OPCOES_PARCELAS.length - 1, i + 1)); return; }
     setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
-  }, [isFormasDePagamento, isRegistroDeItensDePedidos, tutorialStep]);
+  }, [isFormasDePagamento, isRegistroDeItensDePedidos, isCancelamentoParcial, isCancelamentoTotal, isDdg, tutorialStep]);
 
   // Atalhos de teclado físico (teste 1): com o teclado virtual dividido em
   // tela, cada passo tem uma tecla física equivalente à tecla virtual que o
@@ -1261,6 +1368,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const proximoDigitoOv =
     isLocalizarPedidoDoDelivery && tutorialStep === 39 && ovNumero.length < OV_EXEMPLO.length
       ? OV_EXEMPLO[ovNumero.length]
+      : null;
+
+  // Próximo dígito do novo preço da Dipirona (R$ 7,80) a ser destacado no
+  // teclado virtual (passo 74 do fluxo de DDG).
+  const digitosDdg = String(VALOR_DDG_EXEMPLO_CENTS);
+  const digitadosDdg = ddgValorCents === 0 ? 0 : String(ddgValorCents).length;
+  const proximoDigitoDdg = isDdg && tutorialStep === 74 && digitadosDdg < digitosDdg.length ? digitosDdg[digitadosDdg] : null;
+
+  // Próximo dígito do código "300" a ser destacado no teclado virtual
+  // (passo 59 do fluxo de Cancelamento Parcial).
+  const proximoDigitoCancelamento =
+    isCancelamentoParcial && tutorialStep === 59 && cancelamentoCodigo.length < CODIGO_CANCELAMENTO_EXEMPLO.length
+      ? CODIGO_CANCELAMENTO_EXEMPLO[cancelamentoCodigo.length]
       : null;
 
   // Próximo dígito do código do convênio de exemplo a ser destacado no
@@ -2386,6 +2506,226 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
+      {/* Fluxo de Cancelamento Parcial - telas de tela cheia (passos 0 e 52
+          a 62). Sem z-index (só "isolate"): ficam acima do PDV padrão pela
+          ordem no DOM, mas abaixo do overlay "Iniciar Treinamento", do
+          banner de boas-vindas e dos banners pretos. */}
+      {isCancelamentoParcial && [0, 52, 53, 55, 56, 57, 58, 59, 60, 62].includes(tutorialStep) && (
+        <div className="absolute inset-0 isolate rounded-[20px] overflow-hidden">
+          {(tutorialStep === 0 || tutorialStep === 52) && <CancelamentoVendaScreen modo="venda" />}
+          {tutorialStep === 53 && (
+            <CancelamentoVendaScreen modo="venda">
+              <CancelamentoItemModal />
+              <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
+                <TutorialTooltip width={700}>
+                  Será exibido um modal informando que o cancelamento do item requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
+                </TutorialTooltip>
+              </div>
+            </CancelamentoVendaScreen>
+          )}
+          {(tutorialStep === 55 || tutorialStep === 57) && <CancelamentoVendaScreen modo="cancelar" />}
+          {tutorialStep === 56 && (
+            <CancelamentoVendaScreen
+              modo="cancelar"
+              valorCampo={ITENS_CANCELAMENTO_PARCIAL[0].ref}
+              destacadoNumero={1}
+              tooltipItens={
+                <TutorialTooltip width={520}>
+                  O primeiro item da lista foi destacado. As teclas <span className="font-bold">[V]</span> (↑) e <span className="font-bold">[K]</span> (↓) movem o destaque entre os itens da venda. Clique em <span className="font-bold">Próximo</span> para conhecer outra forma de indicar o produto.
+                </TutorialTooltip>
+              }
+            />
+          )}
+          {tutorialStep === 58 && (
+            <CancelamentoVendaScreen
+              modo="cancelar"
+              valorCampo={ITENS_CANCELAMENTO_PARCIAL[0].ref}
+              itens={[ITENS_CANCELAMENTO_PARCIAL[0]]}
+              destacadoNumero={1}
+              tooltipItens={
+                <TutorialTooltip width={520}>
+                  O produto escaneado foi localizado e está pronto para ser cancelado. Clique em <span className="font-bold">Próximo</span> para conhecer a última forma de indicar o produto.
+                </TutorialTooltip>
+              }
+            />
+          )}
+          {(tutorialStep === 59 || tutorialStep === 60) && (
+            <CancelamentoVendaScreen
+              modo="cancelar"
+              valorCampo={cancelamentoCodigo}
+              itens={filtrarItensCancelamento(cancelamentoCodigo)}
+              destacadoNumero={tutorialStep === 60 ? 1 : undefined}
+              tooltipCampo={
+                <TutorialTooltip width={520}>
+                  {tutorialStep === 59 ? (
+                    <>Também é possível digitar o código do produto. A lista é filtrada em tempo real. Neste exemplo, clique em <span className="font-bold">Exibir Teclado</span> e digite <span className="font-bold">300</span>.</>
+                  ) : (
+                    <>O produto foi localizado pelo código digitado e está pronto para ser cancelado. Pressione <span className="font-bold">[Entra]</span> no teclado virtual para seguir com o cancelamento.</>
+                  )}
+                </TutorialTooltip>
+              }
+            />
+          )}
+          {tutorialStep === 62 && (
+            <CancelamentoVendaScreen
+              modo="venda"
+              canceladoNumero={1}
+              tooltipItens={
+                <TutorialTooltip width={520}>
+                  O item cancelado permanece na lista, sinalizado como <span className="font-bold">Cancelado</span>, e os valores da venda são atualizados. Os demais itens continuam registrados.
+                </TutorialTooltip>
+              }
+            />
+          )}
+        </div>
+      )}
+      {isCancelamentoParcial && tutorialStep === 61 && (
+        <div className="absolute inset-0 isolate rounded-[20px] overflow-hidden">
+          <CancelamentoMotivoScreen
+            selectedIndex={motivoCancelamentoIndex}
+            item={ITENS_CANCELAMENTO_PARCIAL[0]}
+            tooltip={
+              <TutorialTooltip width={560}>
+                Selecione o motivo do cancelamento. Use as teclas <span className="font-bold">[V]</span> (↑) e <span className="font-bold">[K]</span> (↓) para navegar entre as opções e pressione <span className="font-bold">[Entra]</span> para confirmar.
+              </TutorialTooltip>
+            }
+          />
+        </div>
+      )}
+      {/* Fluxo de Cancelamento Total - telas de tela cheia (passos 0 e 63 a
+          67). A venda já foi totalizada e está na etapa de pagamento, por
+          isso a tela de boas-vindas é a de pagamento em dinheiro (Dinheiro/Troco)
+          do fluxo de Formas de Pagamento, ainda sem valor recebido. */}
+      {isCancelamentoTotal && [0, 63, 64].includes(tutorialStep) && (
+        <div className="absolute inset-0 isolate rounded-[20px] overflow-hidden">
+          <GavetaTrocoScreen valorRecebidoCents={0} totalCents={4654} />
+          {tutorialStep === 64 && (
+            <>
+              <CancelamentoItemModal
+                titulo="Cancelamento de Venda"
+                texto="Para realizar o cancelamento da venda será necessária a autorização do gerente. Pressione [ENTRA] para confirmar ou [VOLTA] para cancelar."
+              />
+              <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
+                <TutorialTooltip width={700}>
+                  Será exibido um modal informando que o cancelamento da venda requer autorização do gerente. Ao confirmar, <span className="font-bold">todos os produtos registrados nesta venda serão removidos</span>. Para prosseguir, pressione a tecla <span className="font-bold">[Entra]</span>.
+                </TutorialTooltip>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+      {isCancelamentoTotal && tutorialStep === 66 && (
+        <div className="absolute inset-0 isolate rounded-[20px] overflow-hidden">
+          <CancelamentoMotivoScreen
+            selectedIndex={motivoCancelamentoVendaIndex}
+            trilha="Cancelamento de Venda"
+            titulo="Selecione o Motivo"
+            motivos={MOTIVOS_CANCELAMENTO_VENDA}
+            tooltip={
+              <TutorialTooltip width={560}>
+                Selecione o motivo do cancelamento da venda. Use as teclas <span className="font-bold">[V]</span> (↑) e <span className="font-bold">[K]</span> (↓) para navegar entre as opções e pressione <span className="font-bold">[Entra]</span> para confirmar.
+              </TutorialTooltip>
+            }
+          />
+        </div>
+      )}
+      {/* Fluxo de DDG - telas de tela cheia (passos 0 e 68 a 75), sobre a
+          mesma venda em andamento do Cancelamento Parcial. */}
+      {isDdg && [0, 68, 69, 71, 75].includes(tutorialStep) && (
+        <div className="absolute inset-0 isolate rounded-[20px] overflow-hidden">
+          {(tutorialStep === 0 || tutorialStep === 68) && <CancelamentoVendaScreen modo="venda" />}
+          {tutorialStep === 69 && (
+            <CancelamentoVendaScreen modo="venda">
+              <CancelamentoItemModal
+                titulo="Desconto do Gerente"
+                texto="Para realizar a aplicação deste desconto será necessária a autorização do gerente. Pressione [ENTRA] para confirmar ou [VOLTA] para cancelar."
+                icone={<Coins size={32} className="text-[#00ae8e]" strokeWidth={1.8} />}
+                iconeFundo="#f2fbf9"
+              />
+              <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
+                <TutorialTooltip width={700}>
+                  Será exibido um modal informando que a aplicação do desconto requer autorização do gerente. Para prosseguir com a operação, pressione a tecla <span className="font-bold">[Entra]</span>, confirmando que está ciente dessa exigência e concordando em solicitar a autorização necessária.
+                </TutorialTooltip>
+              </div>
+            </CancelamentoVendaScreen>
+          )}
+          {tutorialStep === 71 && (
+            <CancelamentoVendaScreen
+              modo="venda"
+              destacadoNumero={ddgItemIndex + 1}
+              avisoItens="Selecione o ítem e tecle [Entra] para aplicar o desconto"
+            />
+          )}
+          {tutorialStep === 75 && (
+            <CancelamentoVendaScreen
+              modo="venda"
+              itensVenda={ITENS_VENDA_COM_DDG}
+              tooltipItem={{
+                numero: 1,
+                conteudo: (
+                  <TutorialTooltip width={460}>
+                    O preço da Dipirona foi reduzido de <span className="font-bold">R$ 8,50</span> para <span className="font-bold">R$ 7,80</span> por unidade. Com 2 unidades, o Preço Final passou de R$ 17,00 para <span className="font-bold">R$ 15,60</span>, e o Resumo da Venda foi atualizado.
+                  </TutorialTooltip>
+                ),
+              }}
+            />
+          )}
+        </div>
+      )}
+      {isDdg && [72, 73, 74].includes(tutorialStep) && (
+        <div className="absolute inset-0 isolate rounded-[20px] overflow-hidden">
+          {tutorialStep === 72 && (
+            <DdgMotivoScreen
+              selectedIndex={ddgMotivoIndex}
+              item={ITENS_CANCELAMENTO_PARCIAL[0]}
+              tooltip={
+                <TutorialTooltip width={560}>
+                  Selecione o motivo do desconto. Use as teclas <span className="font-bold">[V]</span> (↑) e <span className="font-bold">[K]</span> (↓) para navegar entre as opções e pressione <span className="font-bold">[Entra]</span> para confirmar.
+                </TutorialTooltip>
+              }
+            />
+          )}
+          {tutorialStep === 73 && (
+            <DdgModoScreen
+              item={ITENS_CANCELAMENTO_PARCIAL[0]}
+              motivo={MOTIVOS_DDG[ddgMotivoIndex]}
+            />
+          )}
+          {tutorialStep === 74 && (
+            <DdgValorScreen
+              item={ITENS_CANCELAMENTO_PARCIAL[0]}
+              motivo={MOTIVOS_DDG[ddgMotivoIndex]}
+              valorCents={ddgValorCents}
+              tooltip={
+                <TutorialTooltip width={560}>
+                  {ddgValorCents === VALOR_DDG_EXEMPLO_CENTS ? (
+                    <>Pressione <span className="font-bold">[Entra]</span> para aplicar o novo preço.</>
+                  ) : (
+                    <>Informe o novo preço do produto, respeitando o menor valor permitido. Neste exemplo, clique em <span className="font-bold">Exibir Teclado</span> e digite <span className="font-bold">R$ 7,80</span>.</>
+                  )}
+                </TutorialTooltip>
+              }
+            />
+          )}
+        </div>
+      )}
+      {isTrainingMode && isDdg && tutorialStep === 70 && (
+        <SangriaFlow onAuthComplete={() => setTutorialStep(71)} trilha="Desconto do Gerente" />
+      )}
+
+      {/* Passo 67 (fim do Cancelamento Total) não tem tela própria: usa o PDV
+          padrão, com o cliente ainda não identificado e sem itens — igual à
+          tela de boas-vindas de Cliente Cadastrado e Não Cadastrado. */}
+      {isTrainingMode && isCancelamentoTotal && tutorialStep === 65 && (
+        <SangriaFlow onAuthComplete={() => setTutorialStep(66)} trilha="Cancelamento de Venda" />
+      )}
+
+      {/* Autorização do gerente (passo 54) — mesma animação de matrícula e
+          senha do fluxo de Suprimento Inicial, encerrada logo após a senha. */}
+      {isTrainingMode && isCancelamentoParcial && tutorialStep === 54 && (
+        <SangriaFlow onAuthComplete={() => setTutorialStep(55)} trilha="Cancelamento de Ítem" />
+      )}
+
       {/* Overlay de dimming para destacar o footer */}
       {isTrainingMode && tutorialStep === 1 && (
         <div className="absolute inset-0 bottom-[42px] bg-white/70 rounded-t-[20px] z-[5] pointer-events-none" />
@@ -2814,6 +3154,187 @@ function PDVSimulator({ slug }: { slug?: string }) {
           </div>
         )}
 
+        {/* Cancelamento Parcial - passo 52: instrui o operador a pressionar a
+            tecla [Z] Cancelar para iniciar o cancelamento de um item. */}
+        {isCancelamentoParcial && tutorialStep === 52 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Iniciando o Cancelamento Parcial
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Para cancelar um produto da venda em andamento, pressione a tecla <span className="font-bold text-white">[Z] Cancelar</span> no teclado virtual.
+                </p>
+              </div>
+              {/* Botão Cancelar ilustração */}
+              <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">Z</div>
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">CANCELAR</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DDG - passo 68: instrui o operador a pressionar a tecla [U] DDG. */}
+        {isDdg && tutorialStep === 68 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Iniciando o Desconto do Gerente
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Para aplicar um desconto a um produto da venda em andamento, pressione a tecla <span className="font-bold text-white">[U] DDG</span> no teclado virtual.
+                </p>
+              </div>
+              {/* Botão DDG ilustração */}
+              <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">U</div>
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">DDG</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DDG - passo 71: seleção do produto que receberá o desconto. */}
+        {isDdg && tutorialStep === 71 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Selecione o produto
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Escolha o produto que receberá o desconto. Use as teclas <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓) para navegar entre os itens da venda. Neste exemplo, mantenha a <span className="font-bold text-white">Dipirona</span> selecionada e pressione <span className="font-bold text-white">[Entra]</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* DDG - passo 73: formas de aplicar o desconto; o exemplo segue
+            pela tecla [3] Preço Final. */}
+        {isDdg && tutorialStep === 73 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Escolha a forma de aplicar o desconto
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  O desconto pode ser aplicado de três formas: <span className="font-bold text-white">[1] Percentual</span>, informando a porcentagem de desconto; <span className="font-bold text-white">[2] Subtração</span>, informando o valor a ser subtraído; ou <span className="font-bold text-white">[3] Preço Final</span>, informando o novo preço do produto. Neste exemplo, pressione <span className="font-bold text-white">[3]</span> no teclado virtual.
+                </p>
+              </div>
+              {/* Tecla 3 ilustração */}
+              <div className="bg-[#2258e6] flex items-center justify-center h-[123px] relative rounded-[8px] w-[142px] shrink-0">
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <p className="font-['Nunito_Sans',sans-serif] font-black text-[28px] leading-[1.2] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>3</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancelamento Total - passo 63: instrui o operador a pressionar a
+            tecla [Z] Cancelar para cancelar a venda inteira. */}
+        {isCancelamentoTotal && tutorialStep === 63 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Iniciando o Cancelamento Total
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Neste exemplo, a venda já foi totalizada e está na etapa de pagamento, mas não poderá ser concluída. Para cancelar a venda inteira, removendo todos os produtos registrados, pressione a tecla <span className="font-bold text-white">[Z] Cancelar</span> no teclado virtual.
+                </p>
+              </div>
+              {/* Botão Cancelar ilustração */}
+              <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <div className="font-['Chivo_Mono',sans-serif] font-medium text-[14px] text-white leading-[16px]">Z</div>
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">CANCELAR</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancelamento Parcial - passo 55: Home de Cancelamento, apresenta as
+            três formas de indicar o produto e começa pela navegação V/K. */}
+        {isCancelamentoParcial && tutorialStep === 55 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Selecione o produto a ser cancelado
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Existem três formas de selecionar o produto: navegando pela lista com as teclas <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓), escaneando o código de barras do produto ou digitando o seu código. Vamos começar utilizando as setas, clique em Exibir Teclado e pressione <span className="font-bold text-white">[V]</span> ou <span className="font-bold text-white">[K]</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancelamento Parcial - passo 57: seleção do produto pelo leitor. */}
+        {isCancelamentoParcial && tutorialStep === 57 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <div className="bg-[rgba(0,0,0,0.8)] flex gap-[24px] items-center px-[32px] py-[32px] pb-[120px] rounded-[8px] w-full">
+              <div className="flex items-start pt-[4px] shrink-0">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5" />
+                  <path d="M12 8v4M12 16h.01" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+              <div className="flex flex-col gap-[8px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Escaneie o produto
+                </p>
+                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                  Outra forma é escanear o código de barras do produto que será cancelado. Neste exemplo, vamos simular o uso do leitor. Clique no botão abaixo para seguir.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Step 38 - Informativo Localizar Pedido do Delivery: instrui o
             operador a pressionar a tecla [F] Delivery para iniciar a busca
             do pedido pela OV. */}
@@ -3160,7 +3681,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {!isKeyboardSplitTeste1 && (
         <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50] flex flex-col gap-[16px]">
           {/* Banner Ação do Gerente - abaixo do PDV */}
-          {(tutorialStep === 4 || showAberturaGerenteMatricula || showAberturaGerenteSenha) && (
+          {(tutorialStep === 4 || showAberturaGerenteMatricula || showAberturaGerenteSenha || (isCancelamentoParcial && tutorialStep === 54) || (isCancelamentoTotal && tutorialStep === 65) || (isDdg && tutorialStep === 70)) && (
             <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -3274,7 +3795,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           )}
 
           {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) / step 46 (Convênio) */}
-          {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51)) && (
+          {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75)) && (
             <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -3288,14 +3809,14 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Parabéns!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : "A sangria de caixa foi realizada e concluída com sucesso."}
+                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : isCancelamentoParcial ? "O produto foi cancelado com sucesso e os demais itens permanecem registrados na venda." : isCancelamentoTotal ? "A venda foi cancelada e todos os produtos foram removidos. O PDV está pronto para iniciar uma nova venda." : isDdg ? "O desconto do gerente foi aplicado à Dipirona com sucesso, dentro do limite permitido." : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
             </div>
           )}
 
           {/* Navegação do tutorial - plataforma de treinamentos */}
-          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             onClick={() => {
@@ -3369,6 +3890,27 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isConsultaDePreco && tutorialStep === 49) { setTutorialStep(2); }
               else if (isConsultaDePreco && tutorialStep === 50) { setTutorialStep(49); }
               else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(50); }
+              else if (isCancelamentoParcial && tutorialStep === 52) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
+              else if (isCancelamentoParcial && tutorialStep === 53) { setShowKeyboard(false); setTutorialStep(52); }
+              else if (isCancelamentoParcial && tutorialStep === 55) { setShowKeyboard(false); setTutorialStep(53); }
+              else if (isCancelamentoParcial && tutorialStep === 56) { setTutorialStep(55); }
+              else if (isCancelamentoParcial && tutorialStep === 57) { setTutorialStep(56); }
+              else if (isCancelamentoParcial && tutorialStep === 58) { setTutorialStep(57); }
+              else if (isCancelamentoParcial && tutorialStep === 59) { setShowKeyboard(false); setCancelamentoCodigo(""); setTutorialStep(58); }
+              else if (isCancelamentoParcial && tutorialStep === 60) { setShowKeyboard(false); setCancelamentoCodigo(""); setTutorialStep(59); }
+              else if (isCancelamentoParcial && tutorialStep === 61) { setShowKeyboard(false); setMotivoCancelamentoIndex(0); setTutorialStep(60); }
+              else if (isCancelamentoParcial && tutorialStep === 62) { setMotivoCancelamentoIndex(0); setTutorialStep(61); }
+              else if (isCancelamentoTotal && tutorialStep === 63) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
+              else if (isCancelamentoTotal && tutorialStep === 64) { setShowKeyboard(false); setTutorialStep(63); }
+              else if (isCancelamentoTotal && tutorialStep === 66) { setShowKeyboard(false); setMotivoCancelamentoVendaIndex(0); setTutorialStep(64); }
+              else if (isCancelamentoTotal && tutorialStep === 67) { setMotivoCancelamentoVendaIndex(0); setTutorialStep(66); }
+              else if (isDdg && tutorialStep === 68) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
+              else if (isDdg && tutorialStep === 69) { setShowKeyboard(false); setTutorialStep(68); }
+              else if (isDdg && tutorialStep === 71) { setShowKeyboard(false); setDdgItemIndex(0); setTutorialStep(69); }
+              else if (isDdg && tutorialStep === 72) { setShowKeyboard(false); setDdgMotivoIndex(0); setTutorialStep(71); }
+              else if (isDdg && tutorialStep === 73) { setShowKeyboard(false); setTutorialStep(72); }
+              else if (isDdg && tutorialStep === 74) { setShowKeyboard(false); setDdgValorCents(0); setTutorialStep(73); }
+              else if (isDdg && tutorialStep === 75) { setDdgValorCents(0); setTutorialStep(74); }
               else { setTutorialStep(0); setShowTutorial(true); }
             }}
             className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaGerenteMatricula || showAberturaGerenteSenha) || (!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || (tutorialStep === 0 && !(isAberturaDeCaixa && showTutorial)) || (isEnvioImpressaoCupom && tutorialStep === 31 && showTutorial) || (isRegistroDeItensDePedidos && tutorialStep === 35 && showTutorial) || (isLocalizarPedidoDoDelivery && tutorialStep === 38 && showTutorial))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
@@ -3431,11 +3973,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isConvenio && tutorialStep === 46) { setTutorialStep(10); }
               else if ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) { setTutorialStep(10); }
               else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(10); }
+              else if (isCancelamentoParcial && tutorialStep === 56) { setTutorialStep(57); }
+              else if (isCancelamentoParcial && tutorialStep === 58) { setTutorialStep(59); }
+              else if (isCancelamentoParcial && tutorialStep === 62) { setTutorialStep(10); }
+              else if (isCancelamentoTotal && tutorialStep === 67) { setTutorialStep(10); }
+              else if (isDdg && tutorialStep === 75) { setTutorialStep(10); }
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51)) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75)) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
-              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) ? "Concluir" : "Próximo"}
+              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) ? "Concluir" : "Próximo"}
             </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -3455,9 +4002,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
           }
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
-          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) ? 'animate-pulse-subtle' : ''
+          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) ? 'animate-pulse-subtle' : ''
         } ${keyboardOcultoNestaEtapa || isKeyboardSplitTeste1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) ? {
+        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
         } : {}}
@@ -3621,10 +4168,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
-      {((isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 2) || (isConsultaDePreco && tutorialStep === 49)) && (
+      {((isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 2) || (isConsultaDePreco && tutorialStep === 49) || (isCancelamentoParcial && tutorialStep === 57)) && (
         <button
           onClick={() => {
             setSku("");
+            if (isCancelamentoParcial) { setTutorialStep(58); return; }
             if (isLiberacaoComReceita || isLiberacaoManual) { setTutorialStep(47); return; }
             if (isConsultaDePreco) { setTutorialStep(50); return; }
             setTutorialStep(tutorialStep === 2 ? 15 : 20);
@@ -3780,7 +4328,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           key={tutorialStep}
           highlightSangria={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco}
           onSangriaPress={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && ((tutorialStep === 35 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 36 && pedidoSelecionado))) || (isLocalizarPedidoDoDelivery && tutorialStep === 39 && ovNumero.length === OV_EXEMPLO.length) || (isConvenio && ((tutorialStep === 42 && convenioCodigo.length === CONVENIO_CODIGO_EXEMPLO.length) || (tutorialStep === 43 && convenioCpf.length === CPF_EXEMPLO.length))) || (isLiberacaoComReceita && tutorialStep === 47 && receitaNumero.length === RECEITA_EXEMPLO.length)}
+          highlightEntra={tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && ((tutorialStep === 35 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 36 && pedidoSelecionado))) || (isLocalizarPedidoDoDelivery && tutorialStep === 39 && ovNumero.length === OV_EXEMPLO.length) || (isConvenio && ((tutorialStep === 42 && convenioCodigo.length === CONVENIO_CODIGO_EXEMPLO.length) || (tutorialStep === 43 && convenioCpf.length === CPF_EXEMPLO.length))) || (isLiberacaoComReceita && tutorialStep === 47 && receitaNumero.length === RECEITA_EXEMPLO.length) || (isCancelamentoParcial && (tutorialStep === 53 || tutorialStep === 60 || tutorialStep === 61)) || (isCancelamentoTotal && (tutorialStep === 64 || tutorialStep === 66)) || (isDdg && (tutorialStep === 69 || (tutorialStep === 71 && ddgItemIndex === 0) || tutorialStep === 72 || (tutorialStep === 74 && ddgValorCents === VALOR_DDG_EXEMPLO_CENTS)))}
           highlightVolta={(isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar) || (isLiberacaoManual && tutorialStep === 47 && !showAberturaGerenteMatricula && !showAberturaGerenteSenha)}
           onVoltaPress={
             isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar
@@ -3806,6 +4354,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
           highlightConsultaItem={isConsultaDePreco && tutorialStep === 2}
           onConsultaItemPress={isConsultaDePreco && tutorialStep === 2 ? () => { setTutorialStep(49); setShowKeyboard(false); } : undefined}
           highlightLimpa={isConsultaDePreco && tutorialStep === 50}
+          highlightDdg={isDdg && tutorialStep === 68}
+          onDdgPress={isDdg && tutorialStep === 68 ? () => { setTutorialStep(69); setShowKeyboard(false); } : undefined}
+          highlightCancelar={(isCancelamentoParcial && tutorialStep === 52) || (isCancelamentoTotal && tutorialStep === 63)}
+          onCancelarPress={
+            isCancelamentoParcial && tutorialStep === 52
+              ? () => { setTutorialStep(53); setShowKeyboard(false); }
+              : isCancelamentoTotal && tutorialStep === 63
+              ? () => { setTutorialStep(64); setShowKeyboard(false); }
+              : undefined
+          }
           highlightVoucher={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 1}
           onVoucherPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 1 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
           highlightDebito={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 2}
@@ -3860,19 +4418,19 @@ function PDVSimulator({ slug }: { slug?: string }) {
               ? () => { setShowKeyboard(false); setShowEntradaOperadorMatricula(true); }
               : undefined
           }
-          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0" || proximoDigitoPagamento === "0" || proximoDigitoOv === "0" || proximoDigitoConvenio === "0" || proximoDigitoConvenioCpf === "0"}
+          highlightKey0={(tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0" || proximoDigitoPagamento === "0" || proximoDigitoOv === "0" || proximoDigitoConvenio === "0" || proximoDigitoConvenioCpf === "0" || proximoDigitoCancelamento === "0" || proximoDigitoDdg === "0"}
           onKey0Press={undefined}
-          highlightKey3={proximoDigitoCpf === "3" || proximoDigitoSkuManual === "3" || (isRegistroDeProdutos && tutorialStep === 18 && sku.length === 0) || proximoDigitoPagamento === "3" || proximoDigitoOv === "3" || proximoDigitoConvenio === "3" || proximoDigitoConvenioCpf === "3" || proximoDigitoReceita === "3"}
+          highlightKey3={proximoDigitoCpf === "3" || proximoDigitoSkuManual === "3" || (isRegistroDeProdutos && tutorialStep === 18 && sku.length === 0) || proximoDigitoPagamento === "3" || proximoDigitoOv === "3" || proximoDigitoConvenio === "3" || proximoDigitoConvenioCpf === "3" || proximoDigitoReceita === "3" || proximoDigitoCancelamento === "3" || (isDdg && tutorialStep === 73)}
           highlightKey4={proximoDigitoCpf === "4" || proximoDigitoPagamento === "4" || proximoDigitoOv === "4" || proximoDigitoConvenio === "4" || proximoDigitoConvenioCpf === "4"}
           highlightKey5={proximoDigitoCpf === "5" || proximoDigitoPagamento === "5" || proximoDigitoOv === "5" || proximoDigitoConvenio === "5" || proximoDigitoConvenioCpf === "5"}
           highlightKey6={proximoDigitoCpf === "6" || proximoDigitoPagamento === "6" || proximoDigitoOv === "6" || proximoDigitoConvenio === "6" || proximoDigitoConvenioCpf === "6"}
-          highlightKey7={proximoDigitoCpf === "7" || proximoDigitoPagamento === "7" || proximoDigitoOv === "7" || proximoDigitoConvenio === "7" || proximoDigitoConvenioCpf === "7"}
-          highlightKey8={proximoDigitoCpf === "8" || proximoDigitoPagamento === "8" || proximoDigitoOv === "8" || proximoDigitoConvenio === "8" || proximoDigitoConvenioCpf === "8"}
+          highlightKey7={proximoDigitoDdg === "7" || proximoDigitoCpf === "7" || proximoDigitoPagamento === "7" || proximoDigitoOv === "7" || proximoDigitoConvenio === "7" || proximoDigitoConvenioCpf === "7"}
+          highlightKey8={proximoDigitoDdg === "8" || proximoDigitoCpf === "8" || proximoDigitoPagamento === "8" || proximoDigitoOv === "8" || proximoDigitoConvenio === "8" || proximoDigitoConvenioCpf === "8"}
           highlightKey9={proximoDigitoCpf === "9" || proximoDigitoPagamento === "9" || proximoDigitoOv === "9" || proximoDigitoConvenio === "9" || proximoDigitoConvenioCpf === "9"}
-          highlightV={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30))}
-          onVPress={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) ? handleVPress : undefined}
-          highlightK={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && tutorialStep === 36 && !pedidoSelecionado)}
-          onKPress={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && tutorialStep === 36) ? handleKPress : undefined}
+          highlightV={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && (tutorialStep === 55 || tutorialStep === 61)) || (isCancelamentoTotal && tutorialStep === 66) || (isDdg && (tutorialStep === 71 || tutorialStep === 72))}
+          onVPress={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && (tutorialStep === 55 || tutorialStep === 61)) || (isCancelamentoTotal && tutorialStep === 66) || (isDdg && (tutorialStep === 71 || tutorialStep === 72)) ? handleVPress : undefined}
+          highlightK={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && tutorialStep === 36 && !pedidoSelecionado) || (isCancelamentoParcial && (tutorialStep === 55 || tutorialStep === 61)) || (isCancelamentoTotal && tutorialStep === 66) || (isDdg && (tutorialStep === 71 || tutorialStep === 72))}
+          onKPress={tutorialStep === 6 || (isFormasDePagamento && (tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && tutorialStep === 36) || (isCancelamentoParcial && (tutorialStep === 55 || tutorialStep === 61)) || (isCancelamentoTotal && tutorialStep === 66) || (isDdg && (tutorialStep === 71 || tutorialStep === 72)) ? handleKPress : undefined}
         />
       </div>
 
@@ -3896,7 +4454,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Etapa concluída!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : isConsultaDePreco ? "Consulta de Preço" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : isConsultaDePreco ? "Agora você está pronto para consultar o preço e as informações de um produto sem adicioná-lo à venda." : "Agora você está pronto para realizar essa operação no PDV."}
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : isConsultaDePreco ? "Consulta de Preço" : isCancelamentoParcial ? "Cancelamento Parcial" : isCancelamentoTotal ? "Cancelamento Total" : isDdg ? "DDG (Desconto Gerencial)" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : isConsultaDePreco ? "Agora você está pronto para consultar o preço e as informações de um produto sem adicioná-lo à venda." : isCancelamentoParcial ? "Agora você está pronto para cancelar um produto específico de uma venda em andamento, mantendo os demais itens registrados." : isCancelamentoTotal ? "Agora você está pronto para cancelar uma venda inteira, com a autorização do gerente, removendo todos os produtos registrados." : isDdg ? "Agora você está pronto para aplicar o desconto do gerente a um produto da venda, dentro dos limites definidos." : "Agora você está pronto para realizar essa operação no PDV."}
                 </p>
               </div>
             </div>

@@ -13,7 +13,7 @@ const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 // ── Shared Header ─────────────────────────────────────────────────────────────
 
-function PDVHeader() {
+function PDVHeader({ trilha = "Sangria / Suprimento" }: { trilha?: string }) {
   return (
     <>
       <div className="bg-white flex items-center justify-between px-[20px] py-[20px] shrink-0 w-full">
@@ -117,7 +117,7 @@ function PDVHeader() {
                 </svg>
               </div>
             </div>
-            <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
+            <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">{trilha}</p>
           </div>
         </div>
       </div>
@@ -185,10 +185,10 @@ function BottomButtons({ entraState }: { entraState: EntraState }) {
 
 // ── Screen 1: Matrícula ───────────────────────────────────────────────────────
 
-function MatriculaScreen({ typedText, entraState }: { typedText: string; entraState: EntraState }) {
+function MatriculaScreen({ typedText, entraState, trilha }: { typedText: string; entraState: EntraState; trilha?: string }) {
   return (
     <div className="relative h-full w-full flex flex-col">
-      <PDVHeader />
+      <PDVHeader trilha={trilha} />
       <div className="bg-white flex-1 p-[20px]">
         <div className="h-[202px] w-full flex flex-col items-center justify-center px-[240px]">
           <div className="flex items-center w-full mb-[18px]">
@@ -220,10 +220,10 @@ function MatriculaScreen({ typedText, entraState }: { typedText: string; entraSt
 
 // ── Screen 2: Senha ───────────────────────────────────────────────────────────
 
-function SenhaScreen({ dotCount, entraState }: { dotCount: number; entraState: EntraState }) {
+function SenhaScreen({ dotCount, entraState, trilha }: { dotCount: number; entraState: EntraState; trilha?: string }) {
   return (
     <div className="relative h-full w-full flex flex-col">
-      <PDVHeader />
+      <PDVHeader trilha={trilha} />
       <div className="bg-white flex-1 p-[20px]">
         <div className="w-full flex flex-col gap-[18px] items-center justify-center px-[240px] pt-[20px]">
           <div className="flex items-center w-full">
@@ -345,7 +345,10 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial, startAtSelection }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean; startAtSelection?: boolean }) {
+// onAuthComplete: usado por fluxos que só precisam da autorização do
+// gerente (ex.: Cancelamento Parcial) — encerra a animação logo após a
+// senha, sem exibir a tela de seleção de Sangria/Suprimento.
+export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial, startAtSelection, onAuthComplete, trilha }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean; startAtSelection?: boolean; onAuthComplete?: () => void; trilha?: string }) {
   const [screen, setScreen] = useState<Screen>(startAtSelection ? 3 : 1);
   const [opacity, setOpacity] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -424,6 +427,10 @@ export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, i
       setOpacity(0);
       await w(400);
       if (cancelledRef.current) return;
+      if (onAuthComplete) {
+        onAuthComplete();
+        return;
+      }
       setScreen(3);
       onReachSelection?.();
       await w(80);
@@ -440,8 +447,8 @@ export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, i
   return (
     <div className="absolute inset-0 bg-white overflow-hidden rounded-[20px]">
       <div className="size-full transition-opacity duration-300" style={{ opacity }}>
-        {screen === 1 && <MatriculaScreen typedText={typedText} entraState={entraState} />}
-        {screen === 2 && <SenhaScreen dotCount={dotCount} entraState={entraState} />}
+        {screen === 1 && <MatriculaScreen typedText={typedText} entraState={entraState} trilha={trilha} />}
+        {screen === 2 && <SenhaScreen dotCount={dotCount} entraState={entraState} trilha={trilha} />}
         {screen === 3 && <SelectionScreen isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} />}
       </div>
     </div>

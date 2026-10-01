@@ -121,9 +121,21 @@ export const secoesCategorias: CategoriaSecaoData[] = [
         descricao: "Permite verificar o preço e as informações de um produto a partir da leitura ou digitação do seu código de barras, sem adicioná-lo à venda.",
         slug: "consulta-de-preco"
       },
-      { titulo: "Cancelamento Parcial" },
-      { titulo: "Cancelamento Total" },
-      { titulo: "DDG (Desconto Gerencial)" }
+      {
+        titulo: "Cancelamento Parcial",
+        descricao: "O Cancelamento Parcial permite remover um produto específico de uma venda que ainda não foi finalizada, mantendo os demais itens registrados.",
+        slug: "cancelamento-parcial"
+      },
+      {
+        titulo: "Cancelamento Total",
+        descricao: "O Cancelamento Total permite remover todos os itens registrados e encerrar uma venda que ainda não foi finalizada, mediante autorização do gerente.",
+        slug: "cancelamento-total"
+      },
+      {
+        titulo: "DDG (Desconto Gerencial)",
+        descricao: "O DDG permite que o gerente aplique descontos diretamente no PDV, dentro dos limites definidos, para responder a situações comerciais durante a venda.",
+        slug: "ddg"
+      }
     ]
   },
   { titulo: "Pós-Venda", cards: [{ titulo: "Estorno" }, { titulo: "Troca de Mercadoria" }, { titulo: "Reimpressão de Cupom" }, { titulo: "Reimpressão de Comprovantes" }, { titulo: "Reimpressão Farmácia Popular" }] },
