@@ -246,6 +246,9 @@ export function CancelamentoVendaScreen({
   tooltipItens,
   avisoItens,
   tooltipItem,
+  cpfCliente = "***.222.333-**",
+  painelDireito,
+  linhasExtrasResumo,
   children,
 }: {
   modo: "venda" | "cancelar";
@@ -262,6 +265,13 @@ export function CancelamentoVendaScreen({
   // node 1260:14744 do Figma).
   avisoItens?: ReactNode;
   tooltipItem?: { numero: number; conteudo: ReactNode };
+  cpfCliente?: string;
+  // Conteúdo abaixo do Resumo da Venda no lugar do botão "Totalizar Venda"
+  // (ex.: grade de formas de pagamento da Troca de Mercadoria).
+  painelDireito?: ReactNode;
+  // Linhas adicionais ao fim do Resumo da Venda, após "Economizou" (ex.:
+  // Vale Troca e A receber da Troca de Mercadoria).
+  linhasExtrasResumo?: ReactNode;
   children?: ReactNode;
 }) {
   // Os valores do resumo consideram a venda inteira (não apenas os itens
@@ -292,7 +302,7 @@ export function CancelamentoVendaScreen({
                   </div>
                   <div className="flex flex-col">
                     <p className="font-semibold text-[16px] text-[#231f20]">Pedro Nalini</p>
-                    <p className="text-[12px] text-[#929292]">CPF: ***.222.333-**</p>
+                    <p className="text-[12px] text-[#929292]">CPF: {cpfCliente}</p>
                   </div>
                 </div>
                 <div className="bg-[#f9edbf] border border-[#ae964a] flex gap-[10px] items-center justify-center px-[18px] py-[6px] rounded-full shrink-0">
@@ -390,9 +400,10 @@ export function CancelamentoVendaScreen({
               <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#00ae8e]" style={fontVariation}>Economizou</p>
               <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#00ae8e]" style={fontVariation}>R$ {formatarValorBR(economizou)}</p>
             </div>
+            {linhasExtrasResumo}
           </div>
           <div className="h-px bg-[#bdbdbd]" />
-          <BotaoTotalizarVenda />
+          {painelDireito ?? <BotaoTotalizarVenda />}
         </div>
       </div>
       {children}
