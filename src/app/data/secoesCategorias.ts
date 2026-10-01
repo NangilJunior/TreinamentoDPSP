@@ -138,7 +138,26 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       }
     ]
   },
-  { titulo: "Pós-Venda", cards: [{ titulo: "Estorno" }, { titulo: "Troca de Mercadoria" }, { titulo: "Reimpressão de Cupom" }, { titulo: "Reimpressão de Comprovantes" }, { titulo: "Reimpressão Farmácia Popular" }] },
+  {
+    titulo: "Pós-Venda",
+    cards: [
+      {
+        titulo: "Estorno",
+        descricao: "O estorno permite devolver ao cliente o valor de uma venda já realizada, mediante aprovação do gerente e de acordo com a forma de pagamento utilizada.",
+        slug: "estorno"
+      },
+      {
+        titulo: "Troca de Mercadoria",
+        descricao: "A troca de mercadoria permite substituir um produto de uma venda anterior por outro durante uma nova venda, utilizando o valor do item devolvido para compor a nova compra.",
+        slug: "troca-de-mercadoria"
+      },
+      {
+        titulo: "Reimpressão de Comprovantes",
+        descricao: "A reimpressão permite emitir novamente um comprovante de uma venda já realizada. O processo requer aprovação do gerente e pode ser feito para comprovantes TEF ou cupons fiscais.",
+        slug: "reimpressao-de-comprovantes"
+      }
+    ]
+  },
   {
     titulo: "Gestão do Caixa",
     cards: [
