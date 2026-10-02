@@ -1,5 +1,6 @@
 import { UserPlus } from "lucide-react";
 import svgH5 from "../../imports/Home-5/svg-bveu4s30mg";
+import { RodapeVoltaEntra } from "./ConsultaPrecoScreens";
 
 function Header() {
   return (
@@ -104,6 +105,8 @@ const CAMPO_PLACEHOLDER: Record<CampoOperador, string> = {
   senha: "Digite a senha do operador",
 };
 
+// Rodapé Volta / Entra: o Entra fica ativo quando a matrícula ou a senha
+// (6 dígitos) estiver completa.
 export default function EntradaOperadorScreen({ campo = "matricula", valor = "" }: { campo?: CampoOperador; valor?: string }) {
   return (
     <div className="relative bg-white overflow-hidden rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4] flex flex-col w-[1280px] h-[800px]">
@@ -150,6 +153,7 @@ export default function EntradaOperadorScreen({ campo = "matricula", valor = "" 
           </div>
         </div>
       </div>
+      <RodapeVoltaEntra entraAtivo={valor.length >= 6} />
     </div>
   );
 }

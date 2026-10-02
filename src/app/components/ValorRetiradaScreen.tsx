@@ -5,7 +5,9 @@ export function formatCurrency(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export function PDVHeader({ trilha = ["Sangria / Suprimento", "REALIZAR SANGRIA", "SANGRIA"] }: { trilha?: string[] } = {}) {
+// "status" é opcional (ex.: "Caixa Fechado Parcial" no Fechamento Z); o
+// padrão continua "Caixa Disponível" em verde.
+export function PDVHeader({ trilha = ["Sangria / Suprimento", "REALIZAR SANGRIA", "SANGRIA"], status = { texto: "Caixa Disponível", cor: "#06AC73" } }: { trilha?: string[]; status?: { texto: string; cor: string } } = {}) {
   return (
     <>
       <div className="bg-white flex items-center justify-between px-[20px] py-[20px] shrink-0 w-full">
@@ -22,8 +24,8 @@ export function PDVHeader({ trilha = ["Sangria / Suprimento", "REALIZAR SANGRIA"
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[8px] items-center px-[8px] py-[6px]">
-          <div className="size-[9px] rounded-full bg-[#06AC73] shrink-0" />
-          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Caixa Disponível</p>
+          <div className="size-[9px] rounded-full shrink-0" style={{ backgroundColor: status.cor }} />
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#787878] text-[16px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>{status.texto}</p>
         </div>
         <div className="h-[32px] w-px bg-[#B9B9B9]" />
         <div className="flex gap-[16px] items-center px-[18px] py-[12px]">

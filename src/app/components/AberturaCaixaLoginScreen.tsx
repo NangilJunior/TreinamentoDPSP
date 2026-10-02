@@ -22,7 +22,7 @@ function StatusDot({ color, label }: { color: string; label: string }) {
   );
 }
 
-function RodapeStatus() {
+export function RodapeStatus() {
   return (
     <div className="flex items-center justify-between px-[32px] py-[16px] w-full">
       <StatusDot color="#06AC73" label="PDV 57* Loja 0573" />

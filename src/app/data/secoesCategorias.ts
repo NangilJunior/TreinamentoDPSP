@@ -198,13 +198,8 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       },
       {
         titulo: "Fechamento de Caixa",
-        descricao: "O Fechamento de Caixa encerra as atividades do PDV ao fim do expediente, com a conferência dos valores em dinheiro e das demais formas de pagamento recebidas.",
+        descricao: "O Fechamento Z encerra o movimento do PDV ao final da operação, consolidando as vendas e demais movimentações realizadas no caixa.",
         slug: "fechamento-de-caixa"
-      },
-      {
-        titulo: "Fechamento Z",
-        descricao: "O Fechamento Z encerra o movimento fiscal do dia no PDV e emite o relatório com os totais registrados, que não podem mais ser alterados.",
-        slug: "fechamento-z"
       }
     ]
   },
