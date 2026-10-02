@@ -549,9 +549,14 @@ function Frame32() {
   );
 }
 
-function Frame30() {
+function Frame30({ highlighted, onPress }: { highlighted?: boolean; onPress?: () => void }) {
   return (
-    <div className="bg-[#2ebb62] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer hover:bg-[#4fc878] active:bg-[#1fa751] transition-colors">
+    <div
+      onClick={onPress}
+      className={`bg-[#2ebb62] h-full relative rounded-[8px] shrink-0 w-[142px] cursor-pointer transition-colors ${
+        highlighted ? 'key-highlighted-blue z-[10]' : 'hover:bg-[#4fc878] active:bg-[#1fa751]'
+      }`}
+    >
       <div className="content-stretch flex gap-[4px] items-start p-[10px] relative size-full">
         <Frame31 />
         <Frame32 />
@@ -686,12 +691,12 @@ function Frame42({ highlighted, onPress }: { highlighted?: boolean; onPress?: ()
   );
 }
 
-function Frame27({ highlightK, onKPress, highlightSuprimentoDinheiro, onSuprimentoDinheiroPress, highlightConsultaItem, onConsultaItemPress, highlightCancelar, onCancelarPress }: { highlightK?: boolean; onKPress?: () => void; highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void; highlightConsultaItem?: boolean; onConsultaItemPress?: () => void; highlightCancelar?: boolean; onCancelarPress?: () => void }) {
+function Frame27({ highlightK, onKPress, highlightSuprimentoDinheiro, onSuprimentoDinheiroPress, highlightConsultaItem, onConsultaItemPress, highlightCancelar, onCancelarPress, highlightLeituraX, onLeituraXPress }: { highlightK?: boolean; onKPress?: () => void; highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void; highlightConsultaItem?: boolean; onConsultaItemPress?: () => void; highlightCancelar?: boolean; onCancelarPress?: () => void; highlightLeituraX?: boolean; onLeituraXPress?: () => void }) {
   return (
     <div className="content-stretch flex flex-[1_0_0] gap-[10px] items-center min-h-px relative w-full">
       <Frame28 highlighted={highlightCancelar} onPress={onCancelarPress} />
       <Frame29 />
-      <Frame30 />
+      <Frame30 highlighted={highlightLeituraX} onPress={onLeituraXPress} />
       <Frame34 highlighted={highlightK} onPress={onKPress} />
       <Frame38 highlighted={highlightConsultaItem} onPress={onConsultaItemPress} />
       <Frame42 highlighted={highlightSuprimentoDinheiro} onPress={onSuprimentoDinheiroPress} />
@@ -732,12 +737,12 @@ function Frame7({
   highlightSangria, onSangriaPress, highlightV, onVPress, highlightK, onKPress,
   highlightVoucher, onVoucherPress, highlightDebito, onDebitoPress, highlightCredito, onCreditoPress,
   highlightSuprimentoDinheiro, onSuprimentoDinheiroPress, highlightDelivery, onDeliveryPress,
-  highlightConvenio, onConvenioPress, highlightConsultaItem, onConsultaItemPress, highlightCancelar, onCancelarPress, highlightDdg, onDdgPress, highlightEstornoPgto, onEstornoPgtoPress, highlightTroca, onTrocaPress, highlightFitaDetalhe, onFitaDetalhePress,
+  highlightConvenio, onConvenioPress, highlightConsultaItem, onConsultaItemPress, highlightCancelar, onCancelarPress, highlightDdg, onDdgPress, highlightEstornoPgto, onEstornoPgtoPress, highlightTroca, onTrocaPress, highlightFitaDetalhe, onFitaDetalhePress, highlightLeituraX, onLeituraXPress,
 }: {
   highlightSangria?: boolean; onSangriaPress?: () => void; highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void;
   highlightVoucher?: boolean; onVoucherPress?: () => void; highlightDebito?: boolean; onDebitoPress?: () => void; highlightCredito?: boolean; onCreditoPress?: () => void;
   highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void; highlightDelivery?: boolean; onDeliveryPress?: () => void;
-  highlightConvenio?: boolean; onConvenioPress?: () => void; highlightConsultaItem?: boolean; onConsultaItemPress?: () => void; highlightCancelar?: boolean; onCancelarPress?: () => void; highlightDdg?: boolean; onDdgPress?: () => void; highlightEstornoPgto?: boolean; onEstornoPgtoPress?: () => void; highlightTroca?: boolean; onTrocaPress?: () => void; highlightFitaDetalhe?: boolean; onFitaDetalhePress?: () => void;
+  highlightConvenio?: boolean; onConvenioPress?: () => void; highlightConsultaItem?: boolean; onConsultaItemPress?: () => void; highlightCancelar?: boolean; onCancelarPress?: () => void; highlightDdg?: boolean; onDdgPress?: () => void; highlightEstornoPgto?: boolean; onEstornoPgtoPress?: () => void; highlightTroca?: boolean; onTrocaPress?: () => void; highlightFitaDetalhe?: boolean; onFitaDetalhePress?: () => void; highlightLeituraX?: boolean; onLeituraXPress?: () => void;
 }) {
   return (
     <div className="content-stretch flex flex-col gap-[10px] h-[655px] items-start relative shrink-0">
@@ -745,7 +750,7 @@ function Frame7({
       <Frame3 highlightVoucher={highlightVoucher} onVoucherPress={onVoucherPress} highlightConvenio={highlightConvenio} onConvenioPress={onConvenioPress} highlightFitaDetalhe={highlightFitaDetalhe} onFitaDetalhePress={onFitaDetalhePress} />
       <Frame11 highlightDebito={highlightDebito} onDebitoPress={onDebitoPress} highlightDelivery={highlightDelivery} onDeliveryPress={onDeliveryPress} highlightDdg={highlightDdg} onDdgPress={onDdgPress} />
       <Frame18 highlightSangria={highlightSangria} onSangriaPress={onSangriaPress} highlightV={highlightV} onVPress={onVPress} highlightCredito={highlightCredito} onCreditoPress={onCreditoPress} highlightTroca={highlightTroca} onTrocaPress={onTrocaPress} />
-      <Frame27 highlightK={highlightK} onKPress={onKPress} highlightSuprimentoDinheiro={highlightSuprimentoDinheiro} onSuprimentoDinheiroPress={onSuprimentoDinheiroPress} highlightConsultaItem={highlightConsultaItem} onConsultaItemPress={onConsultaItemPress} highlightCancelar={highlightCancelar} onCancelarPress={onCancelarPress} />
+      <Frame27 highlightK={highlightK} onKPress={onKPress} highlightSuprimentoDinheiro={highlightSuprimentoDinheiro} onSuprimentoDinheiroPress={onSuprimentoDinheiroPress} highlightConsultaItem={highlightConsultaItem} onConsultaItemPress={onConsultaItemPress} highlightCancelar={highlightCancelar} onCancelarPress={onCancelarPress} highlightLeituraX={highlightLeituraX} onLeituraXPress={onLeituraXPress} />
       <Frame43 highlightEstornoPgto={highlightEstornoPgto} onEstornoPgtoPress={onEstornoPgtoPress} />
     </div>
   );
@@ -1060,16 +1065,16 @@ export default function VirtualKeyboard({
   highlightVolta, onVoltaPress, highlightMultiplica, onMultiplicaPress, highlightSubTotal, onSubTotalPress,
   highlightVoucher, onVoucherPress, highlightDebito, onDebitoPress, highlightCredito, onCreditoPress,
   highlightSuprimentoDinheiro, onSuprimentoDinheiroPress, highlightDelivery, onDeliveryPress,
-  highlightConvenio, onConvenioPress, highlightConsultaItem, onConsultaItemPress, highlightLimpa, highlightCancelar, onCancelarPress, highlightDdg, onDdgPress, highlightEstornoPgto, onEstornoPgtoPress, highlightTroca, onTrocaPress, highlightFitaDetalhe, onFitaDetalhePress,
+  highlightConvenio, onConvenioPress, highlightConsultaItem, onConsultaItemPress, highlightLimpa, highlightCancelar, onCancelarPress, highlightDdg, onDdgPress, highlightEstornoPgto, onEstornoPgtoPress, highlightTroca, onTrocaPress, highlightFitaDetalhe, onFitaDetalhePress, highlightLeituraX, onLeituraXPress,
 }: {
   highlightSangria?: boolean; onSangriaPress?: () => void; highlightEntra?: boolean; onEntraPress?: () => void; highlightKey1?: boolean; onKey1Press?: () => void; highlightKey2?: boolean; onKey2Press?: () => void; highlightKey0?: boolean; onKey0Press?: () => void;
   highlightV?: boolean; onVPress?: () => void; highlightK?: boolean; onKPress?: () => void; highlightKey3?: boolean; highlightKey4?: boolean; highlightKey5?: boolean; highlightKey6?: boolean; highlightKey7?: boolean; highlightKey8?: boolean; highlightKey9?: boolean;
   highlightVolta?: boolean; onVoltaPress?: () => void; highlightMultiplica?: boolean; onMultiplicaPress?: () => void; highlightSubTotal?: boolean; onSubTotalPress?: () => void;
   highlightVoucher?: boolean; onVoucherPress?: () => void; highlightDebito?: boolean; onDebitoPress?: () => void; highlightCredito?: boolean; onCreditoPress?: () => void;
   highlightSuprimentoDinheiro?: boolean; onSuprimentoDinheiroPress?: () => void; highlightDelivery?: boolean; onDeliveryPress?: () => void;
-  highlightConvenio?: boolean; onConvenioPress?: () => void; highlightConsultaItem?: boolean; onConsultaItemPress?: () => void; highlightLimpa?: boolean; highlightCancelar?: boolean; onCancelarPress?: () => void; highlightDdg?: boolean; onDdgPress?: () => void; highlightEstornoPgto?: boolean; onEstornoPgtoPress?: () => void; highlightTroca?: boolean; onTrocaPress?: () => void; highlightFitaDetalhe?: boolean; onFitaDetalhePress?: () => void;
+  highlightConvenio?: boolean; onConvenioPress?: () => void; highlightConsultaItem?: boolean; onConsultaItemPress?: () => void; highlightLimpa?: boolean; highlightCancelar?: boolean; onCancelarPress?: () => void; highlightDdg?: boolean; onDdgPress?: () => void; highlightEstornoPgto?: boolean; onEstornoPgtoPress?: () => void; highlightTroca?: boolean; onTrocaPress?: () => void; highlightFitaDetalhe?: boolean; onFitaDetalhePress?: () => void; highlightLeituraX?: boolean; onLeituraXPress?: () => void;
 }) {
-  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK || highlightKey3 || highlightKey4 || highlightKey5 || highlightKey6 || highlightKey7 || highlightKey8 || highlightKey9 || highlightVolta || highlightMultiplica || highlightSubTotal || highlightVoucher || highlightDebito || highlightCredito || highlightSuprimentoDinheiro || highlightDelivery || highlightConvenio || highlightConsultaItem || highlightLimpa || highlightCancelar || highlightDdg || highlightEstornoPgto || highlightTroca || highlightFitaDetalhe;
+  const anyHighlight = highlightSangria || highlightEntra || highlightKey1 || highlightKey2 || highlightKey0 || highlightV || highlightK || highlightKey3 || highlightKey4 || highlightKey5 || highlightKey6 || highlightKey7 || highlightKey8 || highlightKey9 || highlightVolta || highlightMultiplica || highlightSubTotal || highlightVoucher || highlightDebito || highlightCredito || highlightSuprimentoDinheiro || highlightDelivery || highlightConvenio || highlightConsultaItem || highlightLimpa || highlightCancelar || highlightDdg || highlightEstornoPgto || highlightTroca || highlightFitaDetalhe || highlightLeituraX;
   return (
     <>
       <style>{keyHighlightStyle}</style>
@@ -1086,6 +1091,7 @@ export default function VirtualKeyboard({
           highlightEstornoPgto={highlightEstornoPgto} onEstornoPgtoPress={onEstornoPgtoPress}
           highlightTroca={highlightTroca} onTrocaPress={onTrocaPress}
           highlightFitaDetalhe={highlightFitaDetalhe} onFitaDetalhePress={onFitaDetalhePress}
+          highlightLeituraX={highlightLeituraX} onLeituraXPress={onLeituraXPress}
         />
         <Frame45
           highlightEntra={highlightEntra} onEntraPress={onEntraPress} highlightKey1={highlightKey1} onKey1Press={onKey1Press} highlightKey2={highlightKey2} onKey2Press={onKey2Press} highlightKey3={highlightKey3} highlightKey0={highlightKey0} onKey0Press={onKey0Press}

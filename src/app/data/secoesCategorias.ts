@@ -182,16 +182,30 @@ export const secoesCategorias: CategoriaSecaoData[] = [
         slug: "detalhe-da-venda"
       },
       {
-        titulo: "Relatório do Operador",
-        descricao: "O Relatório do Operador apresenta o resumo das operações realizadas pelo operador no PDV, como vendas, sangrias e suprimentos, auxiliando na conferência do caixa.",
-        slug: "relatorio-do-operador"
-      },
-      {
-        titulo: "Relatório do Dia",
-        descricao: "O Relatório do Dia reúne os totais movimentados no PDV ao longo do dia, organizados por forma de pagamento e tipo de operação, facilitando o acompanhamento e o fechamento.",
-        slug: "relatorio-do-dia"
+        titulo: "Relatórios",
+        descricao: "O relatório de movimentação permite consultar as vendas e demais operações realizadas no PDV, reunindo informações sobre valores e formas de pagamento para acompanhar e conferir o movimento do caixa.",
+        slug: "relatorios"
       }
     ]
   },
-  { titulo: "Encerramento da Operação", cards: [{ titulo: "Saída do Operador" }, { titulo: "Fechamento de Caixa" }, { titulo: "Fechamento Z" }] },
+  {
+    titulo: "Encerramento da Operação",
+    cards: [
+      {
+        titulo: "Saída do Operador",
+        descricao: "A Saída do Operador encerra a sessão do operador no PDV, mantendo o caixa aberto para que outro operador possa assumir o atendimento.",
+        slug: "saida-do-operador"
+      },
+      {
+        titulo: "Fechamento de Caixa",
+        descricao: "O Fechamento de Caixa encerra as atividades do PDV ao fim do expediente, com a conferência dos valores em dinheiro e das demais formas de pagamento recebidas.",
+        slug: "fechamento-de-caixa"
+      },
+      {
+        titulo: "Fechamento Z",
+        descricao: "O Fechamento Z encerra o movimento fiscal do dia no PDV e emite o relatório com os totais registrados, que não podem mais ser alterados.",
+        slug: "fechamento-z"
+      }
+    ]
+  },
 ];

@@ -115,7 +115,7 @@ export function TeclaNumericaIlustracao({ numero }: { numero: string }) {
   );
 }
 
-function OpcaoEstorno({ tecla, rotulo, className }: { tecla: string; rotulo: string; className: string }) {
+export function OpcaoEstorno({ tecla, rotulo, className }: { tecla: string; rotulo: string; className: string }) {
   return (
     <div className={`border border-[#ddd] flex gap-[20px] h-[70px] items-center px-[18px] py-[10px] rounded-[6px] ${className}`}>
       <div className="border border-[#2258e6] flex items-center justify-center px-[24px] py-[10px] rounded-[8px] w-[60px] shrink-0">
