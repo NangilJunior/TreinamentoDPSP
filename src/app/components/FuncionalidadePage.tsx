@@ -532,21 +532,37 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // resoluções menores. A folga vertical (paddingY) garante espaço para o card
   // de tutorial que aparece abaixo do PDV.
   const trainingScale = useFitScale(1280, 800, { paddingX: 32, paddingY: 90 });
-  // Layout experimental (teste 1): a tela ocupa a parte de cima da viewport,
-  // e o teclado virtual (reduzido a 70% do seu tamanho atual, de 0.5 para
-  // scale-[0.35]) é posicionado logo abaixo dela — a posição do teclado é
-  // CALCULADA a partir da altura real da tela (não é um valor independente
-  // "adivinhado"), garantindo que um sempre fique embaixo do outro, nessa
-  // ordem, sem se sobrepor.
+  // Layout experimental (teste 1): tela e teclado virtual lado a lado. A
+  // largura disponível (viewport menos margens laterais e o espaço entre os
+  // dois) é dividida em 55% para a tela e 45% para o teclado; cada um é
+  // escalado para caber na sua fatia (respeitando também a altura), e o
+  // conjunto fica centralizado na viewport.
   const KEYBOARD_SPLIT_GAP = 16;
+  const KEYBOARD_SPLIT_PADDING_X = 32;
+  const KEYBOARD_SPLIT_PADDING_Y = 16;
+  const KEYBOARD_SPLIT_SCREEN_RATIO = 0.55;
+  const KEYBOARD_SPLIT_NATURAL_WIDTH = 1590; // largura natural (sem escala) do VirtualKeyboard
   const KEYBOARD_SPLIT_NATURAL_HEIGHT = 735; // altura natural (sem escala) do VirtualKeyboard
-  const keyboardSplitHeight = KEYBOARD_SPLIT_NATURAL_HEIGHT * 0.35;
-  const splitScreenScale = useFitScale(1280, 800, {
-    paddingX: 32,
-    paddingTop: KEYBOARD_SPLIT_GAP,
-    paddingBottom: keyboardSplitHeight + KEYBOARD_SPLIT_GAP * 2,
-  });
-  const splitKeyboardTop = KEYBOARD_SPLIT_GAP + 800 * splitScreenScale + KEYBOARD_SPLIT_GAP;
+  const [viewport, setViewport] = useState(() => ({
+    width: typeof window === "undefined" ? 1440 : window.innerWidth,
+    height: typeof window === "undefined" ? 900 : window.innerHeight,
+  }));
+  useEffect(() => {
+    const onResize = () => setViewport({ width: window.innerWidth, height: window.innerHeight });
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+  const splitAvailW = Math.max(0, viewport.width - KEYBOARD_SPLIT_PADDING_X * 2 - KEYBOARD_SPLIT_GAP);
+  const splitAvailH = Math.max(0, viewport.height - KEYBOARD_SPLIT_PADDING_Y * 2);
+  const splitScreenScale = Math.min(1, (splitAvailW * KEYBOARD_SPLIT_SCREEN_RATIO) / 1280, splitAvailH / 800);
+  const splitKeyboardScale = Math.min(
+    1,
+    (splitAvailW * (1 - KEYBOARD_SPLIT_SCREEN_RATIO)) / KEYBOARD_SPLIT_NATURAL_WIDTH,
+    splitAvailH / KEYBOARD_SPLIT_NATURAL_HEIGHT,
+  );
+  const splitGroupWidth = 1280 * splitScreenScale + KEYBOARD_SPLIT_GAP + KEYBOARD_SPLIT_NATURAL_WIDTH * splitKeyboardScale;
+  const splitScreenLeft = (viewport.width - splitGroupWidth) / 2;
+  const splitKeyboardLeft = splitScreenLeft + 1280 * splitScreenScale + KEYBOARD_SPLIT_GAP;
   const [showKeyboard, setShowKeyboard] = useState(false);
   const [keyboardReady, setKeyboardReady] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -583,7 +599,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Ativa o layout experimental nos passos em que o operador precisa
   // localizar uma tecla no teclado virtual (Sangria no passo 2, Entra no
   // passo 3), e só depois de abri-lo.
-  const isKeyboardSplitTeste1 = isSuprimentoInicialTeste1 && showKeyboard && [2, 3, 5, 6, 7].includes(tutorialStep);
+  // Passos do teste 1 em que o operador usa o teclado: neles os atalhos de
+  // teclado físico ficam sempre ativos (mesmo sem abrir o teclado virtual),
+  // e o layout dividido entra em cena quando o teclado virtual é aberto.
+  const isPassoTecladoTeste1 = isSuprimentoInicialTeste1 && [2, 3, 5, 6, 7].includes(tutorialStep);
+  const isKeyboardSplitTeste1 = isPassoTecladoTeste1 && showKeyboard;
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [cpf, setCpf] = useState("");
   // Número da OV (pedido) digitado no fluxo de Localizar Pedido do Delivery
@@ -1512,8 +1532,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
   }, [isFormasDePagamento, isRegistroDeItensDePedidos, isCancelamentoParcial, isCancelamentoTotal, isDdg, isTrocaDeMercadoria, isReimpressaoDeComprovantes, isDetalheDaVenda, tutorialStep]);
 
-  // Atalhos de teclado físico (teste 1): com o teclado virtual dividido em
-  // tela, cada passo tem uma tecla física equivalente à tecla virtual que o
+  // Atalhos de teclado físico (teste 1): ativos com ou sem o teclado virtual
+  // aberto, permitindo navegar o fluxo sem nunca abri-lo. Cada passo tem uma tecla física equivalente à tecla virtual que o
   // avança — [V] (Sangria) no passo 2, [Enter] (Entra) no passo 3, [2]
   // (Consultar Suprimento) no passo 5, [Enter] (Entra) + [V]/[K] ou
   // setas ↑/↓ (navegar motivos) no passo 6, dígitos + [Enter] (Entra) no
@@ -1524,7 +1544,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // mudanças de passo — por isso o passo 7 precisa da própria lógica aqui,
   // com as dependências corretas.
   useEffect(() => {
-    if (!isKeyboardSplitTeste1) return;
+    if (!isPassoTecladoTeste1) return;
     // Como o botão "Exibir Teclado" fica focado (clique do mouse) quando o
     // teclado é aberto, avançar de etapa via atalho físico deixava esse
     // foco "preso" nele — reaparecendo com o anel de foco do navegador na
@@ -1582,7 +1602,27 @@ function PDVSimulator({ slug }: { slug?: string }) {
     };
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, [isKeyboardSplitTeste1, tutorialStep, motivoIndex, valorRetirada, valorAlvo, isSuprimentoAdicional, handleVPress, handleKPress]);
+  }, [isPassoTecladoTeste1, tutorialStep, motivoIndex, valorRetirada, valorAlvo, isSuprimentoAdicional, handleVPress, handleKPress]);
+
+  // Setas ← / → (testes 1 e 2): acionam os botões Anterior / Próximo do tutorial
+  // quando estiverem disponíveis, e Esc aciona o botão de fechar (X). O clique é feito no próprio botão, então a
+  // regra de disponibilidade é a mesma da tela: botão fora do DOM (navegação
+  // oculta no layout dividido) ou com pointer-events desativado (oculto com
+  // opacity-0 pointer-events-none, nele ou em um ancestral) não é acionado.
+  useEffect(() => {
+    if ((!isSuprimentoInicialTeste1 && !isSuprimentoInicialTeste2) || !isTrainingMode) return;
+    const handleArrows = (e: KeyboardEvent) => {
+      const nav = e.key === "ArrowLeft" ? "anterior" : e.key === "ArrowRight" ? "proximo" : e.key === "Escape" ? "fechar" : null;
+      if (!nav) return;
+      const button = document.querySelector<HTMLButtonElement>(`[data-tutorial-nav="${nav}"]`);
+      if (!button || button.disabled || getComputedStyle(button).pointerEvents === "none") return;
+      e.preventDefault();
+      button.click();
+      button.blur();
+    };
+    window.addEventListener("keydown", handleArrows);
+    return () => window.removeEventListener("keydown", handleArrows);
+  }, [isSuprimentoInicialTeste1, isSuprimentoInicialTeste2, isTrainingMode]);
 
   // Próximo dígito do CPF de exemplo a ser destacado no teclado virtual
   // (passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado).
@@ -3538,6 +3578,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
       {/* Close Button */}
       <button
+        data-tutorial-nav="fechar"
         onClick={exitTraining}
         className="absolute top-[20px] right-[20px] w-[48px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors group z-[60]"
       >
@@ -3548,10 +3589,14 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
       {/* PDV - Centralizado verticalmente (escalado para caber em telas menores) */}
       <div
-        className={`absolute left-1/2 z-10 transition-all duration-500 ease-in-out ${isKeyboardSplitTeste1 ? 'top-[16px]' : 'top-[42%]'}`}
-        style={{
-          transform: `translate(-50%, ${isKeyboardSplitTeste1 ? '0' : '-50%'}) scale(${isKeyboardSplitTeste1 ? splitScreenScale : trainingScale})`,
-          transformOrigin: isKeyboardSplitTeste1 ? 'top center' : 'center center',
+        className={`absolute z-10 transition-all duration-500 ease-in-out ${isKeyboardSplitTeste1 ? 'top-1/2' : 'left-1/2 top-[42%]'}`}
+        style={isKeyboardSplitTeste1 ? {
+          left: `${splitScreenLeft}px`,
+          transform: `translateY(-50%) scale(${splitScreenScale})`,
+          transformOrigin: 'left center',
+        } : {
+          transform: `translate(-50%, -50%) scale(${trainingScale})`,
+          transformOrigin: 'center center',
         }}
       >
 
@@ -4579,6 +4624,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
+            data-tutorial-nav="anterior"
             onClick={() => {
               if (showAberturaIdentificacao) { setShowAberturaIdentificacao(false); setShowEntradaOperadorSenha(true); setOperadorSenha(""); }
               else if (showAberturaAutorizacao) { setShowAberturaAutorizacao(false); setShowAberturaLogin(true); }
@@ -4719,6 +4765,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
           {/* Botão Próximo - tela de login (Abertura de Caixa), steps 0, 1 e 9 */}
           <button
+            data-tutorial-nav="proximo"
             onClick={() => {
               // O áudio de boas-vindas só deve tocar enquanto a tela à qual
               // ele pertence estiver visível — ao avançar, ele é cortado,
@@ -5048,16 +5095,29 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
-      {/* Virtual Keyboard - Posicionado embaixo com animação */}
+      {/* Virtual Keyboard - Posicionado embaixo com animação. No layout
+          experimental (teste 1), fica escondido à direita da viewport,
+          reduzido e transparente, e entra da direita para a esquerda
+          crescendo até a sua posição ao lado da tela. */}
       <div
-        className={`absolute left-1/2 -translate-x-1/2 z-20 transform ${
-          isKeyboardSplitTeste1 ? "scale-[0.35]" : "scale-[0.5]"
+        className={`absolute z-20 ${
+          isSuprimentoInicialTeste1 && (isKeyboardSplitTeste1 || !showKeyboard) ? "top-1/2" : "left-1/2 -translate-x-1/2 transform scale-[0.5]"
         } ${
           keyboardReady || isSuprimentoInicialTeste1 ? "transition-all duration-500 ease-in-out" : ""
         } ${
-          isKeyboardSplitTeste1 ? "" : showKeyboard ? "bottom-[-40px]" : "bottom-[-600px]"
+          isSuprimentoInicialTeste1 && (isKeyboardSplitTeste1 || !showKeyboard) ? "" : showKeyboard ? "bottom-[-40px]" : "bottom-[-600px]"
         }`}
-        style={isKeyboardSplitTeste1 ? { top: `${splitKeyboardTop}px`, transformOrigin: "top center" } : undefined}
+        style={isKeyboardSplitTeste1 ? {
+          left: `${splitKeyboardLeft}px`,
+          transform: `translateY(-50%) scale(${splitKeyboardScale})`,
+          transformOrigin: "left center",
+          opacity: 1,
+        } : isSuprimentoInicialTeste1 && !showKeyboard ? {
+          left: `${viewport.width}px`,
+          transform: `translateY(-50%) scale(${splitKeyboardScale * 0.2})`,
+          transformOrigin: "left center",
+          opacity: 0,
+        } : undefined}
         onClick={(e) => {
           const target = e.target as HTMLElement;
           const buttonText = target.textContent?.trim();
