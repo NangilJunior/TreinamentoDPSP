@@ -11,16 +11,6 @@ export interface CategoriaSecaoData {
 
 export const secoesCategorias: CategoriaSecaoData[] = [
   {
-    titulo: "Teste de teclado",
-    cards: [
-      {
-        titulo: "Suprimento Inicial Teste 1",
-        descricao: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
-        slug: "suprimento-inicial-teste-1"
-      }
-    ]
-  },
-  {
     titulo: "Início da Operação",
     cards: [
       {

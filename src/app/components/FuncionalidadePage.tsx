@@ -75,11 +75,6 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
     conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
     hasPDV: true
   },
-  "suprimento-inicial-teste-1": {
-    titulo: "Suprimento Inicial Teste 1",
-    conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
-    hasPDV: true
-  },
   "abertura-de-caixa": {
     titulo: "Abertura de Caixa",
     conteudo: "A abertura de caixa é o protocolo de segurança que autoriza o início das atividades de um operador no PDV. O processo exige a validação prévia de um gerente, seguida da autenticação do operador, garantindo rastreabilidade e prevenção de acessos não autorizados ao caixa.",
@@ -368,7 +363,6 @@ function formatCpf(digitos: string): string {
 const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
   "abertura-de-caixa": "abertura-de-caixa.mp3",
   "suprimento-inicial": "suprimento-inicial.mp3",
-  "suprimento-inicial-teste-1": "suprimento-inicial.mp3",
   "suprimento-complementar": "suprimento-complementar.mp3",
   "sangria-de-caixa": "sangria-de-caixa.mp3",
   "cliente-cadastrado-e-nao-cadastrado": "cliente-cadastrado-e-nao-cadastrado.mp3",
@@ -382,7 +376,7 @@ const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
 
 function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
-  const isSuprimentoInicial = slug === "suprimento-inicial" || slug === "suprimento-inicial-teste-1";
+  const isSuprimentoInicial = slug === "suprimento-inicial";
   const isSuprimentoAdicional = slug === "suprimento-complementar" || isSuprimentoInicial;
   const isAberturaDeCaixa = slug === "abertura-de-caixa";
   // Aviso de limite de valores/recomendação de sangria só faz sentido no
@@ -415,10 +409,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const isEncerramentoDaOperacao = isSaidaDoOperador || isFechamentoDeCaixa;
   const isEncantometro = slug === "encantometro";
   const isPbm = slug === "pbm";
-  // Layout experimental: tela + teclado virtual lado a lado (em vez do
-  // teclado sobrepor a tela), testado isoladamente neste fluxo antes de uma
-  // possível adoção nos demais.
-  const isSuprimentoInicialTeste1 = slug === "suprimento-inicial-teste-1";
   // Tela do tooltip "limite de valores atingido" (step 1) só faz sentido no
   // fluxo de Sangria de Caixa — Suprimento já pulava essa tela, e Cliente
   // Cadastrado e Não Cadastrado, Registro de Produtos, Formas de Pagamento,
@@ -547,7 +537,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // resoluções menores. A folga vertical (paddingY) garante espaço para o card
   // de tutorial que aparece abaixo do PDV.
   const trainingScale = useFitScale(1280, 800, { paddingX: 32, paddingY: 90 });
-  // Layout experimental (teste 1): tela e teclado virtual lado a lado. A
+  // Layout do teclado virtual: tela e teclado lado a lado. A
   // largura disponível (viewport menos margens laterais e o espaço entre os
   // dois) é dividida em 55% para a tela e 45% para o teclado; cada um é
   // escalado para caber na sua fatia (respeitando também a altura), e o
@@ -578,8 +568,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const splitGroupWidth = 1280 * splitScreenScale + KEYBOARD_SPLIT_GAP + KEYBOARD_SPLIT_NATURAL_WIDTH * splitKeyboardScale;
   const splitScreenLeft = (viewport.width - splitGroupWidth) / 2;
   const splitKeyboardLeft = splitScreenLeft + 1280 * splitScreenScale + KEYBOARD_SPLIT_GAP;
+  // Posição das tooltips que apontam para o teclado aberto: centralizadas
+  // acima dele, com a seta para baixo.
+  const tooltipAcimaDoTecladoStyle = {
+    left: `${splitKeyboardLeft + (KEYBOARD_SPLIT_NATURAL_WIDTH * splitKeyboardScale) / 2}px`,
+    top: `${viewport.height / 2 - (KEYBOARD_SPLIT_NATURAL_HEIGHT * splitKeyboardScale) / 2 - 12}px`,
+    // Mesma escala da tela, para o texto ter o tamanho das demais tooltips.
+    transform: `translate(-50%, -100%) scale(${splitScreenScale})`,
+    transformOrigin: "bottom center",
+  };
   const [showKeyboard, setShowKeyboard] = useState(false);
-  const [keyboardReady, setKeyboardReady] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAberturaLogin, setShowAberturaLogin] = useState(false);
   const [showAberturaAutorizacao, setShowAberturaAutorizacao] = useState(false);
@@ -611,14 +609,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const teclaLeituraX = isLeituraOperador ? "1" : "2";
   // Etapa relativa da Leitura X (0 a 4), ou -1 fora desse fluxo.
   const etapaLeituraX = isLeituraX && tutorialStep >= 115 && tutorialStep <= 124 ? tutorialStep - leituraXBase : -1;
-  // Ativa o layout experimental nos passos em que o operador precisa
-  // localizar uma tecla no teclado virtual (Sangria no passo 2, Entra no
-  // passo 3), e só depois de abri-lo.
-  // Passos do teste 1 em que o operador usa o teclado: neles os atalhos de
-  // teclado físico ficam sempre ativos (mesmo sem abrir o teclado virtual),
-  // e o layout dividido entra em cena quando o teclado virtual é aberto.
-  const isPassoTecladoTeste1 = isSuprimentoInicialTeste1 && [2, 3, 5, 6, 7].includes(tutorialStep);
-  const isKeyboardSplitTeste1 = isPassoTecladoTeste1 && showKeyboard;
+  // Layout do teclado virtual (todos os fluxos): ao abrir o teclado, a tela
+  // e o teclado ficam lado a lado (55/45), com o teclado entrando pela
+  // direita; fechado, ele fica escondido à direita da viewport.
+  const isKeyboardSplit = showKeyboard;
   const [isFirstAccess, setIsFirstAccess] = useState(true);
   const [cpf, setCpf] = useState("");
   // Número da OV (pedido) digitado no fluxo de Localizar Pedido do Delivery
@@ -1529,38 +1523,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
     }
   };
 
-  useEffect(() => {
-    if (isTrainingMode) {
-      // Pequeno delay para preparar o teclado sem animação
-      const timer = setTimeout(() => {
-        setKeyboardReady(true);
-      }, 50);
-
-      const handleKeyboard = (e: KeyboardEvent) => {
-        e.preventDefault();
-        const key = e.key;
-        if (key === "Enter") {
-          handleKeyPress("ENTRA");
-        } else if (key === "Backspace") {
-          handleKeyPress("VOLTA");
-        } else if (key === "Delete") {
-          handleKeyPress("LIMPA");
-        } else if (!isNaN(Number(key))) {
-          handleKeyPress(key);
-        }
-      };
-
-      window.addEventListener("keydown", handleKeyboard);
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener("keydown", handleKeyboard);
-      };
-    } else {
-      setKeyboardReady(false);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTrainingMode]);
-
   // Navegação dos motivos da sangria (step 6) pelas teclas V (↑) e K (↓)
   // do teclado virtual do PDV.
   const handleVPress = useCallback(() => {
@@ -1591,87 +1553,64 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setMotivoIndex((i) => Math.min(MOTIVOS_SANGRIA.length - 1, i + 1));
   }, [isFormasDePagamento, isRegistroDeItensDePedidos, isCancelamentoParcial, isCancelamentoTotal, isDdg, isTrocaDeMercadoria, isReimpressaoDeComprovantes, isDetalheDaVenda, tutorialStep]);
 
-  // Atalhos de teclado físico (teste 1): ativos com ou sem o teclado virtual
-  // aberto, permitindo navegar o fluxo sem nunca abri-lo. Cada passo tem uma tecla física equivalente à tecla virtual que o
-  // avança — [V] (Sangria) no passo 2, [Enter] (Entra) no passo 3, [2]
-  // (Consultar Suprimento) no passo 5, [Enter] (Entra) + [V]/[K] ou
-  // setas ↑/↓ (navegar motivos) no passo 6, dígitos + [Enter] (Entra) no
-  // passo 7 (digitação do valor). Nota: o listener físico
-  // genérico do restante do app (mais abaixo, "handleKeyboard") fica preso
-  // ao tutorialStep do momento em que o treinamento começou (closure
-  // obsoleta, dependências [isTrainingMode]), então não reage corretamente a
-  // mudanças de passo — por isso o passo 7 precisa da própria lógica aqui,
-  // com as dependências corretas.
+  // Atalhos de teclado físico (todos os fluxos): cada tecla física aciona a
+  // tecla virtual correspondente simulando o clique nela, então o atalho faz
+  // exatamente o mesmo que o clique, em qualquer fluxo e passo. Ficam ativos
+  // sempre que o teclado virtual pode ser usado (botão Exibir Teclado
+  // disponível ou teclado aberto), mesmo antes de abri-lo. Mapeamento:
+  // letras = tecla com a mesma letra impressa (V Sangria, R Convênio...),
+  // dígitos = teclas numéricas, setas ↑/↓ = V/K (navegação em listas),
+  // [Enter] = Entra, [Esc] = Volta, [Backspace] = Limpa, [F8] = Sub Total e
+  // [*] = Multiplica. Anula, Suprimento Dinheiro e 00 não têm atalho.
+  const tecladoVirtualRef = useRef<HTMLDivElement>(null);
+  const tecladoDisponivel = isTrainingMode && (showKeyboard || !keyboardOcultoNestaEtapa);
   useEffect(() => {
-    if (!isPassoTecladoTeste1) return;
-    // Como o botão "Exibir Teclado" fica focado (clique do mouse) quando o
-    // teclado é aberto, avançar de etapa via atalho físico deixava esse
-    // foco "preso" nele — reaparecendo com o anel de foco do navegador na
-    // próxima tela. Tirar o foco a cada avanço evita isso.
-    const blurActiveElement = () => (document.activeElement as HTMLElement | null)?.blur();
+    if (!tecladoDisponivel) return;
     const handleShortcut = (e: KeyboardEvent) => {
-      if (tutorialStep === 2 && e.key.toLowerCase() === "v") {
-        e.preventDefault();
-        setTutorialStep(3);
-        setShowKeyboard(false);
-        blurActiveElement();
-      } else if (tutorialStep === 3 && e.key === "Enter") {
-        e.preventDefault();
-        setTutorialStep(4);
-        setShowKeyboard(false);
-        blurActiveElement();
-      } else if (tutorialStep === 5 && e.key === "2") {
-        e.preventDefault();
-        setTutorialStep(6);
-        setShowKeyboard(false);
-        blurActiveElement();
-      } else if (tutorialStep === 6) {
-        if (e.key === "Enter" && motivoIndex === 0) {
-          e.preventDefault();
-          setTutorialStep(7);
-          setShowKeyboard(false);
-          blurActiveElement();
-        } else if (e.key.toLowerCase() === "v" || e.key === "ArrowUp") {
-          e.preventDefault();
-          handleVPress();
-        } else if (e.key.toLowerCase() === "k" || e.key === "ArrowDown") {
-          e.preventDefault();
-          handleKPress();
-        }
-      } else if (tutorialStep === 7) {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          if (valorRetirada === valorAlvo) {
-            setTutorialStep(8);
-            setShowKeyboard(false);
-            if (!isSuprimentoAdicional) setValorRetirada(0);
-            blurActiveElement();
-          }
-        } else if (e.key === "Backspace") {
-          e.preventDefault();
-          setValorRetirada((prev) => Math.floor(prev / 10));
-        } else if (e.key === "Delete") {
-          e.preventDefault();
-          setValorRetirada(0);
-        } else if (!isNaN(Number(e.key))) {
-          e.preventDefault();
-          setValorRetirada((prev) => Math.min(prev * 10 + Number(e.key), 99999999));
-        }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const origem = e.target as HTMLElement | null;
+      if (origem && (origem.tagName === "INPUT" || origem.tagName === "TEXTAREA")) return;
+      const teclado = tecladoVirtualRef.current;
+      if (!teclado) return;
+      const k = e.key;
+      const rotulo = /^[0-9]$/.test(k) ? k
+        : k === "Enter" ? "ENTRA"
+        : k === "Escape" ? "VOLTA"
+        : k === "Backspace" ? "LIMPA"
+        : k === "F8" ? "SUB TOTAL"
+        : k === "*" ? "MULTIPLICA"
+        : null;
+      const letra = /^[a-zA-Z]$/.test(k) ? k.toUpperCase() : k === "ArrowUp" ? "V" : k === "ArrowDown" ? "K" : null;
+      const textos = Array.from(teclado.querySelectorAll("p"));
+      let elemento: HTMLElement | undefined;
+      if (rotulo) {
+        elemento = textos.find((t) => t.textContent?.trim() === rotulo);
+      } else if (letra) {
+        // Encontra a tecla pela letra impressa e clica no nome dela (o
+        // último texto da tecla), como num clique real.
+        const tecla = textos.find((t) => t.textContent?.trim() === letra)?.closest<HTMLElement>("[class*='w-[142px]']");
+        elemento = tecla ? Array.from(tecla.querySelectorAll("p")).pop() : undefined;
       }
+      if (!elemento) return;
+      e.preventDefault();
+      elemento.click();
+      // Evita que o foco fique preso no botão Exibir Teclado (anel de foco
+      // reaparecendo na próxima tela).
+      (document.activeElement as HTMLElement | null)?.blur();
     };
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, [isPassoTecladoTeste1, tutorialStep, motivoIndex, valorRetirada, valorAlvo, isSuprimentoAdicional, handleVPress, handleKPress]);
+  }, [tecladoDisponivel]);
 
-  // Setas ← / → (teste 1): acionam os botões Anterior / Próximo do tutorial
-  // quando estiverem disponíveis, e Esc aciona o botão de fechar (X). O clique é feito no próprio botão, então a
+  // Setas ← / → (todos os fluxos): acionam os botões Anterior / Próximo do tutorial
+  // quando estiverem disponíveis. (O Esc é reservado à tecla [Volta].) O clique é feito no próprio botão, então a
   // regra de disponibilidade é a mesma da tela: botão fora do DOM (navegação
   // oculta no layout dividido) ou com pointer-events desativado (oculto com
   // opacity-0 pointer-events-none, nele ou em um ancestral) não é acionado.
   useEffect(() => {
-    if (!isSuprimentoInicialTeste1 || !isTrainingMode) return;
+    if (!isTrainingMode) return;
     const handleArrows = (e: KeyboardEvent) => {
-      const nav = e.key === "ArrowLeft" ? "anterior" : e.key === "ArrowRight" ? "proximo" : e.key === "Escape" ? "fechar" : null;
+      const nav = e.key === "ArrowLeft" ? "anterior" : e.key === "ArrowRight" ? "proximo" : null;
       if (!nav) return;
       const button = document.querySelector<HTMLButtonElement>(`[data-tutorial-nav="${nav}"]`);
       if (!button || button.disabled || getComputedStyle(button).pointerEvents === "none") return;
@@ -1681,7 +1620,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     };
     window.addEventListener("keydown", handleArrows);
     return () => window.removeEventListener("keydown", handleArrows);
-  }, [isSuprimentoInicialTeste1, isTrainingMode]);
+  }, [isTrainingMode]);
 
   // Próximo dígito do CPF de exemplo a ser destacado no teclado virtual
   // (passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado).
@@ -3731,8 +3670,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
       {/* PDV - Centralizado verticalmente (escalado para caber em telas menores) */}
       <div
-        className={`absolute z-10 transition-all duration-500 ease-in-out ${isKeyboardSplitTeste1 ? 'top-1/2' : 'left-1/2 top-[42%]'}`}
-        style={isKeyboardSplitTeste1 ? {
+        className={`absolute z-10 transition-all duration-500 ease-in-out ${isKeyboardSplit ? 'top-1/2' : 'left-1/2 top-[42%]'}`}
+        style={isKeyboardSplit ? {
           left: `${splitScreenLeft}px`,
           transform: `translateY(-50%) scale(${splitScreenScale})`,
           transformOrigin: 'left center',
@@ -4630,9 +4569,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
         {/* Faixa abaixo da tela: banner (quando houver) + navegação, todos
             empilhados com o mesmo espaçamento padrão de 16px entre si.
-            Ocultada no layout experimental (teste 1), que não usa Anterior/
-            Próximo enquanto o teclado dividido estiver em tela. */}
-        {!isKeyboardSplitTeste1 && (
+            Ocultada enquanto o teclado virtual está aberto ao lado da tela
+            (layout dividido), que não usa Anterior/Próximo. */}
+        {!isKeyboardSplit && (
         <div className="absolute top-[calc(100%+16px)] left-0 right-0 z-[50] flex flex-col gap-[16px]">
           {/* Banner Ação do Gerente - abaixo do PDV */}
           {(tutorialStep === 4 || showAberturaGerenteMatricula || showAberturaGerenteSenha || (isCancelamentoParcial && tutorialStep === 54) || (isCancelamentoTotal && tutorialStep === 65) || (isDdg && tutorialStep === 70) || (isEstorno && tutorialStep === 77) || (isTrocaDeMercadoria && tutorialStep === 92) || (isReimpressaoDeComprovantes && tutorialStep === 103) || (isDetalheDaVenda && tutorialStep === 111) || etapaLeituraX === 2 || (isSaidaDoOperador && tutorialStep === 127) || (isFechamentoDeCaixa && tutorialStep === 131)) && (
@@ -5040,7 +4979,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
           isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? 'animate-pulse-subtle' : ''
-        } ${keyboardOcultoNestaEtapa || isKeyboardSplitTeste1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        } ${keyboardOcultoNestaEtapa || isKeyboardSplit ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
@@ -5148,11 +5087,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {/* Tooltip - Teclado numérico (passo 16, registro manual do fluxo de
           Registro de Produtos) */}
       {showKeyboard && isRegistroDeProdutos && tutorialStep === 16 && (
-        <div
-          className="fade-in-delay absolute bottom-[520px] left-1/2 pointer-events-none z-[45]"
-          style={{ transform: `translateX(calc(-50% + 228px)) scale(${trainingScale})`, transformOrigin: "bottom center" }}
-        >
-          <TutorialTooltip width={480}>
+        <div className="fade-in-delay absolute pointer-events-none z-[45]" style={tooltipAcimaDoTecladoStyle}>
+          <TutorialTooltip width={420}>
             Insira o código de barras 11122233
           </TutorialTooltip>
         </div>
@@ -5161,39 +5097,30 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {/* Tooltip - Teclado numérico (passo 18, multiplicando produtos do
           fluxo de Registro de Produtos) */}
       {showKeyboard && isRegistroDeProdutos && tutorialStep === 18 && (
-        <div
-          className="fade-in-delay absolute bottom-[520px] left-1/2 pointer-events-none z-[45]"
-          style={{ transform: `translateX(calc(-50% + 228px)) scale(${trainingScale})`, transformOrigin: "bottom center" }}
-        >
-          <TutorialTooltip width={480}>
+        <div className="fade-in-delay absolute pointer-events-none z-[45]" style={tooltipAcimaDoTecladoStyle}>
+          <TutorialTooltip width={420}>
             Neste exemplo, vamos multiplicar o produto que será registrado por 3.
           </TutorialTooltip>
         </div>
       )}
 
-      {/* Virtual Keyboard - Posicionado embaixo com animação. No layout
-          experimental (teste 1), fica escondido à direita da viewport,
-          reduzido e transparente, e entra da direita para a esquerda
-          crescendo até a sua posição ao lado da tela. */}
+      {/* Virtual Keyboard - fechado, fica escondido à direita da viewport,
+          reduzido e transparente; ao abrir, entra da direita para a
+          esquerda crescendo até a sua posição ao lado da tela. */}
       <div
-        className={`absolute z-20 ${
-          isSuprimentoInicialTeste1 && (isKeyboardSplitTeste1 || !showKeyboard) ? "top-1/2" : "left-1/2 -translate-x-1/2 transform scale-[0.5]"
-        } ${
-          keyboardReady || isSuprimentoInicialTeste1 ? "transition-all duration-500 ease-in-out" : ""
-        } ${
-          isSuprimentoInicialTeste1 && (isKeyboardSplitTeste1 || !showKeyboard) ? "" : showKeyboard ? "bottom-[-40px]" : "bottom-[-600px]"
-        }`}
-        style={isKeyboardSplitTeste1 ? {
+        ref={tecladoVirtualRef}
+        className="absolute z-20 top-1/2 transition-all duration-500 ease-in-out"
+        style={isKeyboardSplit ? {
           left: `${splitKeyboardLeft}px`,
           transform: `translateY(-50%) scale(${splitKeyboardScale})`,
           transformOrigin: "left center",
           opacity: 1,
-        } : isSuprimentoInicialTeste1 && !showKeyboard ? {
+        } : {
           left: `${viewport.width}px`,
           transform: `translateY(-50%) scale(${splitKeyboardScale * 0.2})`,
           transformOrigin: "left center",
           opacity: 0,
-        } : undefined}
+        }}
         onClick={(e) => {
           const target = e.target as HTMLElement;
           const buttonText = target.textContent?.trim();
