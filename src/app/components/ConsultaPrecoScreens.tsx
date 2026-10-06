@@ -5,7 +5,9 @@ import { TutorialTooltip } from "./TutorialTooltip";
 // Rodapé Volta/Entra — mesmo padrão (com ícones) usado no rodapé real das
 // telas de Home (ex.: Frame22 em src/imports/Home-4/index.tsx), reaproveitado
 // aqui para manter a navegação decorativa consistente com o restante do PDV.
-export function RodapeVoltaEntra({ entraAtivo }: { entraAtivo: boolean }) {
+// `semEntra` oculta o botão Entra (ex.: telas de carregamento, que só
+// oferecem Volta), mantendo o Volta na mesma posição.
+export function RodapeVoltaEntra({ entraAtivo, semEntra = false }: { entraAtivo: boolean; semEntra?: boolean }) {
   return (
     <div className="flex items-center justify-between px-[24px] py-[20px]">
       <div className="bg-[rgba(255,255,255,0.1)] flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px]">
@@ -20,18 +22,20 @@ export function RodapeVoltaEntra({ entraAtivo }: { entraAtivo: boolean }) {
         </div>
         <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap text-[#ed403d]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Volta</p>
       </div>
-      <div className={`flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px] ${entraAtivo ? "" : "opacity-50"}`} style={{ backgroundColor: entraAtivo ? '#2258e6' : '#cfcfcf' }}>
-        <div className="relative shrink-0 size-[16px]">
-          <div className="absolute inset-[9.38%]">
-            <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
-              <path d="M4.81315 2.81315C5.00841 2.61789 5.32492 2.61789 5.52018 2.81315L8.85352 6.14648C9.04878 6.34175 9.04878 6.65825 8.85352 6.85352L5.52018 10.1868C5.32492 10.3821 5.00841 10.3821 4.81315 10.1868C4.61789 9.99159 4.61789 9.67508 4.81315 9.47982L7.79297 6.5L4.81315 3.52018C4.61789 3.32492 4.61789 3.00841 4.81315 2.81315Z" fill={entraAtivo ? "white" : "#3b3b3b"} />
-              <path d="M8.5 6C8.77614 6 9 6.22386 9 6.5C9 6.77614 8.77614 7 8.5 7H0.5C0.223858 7 0 6.77614 0 6.5C0 6.22386 0.223858 6 0.5 6H8.5Z" fill={entraAtivo ? "white" : "#3b3b3b"} />
-              <path d="M12 11.1667V1.83333C12 1.61232 11.9121 1.40042 11.7559 1.24414C11.5996 1.08786 11.3877 1 11.1667 1H8.5C8.22386 1 8 0.776142 8 0.5C8 0.223858 8.22386 0 8.5 0H11.1667C11.6529 0 12.1191 0.193293 12.4629 0.537109C12.8067 0.880926 13 1.3471 13 1.83333V11.1667C13 11.6529 12.8067 12.1191 12.4629 12.4629C12.1191 12.8067 11.6529 13 11.1667 13H8.5C8.22386 13 8 12.7761 8 12.5C8 12.2239 8.22386 12 8.5 12H11.1667C11.3877 12 11.5996 11.9121 11.7559 11.7559C11.9121 11.5996 12 11.3877 12 11.1667Z" fill={entraAtivo ? "white" : "#3b3b3b"} />
-            </svg>
+      {!semEntra && (
+        <div className={`flex gap-[8px] h-[72px] items-center justify-center px-[24px] py-[10px] relative rounded-[8px] w-[185px] ${entraAtivo ? "" : "opacity-50"}`} style={{ backgroundColor: entraAtivo ? '#2258e6' : '#cfcfcf' }}>
+          <div className="relative shrink-0 size-[16px]">
+            <div className="absolute inset-[9.38%]">
+              <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 13 13">
+                <path d="M4.81315 2.81315C5.00841 2.61789 5.32492 2.61789 5.52018 2.81315L8.85352 6.14648C9.04878 6.34175 9.04878 6.65825 8.85352 6.85352L5.52018 10.1868C5.32492 10.3821 5.00841 10.3821 4.81315 10.1868C4.61789 9.99159 4.61789 9.67508 4.81315 9.47982L7.79297 6.5L4.81315 3.52018C4.61789 3.32492 4.61789 3.00841 4.81315 2.81315Z" fill={entraAtivo ? "white" : "#3b3b3b"} />
+                <path d="M8.5 6C8.77614 6 9 6.22386 9 6.5C9 6.77614 8.77614 7 8.5 7H0.5C0.223858 7 0 6.77614 0 6.5C0 6.22386 0.223858 6 0.5 6H8.5Z" fill={entraAtivo ? "white" : "#3b3b3b"} />
+                <path d="M12 11.1667V1.83333C12 1.61232 11.9121 1.40042 11.7559 1.24414C11.5996 1.08786 11.3877 1 11.1667 1H8.5C8.22386 1 8 0.776142 8 0.5C8 0.223858 8.22386 0 8.5 0H11.1667C11.6529 0 12.1191 0.193293 12.4629 0.537109C12.8067 0.880926 13 1.3471 13 1.83333V11.1667C13 11.6529 12.8067 12.1191 12.4629 12.4629C12.1191 12.8067 11.6529 13 11.1667 13H8.5C8.22386 13 8 12.7761 8 12.5C8 12.2239 8.22386 12 8.5 12H11.1667C11.3877 12 11.5996 11.9121 11.7559 11.7559C11.9121 11.5996 12 11.3877 12 11.1667Z" fill={entraAtivo ? "white" : "#3b3b3b"} />
+              </svg>
+            </div>
           </div>
+          <p className={`font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap ${entraAtivo ? "text-white" : "text-[#3b3b3b]"}`} style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Entra</p>
         </div>
-        <p className={`font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-center whitespace-nowrap ${entraAtivo ? "text-white" : "text-[#3b3b3b]"}`} style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Entra</p>
-      </div>
+      )}
     </div>
   );
 }

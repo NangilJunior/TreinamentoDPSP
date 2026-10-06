@@ -348,8 +348,8 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
 // onAuthComplete: usado por fluxos que só precisam da autorização do
 // gerente (ex.: Cancelamento Parcial) — encerra a animação logo após a
 // senha, sem exibir a tela de seleção de Sangria/Suprimento.
-export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial, startAtSelection, onAuthComplete, trilha }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean; startAtSelection?: boolean; onAuthComplete?: () => void; trilha?: string }) {
-  const [screen, setScreen] = useState<Screen>(startAtSelection ? 3 : 1);
+export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial, onAuthComplete, trilha }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean; onAuthComplete?: () => void; trilha?: string }) {
+  const [screen, setScreen] = useState<Screen>(1);
   const [opacity, setOpacity] = useState(0);
   const [typedText, setTypedText] = useState("");
   const [dotCount, setDotCount] = useState(0);
@@ -366,11 +366,6 @@ export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, i
       await w(80);
       if (cancelledRef.current) return;
       setOpacity(1);
-
-      if (startAtSelection) {
-        onReachSelection?.();
-        return;
-      }
 
       // ── Screen 1: Matrícula ───────────────────────
       await w(1200);

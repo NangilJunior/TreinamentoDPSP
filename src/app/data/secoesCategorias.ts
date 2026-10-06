@@ -17,11 +17,6 @@ export const secoesCategorias: CategoriaSecaoData[] = [
         titulo: "Suprimento Inicial Teste 1",
         descricao: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
         slug: "suprimento-inicial-teste-1"
-      },
-      {
-        titulo: "Suprimento Inicial Teste 2",
-        descricao: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
-        slug: "suprimento-inicial-teste-2"
       }
     ]
   },
@@ -93,8 +88,11 @@ export const secoesCategorias: CategoriaSecaoData[] = [
         descricao: "Para que as condições do Convênio, como promoções e descontos, sejam aplicadas à venda, é necessário realizar uma autenticação com o provedor.",
         slug: "convenio"
       },
-      { titulo: "PBM" },
-      { titulo: "Farmácia Popular" }
+      {
+        titulo: "PBM",
+        descricao: "O PBM permite aplicar benefícios e descontos em medicamentos participantes durante a venda, após a identificação do programa e do cliente.",
+        slug: "pbm"
+      }
     ]
   },
   {
@@ -112,7 +110,16 @@ export const secoesCategorias: CategoriaSecaoData[] = [
       }
     ]
   },
-  { titulo: "Experiência do Cliente", cards: [{ titulo: "Encantômetro" }] },
+  {
+    titulo: "Experiência do Cliente",
+    cards: [
+      {
+        titulo: "Encantômetro",
+        descricao: "O Encantômetro permite que o cliente avalie sua experiência de atendimento após a venda, atribuindo uma nota de 1 a 5 estrelas.",
+        slug: "encantometro"
+      }
+    ]
+  },
   {
     titulo: "Ajustes durante a Venda",
     cards: [

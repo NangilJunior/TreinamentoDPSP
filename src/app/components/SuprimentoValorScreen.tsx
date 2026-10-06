@@ -144,7 +144,7 @@ export function PDVHeader() {
   );
 }
 
-export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false, isSuprimentoInicial = false, campoInativo = false }: { valorCents: number; gavetaAberta?: boolean; isSuprimentoInicial?: boolean; campoInativo?: boolean }) {
+export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false, isSuprimentoInicial = false }: { valorCents: number; gavetaAberta?: boolean; isSuprimentoInicial?: boolean }) {
   const showValue = valorCents > 0;
   const isValidValue = valorCents === 20000;
 
@@ -180,7 +180,7 @@ export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false
               <div className="flex flex-col gap-[18px] items-start w-full">
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>Valor da entrada</p>
                 <div className="h-[72px] w-full">
-                  <div className={`bg-white rounded-[8px] h-full relative flex items-center px-[16px] border ${showValue && !campoInativo ? "border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4]" : "border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"}`}>
+                  <div className={`bg-white rounded-[8px] h-full relative flex items-center px-[16px] border ${showValue ? "border-[#a3a3a3] shadow-[0px_0px_0px_3px_#d4d4d4]" : "border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]"}`}>
                     {showValue ? (
                       <p className="font-['Nunito_Sans',sans-serif] font-medium text-[#0a0a0a] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                         R$ {formatCurrency(valorCents)}
