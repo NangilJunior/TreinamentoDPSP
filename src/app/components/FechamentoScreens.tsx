@@ -25,7 +25,9 @@ function CabecalhoFechamentoZ() {
   );
 }
 
-function EtapaProcessamento({ concluida, rotulo }: { concluida: boolean; rotulo: string }) {
+// Etapa de processamento com o ícone girando (refresh) até ser concluída,
+// quando vira um check. Usada também na Leitura X (LeituraXScreens).
+export function EtapaProcessamento({ concluida, rotulo }: { concluida: boolean; rotulo: string }) {
   return (
     <div className="flex gap-[24px] items-center">
       <style>{`@keyframes check-pop { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }`}</style>

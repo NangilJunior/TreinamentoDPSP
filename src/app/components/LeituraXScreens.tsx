@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
-import { FileChartPie, UserRoundCheck, CalendarCheck2, LoaderCircle, RefreshCw, Check } from "lucide-react";
+import { ReactNode, useEffect, useState } from "react";
+import { FileChartPie, UserRoundCheck, CalendarCheck2, LoaderCircle, Check } from "lucide-react";
+import { EtapaProcessamento } from "./FechamentoScreens";
 import { PDVHeader } from "./ValorRetiradaScreen";
 import { ConvenioBottomSheet } from "./ConvenioScreens";
 import { OpcaoEstorno } from "./EstornoScreens";
@@ -65,6 +66,13 @@ export function LeituraXOpcoesSheet({ tooltip }: { tooltip?: ReactNode }) {
 
 // Nodes 2522:32835 e 2522:32921 — processamento da Leitura X.
 export function LeituraXProcessandoScreen({ tipo }: { tipo: TipoLeituraX }) {
+  // A etapa "Analisando memória fiscal" gira e recebe o check pouco antes
+  // de a tela avançar sozinha (ver FuncionalidadePage), como no Fechamento Z.
+  const [analiseConcluida, setAnaliseConcluida] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setAnaliseConcluida(true), 1700);
+    return () => clearTimeout(timer);
+  }, []);
   return (
     <div className="absolute inset-0 bg-white rounded-[20px] overflow-hidden flex flex-col">
       <CabecalhoLeituraX tipo={tipo} />
@@ -83,12 +91,7 @@ export function LeituraXProcessandoScreen({ tipo }: { tipo: TipoLeituraX }) {
           </p>
         </div>
         <div className="bg-white flex gap-[24px] items-center px-[40px] py-[20px] rounded-[8px]">
-          <div className="bg-[#fef5f5] flex items-center p-[10px] rounded-full">
-            <RefreshCw size={32} className="text-[#ed403d]" strokeWidth={1.8} />
-          </div>
-          <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2] text-[#535353] whitespace-nowrap" style={fontVariation}>
-            Analisando memória fiscal
-          </p>
+          <EtapaProcessamento concluida={analiseConcluida} rotulo="Analisando memória fiscal" />
         </div>
       </div>
     </div>

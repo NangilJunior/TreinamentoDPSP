@@ -434,7 +434,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     : isSuprimentoAdicional
     ? "Olá, boas vindas ao tutorial de Suprimento Complementar."
     : isAberturaDeCaixa
-    ? "Olá, boas vindas ao tutorial de Abertura de Caixa"
+    ? "Olá, boas vindas ao tutorial de Abertura de Caixa."
     : isClienteCadastrado
     ? "Olá, boas vindas ao tutorial de Cliente Cadastrado e Não Cadastrado."
     : isRegistroDeProdutos
@@ -476,9 +476,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
     : isFechamentoDeCaixa
     ? "Olá, boas vindas ao tutorial de Fechamento de Caixa."
     : isEncantometro
-    ? "Olá, boas vindas ao tutorial do Encantômetro."
+    ? "Olá, boas vindas ao tutorial de Encantômetro."
     : isPbm
-    ? "Olá, boas vindas ao tutorial do PBM."
+    ? "Olá, boas vindas ao tutorial de PBM."
     : undefined;
   const welcomeDescricao = isSuprimentoInicial
     ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
@@ -523,7 +523,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     : isRelatorios
     ? "Também conhecido como Leitura X, o relatório apresenta um resumo das movimentações realizadas no PDV até o momento da emissão. A consulta reúne informações sobre vendas, valores por forma de pagamento e outras movimentações do caixa, auxiliando no acompanhamento e na conferência das operações."
     : isSaidaDoOperador
-    ? "Encerramento do turno do operador no PDV ao final de suas atividades, sem fechar o caixa. Dessa forma, o mesmo caixa permanece disponível para que outro operador realize sua entrada e continue o atendimento."
+    ? "Trata-se do encerramento do turno do operador no PDV ao final de suas atividades, sem fechar o caixa. Dessa forma, o mesmo caixa permanece disponível para que outro operador realize sua entrada e continue o atendimento."
     : isFechamentoDeCaixa
     ? "O Fechamento Z encerra o movimento do PDV ao final da operação, consolidando as vendas e demais movimentações realizadas no caixa. Para realizar o fechamento, o operador deve seguir o fluxo indicado no sistema e concluir a operação. Após o fechamento, o movimento do período é encerrado e os valores ficam disponíveis para a conferência do caixa."
     : isEncantometro
@@ -941,6 +941,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       etapaLeituraX >= 2 ||
       (isSaidaDoOperador && [127, 128].includes(tutorialStep)) ||
       (isEncantometro && [135, 136].includes(tutorialStep)) ||
+      (isRegistroDeItensDePedidos && tutorialStep === 145) ||
       (isPbm && [141, 142, 143].includes(tutorialStep)) ||
       (isFechamentoDeCaixa && [131, 132, 134].includes(tutorialStep)) ||
       showAberturaGerenteMatricula || showAberturaGerenteSenha
@@ -971,10 +972,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
   }, [isEstorno, tutorialStep]);
 
   // Leitura X: a tela de processamento avança sozinha para o relatório
-  // impresso após alguns segundos.
+  // impresso após alguns segundos (a análise da memória fiscal recebe o
+  // check aos 1,7s, ver LeituraXProcessandoScreen).
   useEffect(() => {
     if (etapaLeituraX !== 3) return;
-    const timer = setTimeout(() => setTutorialStep(leituraXBase + 4), 2500);
+    const timer = setTimeout(() => setTutorialStep(leituraXBase + 4), 3000);
     return () => clearTimeout(timer);
   }, [etapaLeituraX, leituraXBase]);
 
@@ -1739,7 +1741,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     (isRegistroDeProdutos && tutorialStep >= 15 && tutorialStep <= 20) ||
     (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)) ||
     (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31)) ||
-    (isRegistroDeItensDePedidos && tutorialStep === 37) ||
+    (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) ||
     (isLocalizarPedidoDoDelivery && tutorialStep === 40) ||
     (isConvenio && tutorialStep === 46) ||
     ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) ||
@@ -1748,7 +1750,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const quantidadeCardsDipirona =
     (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)) || (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31))
       ? 3
-      : isRegistroDeItensDePedidos && tutorialStep === 37 ? 3
+      : isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145) ? 3
       : isLocalizarPedidoDoDelivery && tutorialStep === 40 ? 1
       : isConvenio && tutorialStep === 46 ? 4
       : (isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48 ? 1
@@ -1830,6 +1832,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     25: 88.91,
     31: 88.91,
     37: 142.5,
+    145: 142.5,
     40: 8.5,
     46: 44.9,
     48: 8.13,
@@ -1851,6 +1854,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     25: 42.37,
     31: 42.37,
     37: 11.4,
+    145: 11.4,
     40: 0.85,
     46: 3.68,
     48: 0.9,
@@ -1862,12 +1866,93 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // valor definido aqui, usa a soma do preço final dos itens visíveis.
   const totalPorStepRegistroDeProdutos: Record<number, number> = {
     37: 131.1,
+    145: 131.1,
     40: 8.5,
     46: 41.22,
     48: 8.13,
   };
   const totalExibidoRegistroDeProdutos =
     totalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos;
+
+  // Banner de conclusão (título "Parabéns!") exibido abaixo da tela final
+  // dos fluxos; quando visível na tela final, o botão Concluir fica dentro
+  // dele, em azul, no lugar do botão da navegação (no banner intermediário
+  // dos Relatórios, o Próximo continua na navegação).
+  const bannerConclusaoVisivel = (tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && tutorialStep === 143) || (isRegistroDeItensDePedidos && tutorialStep === 145));
+  // Rótulo do botão de avançar do tutorial: "Concluir" na última tela de
+  // cada fluxo (destacado em azul), "Avançar" nas telas de demonstração do
+  // Registro de Produtos e "Próximo" nas demais.
+  const rotuloProximo = tutorialStep === 9 || showAberturaIdentificacao || (isClienteCadastrado && tutorialStep === 14) || (isRegistroDeProdutos && tutorialStep === 20) || (isRegistroDeItensDePedidos && tutorialStep === 145) ? "Concluir" : isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && tutorialStep === 89) || (isTrocaDeMercadoria && tutorialStep === 101) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || (etapaLeituraX === 4 && !isLeituraOperador) || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && tutorialStep === 143) ? "Concluir" : "Próximo";
+  const handleProximo = () => {
+              // O áudio de boas-vindas só deve tocar enquanto a tela à qual
+              // ele pertence estiver visível — ao avançar, ele é cortado,
+              // independentemente do fluxo ou da etapa de destino.
+              stopAudio();
+              if (showAberturaLogin) {
+                setShowAberturaLogin(false);
+                setShowAberturaAutorizacao(true);
+              }
+              else if (showAberturaAutorizacao) {
+                setShowAberturaAutorizacao(false);
+                setShowAberturaGerenteMatricula(true);
+              }
+              else if (showAberturaIdentificacao) {
+                setShowAberturaIdentificacao(false);
+                setTutorialStep(10);
+              }
+              else if (showTutorial) { setTutorialStep(proximaEtapaAposBoasVindas); setShowTutorial(false); }
+              else if (isClienteCadastrado && tutorialStep === 12) { setCpf(""); setTutorialStep(2); setDemoSemIdentificar(true); }
+              else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
+              else if (tutorialStep === 1) setTutorialStep(2);
+              else if (tutorialStep === 9) setTutorialStep(10);
+              else if (isRegistroDeProdutos && tutorialStep === 15) setTutorialStep(16);
+              else if (isRegistroDeProdutos && tutorialStep === 17) setTutorialStep(18);
+              else if (isRegistroDeProdutos && tutorialStep === 20) setTutorialStep(10);
+              else if (isFormasDePagamento && tutorialStep === 26) {
+                if (pagamentoEtapaIndex === 3) {
+                  setTutorialStep(10);
+                } else {
+                  // [SUB TOTAL] já foi pressionado uma vez para revelar a
+                  // grade de formas de pagamento; nas próximas voltas do
+                  // ciclo, "Próximo" leva direto às instruções do método
+                  // seguinte (passo 22), sem repetir o passo 21.
+                  setValorPagamento(0);
+                  setPagamentoEtapaIndex((i) => i + 1);
+                  setTutorialStep(22);
+                }
+              }
+              else if (isFormasDePagamento && tutorialStep === 27) { setTutorialStep(25); }
+              else if (isFormasDePagamento && tutorialStep === 28) { setTutorialStep(25); }
+              else if (isEnvioImpressaoCupom && tutorialStep === 34) {
+                if (cupomEtapaIndex === 0) { setCupomEtapaIndex(1); setTutorialStep(31); }
+                else { setTutorialStep(10); }
+              }
+              else if (isLocalizarPedidoDoDelivery && tutorialStep === 40) { setTutorialStep(10); }
+              else if (isConvenio && tutorialStep === 44) { setTutorialStep(45); }
+              else if (isConvenio && tutorialStep === 45) { setTutorialStep(144); }
+              else if (isConvenio && tutorialStep === 46) { setTutorialStep(10); }
+              else if ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) { setTutorialStep(10); }
+              else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(10); }
+              else if (isCancelamentoParcial && tutorialStep === 56) { setTutorialStep(57); }
+              else if (isCancelamentoParcial && tutorialStep === 58) { setTutorialStep(59); }
+              else if (isCancelamentoParcial && tutorialStep === 62) { setTutorialStep(10); }
+              else if (isCancelamentoTotal && tutorialStep === 67) { setTutorialStep(10); }
+              else if (isDdg && tutorialStep === 75) { setTutorialStep(10); }
+              else if (isEstorno && tutorialStep === 83) { setTutorialStep(84); }
+              else if (isEstorno && tutorialStep === 87) { setTutorialStep(88); }
+              else if (isEstorno && tutorialStep === 89) { setTutorialStep(10); }
+              else if (isTrocaDeMercadoria && tutorialStep === 98) { setTrocaItemIndex(0); setTutorialStep(99); }
+              else if (isTrocaDeMercadoria && tutorialStep === 101) { setTutorialStep(10); }
+              else if (isReimpressaoDeComprovantes && tutorialStep === 109) { setTutorialStep(10); }
+              else if (isDetalheDaVenda && tutorialStep === 114) { setTutorialStep(10); }
+              else if (etapaLeituraX === 4) { setTutorialStep(isLeituraOperador ? 121 : 10); }
+              else if (isSaidaDoOperador && tutorialStep === 128) { setTutorialStep(10); }
+              else if (isFechamentoDeCaixa && tutorialStep === 134) { setTutorialStep(10); }
+              else if (isEncantometro && tutorialStep === 136) { setTutorialStep(10); }
+              else if (isPbm && tutorialStep === 141) { setTutorialStep(142); }
+              else if (isPbm && tutorialStep === 143) { setTutorialStep(10); }
+              else if (isRegistroDeItensDePedidos && tutorialStep === 145) { setTutorialStep(10); }
+  };
 
   const pdvContent = (
     <div className={`bg-white relative flex flex-col w-[1280px] ${isTrainingMode ? `h-[800px] ${isConvenio && tutorialStep === 46 ? "overflow-hidden" : "overflow-y-auto"}` : "overflow-hidden"} rounded-[20px] shadow-[0px_8px_24px_0px_rgba(0,0,0,0.15)] border border-[#d4d4d4]`}>
@@ -2039,7 +2124,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || isEnvioImpressaoCupom || (isRegistroDeItensDePedidos && tutorialStep === 37) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 46 || tutorialStep === 144)) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || (isPbm && tutorialStep >= 142) ? (
+            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || isEnvioImpressaoCupom || (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 46 || tutorialStep === 144)) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || (isPbm && tutorialStep >= 142) ? (
               /* Cliente já identificado após o CPF informado na etapa anterior
                  (também usado como tela de fundo dos fluxos de Registro de
                  Produtos, Formas de Pagamento, Liberação de Medicamento
@@ -2143,7 +2228,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
                       }`}
                     />
                   </div>
-                  <button className="bg-[#171717] opacity-50 flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[48px] rounded-[8px]">
+                  {/* Buscar: desabilitado até o CPF ser completado, quando fica
+                      azul (node 964:12491 do Figma). */}
+                  <button className={`flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[48px] rounded-[8px] transition-all ${
+                    cpf.length === CPF_EXEMPLO.length ? "bg-[#2258e6] shadow-[0px_0px_0px_3px_rgba(34,88,230,0.27)]" : "bg-[#171717] opacity-50"
+                  }`}>
                     <div className="overflow-clip relative shrink-0 size-[16px]">
                       <div className="absolute inset-[9.38%]">
                         <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 12.9999 12.9999">
@@ -2474,7 +2563,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
           <div className="h-px bg-[#bdbdbd]" />
 
-          {isFormasDePagamento && tutorialStep === 22 ? (
+          {(isFormasDePagamento && tutorialStep === 22) || (isRegistroDeItensDePedidos && tutorialStep === 145) ? (
             /* Grade de formas de pagamento - passo 22 do fluxo de Formas de
                Pagamento. Substitui o botão "Totalizar Venda" após o
                operador pressionar [SUB TOTAL] no teclado virtual. Layout e
@@ -4637,7 +4726,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Gaveta Aberta
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Nesta etapa, a gaveta do caixa ser&aacute; aberta. {isSuprimentoAdicional ? "Adicione o valor informado" : "Retire o valor indicado"} e, para prosseguir, feche a gaveta.
+                  {isSuprimentoAdicional ? "Feche a gaveta após inserir o valor informado." : "Feche a gaveta após retirar o valor indicado."}
                 </p>
               </div>
               <button
@@ -4670,7 +4759,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Gaveta Aberta
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Guarde o dinheiro recebido do cliente e retire o troco correspondente e, para prosseguir, feche a gaveta.
+                  Feche a gaveta após guardar o dinheiro recebido e retirar o troco.
                 </p>
               </div>
               <button
@@ -4712,7 +4801,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           )}
 
           {/* Banner de conclusão - step 9 (comprovante) / Identificação do Cliente (Abertura de Caixa) / step 46 (Convênio) */}
-          {(tutorialStep === 9 || showAberturaIdentificacao || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && tutorialStep === 143)) && (
+          {bannerConclusaoVisivel && (
             <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -4721,14 +4810,26 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <div className="flex flex-col gap-[2px]">
+              <div className="flex flex-col gap-[2px] flex-1">
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isEncantometro ? "Concluído!" : "Parabéns!"}
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : isCancelamentoParcial ? "O produto foi cancelado com sucesso e os demais itens permanecem registrados na venda." : isCancelamentoTotal ? "A venda foi cancelada e todos os produtos foram removidos. O PDV está pronto para iniciar uma nova venda." : isDdg ? "O desconto do gerente foi aplicado à Dipirona com sucesso, dentro do limite permitido." : isFechamentoDeCaixa ? "O caixa foi fechado com sucesso e poderá ser reaberto no horário indicado na tela." : isEncantometro ? "A avaliação do cliente foi registrada no Encantômetro." : isPbm ? "O benefício do PBM foi validado e o desconto foi aplicado ao produto elegível." : isSaidaDoOperador ? "A Saída do Operador foi realizada com sucesso e o PDV fica disponível para a entrada de um novo operador." : isLeituraX ? (isLeituraOperador ? "O Relatório do Operador foi impresso com o resumo das vendas. Na sequência, vamos emitir o Relatório do Dia." : "O Relatório do Dia foi impresso com o resumo das vendas.") : "A sangria de caixa foi realizada e concluída com sucesso."}
+                  {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : isCancelamentoParcial ? "O produto foi cancelado com sucesso e os demais itens permanecem registrados na venda." : isCancelamentoTotal ? "A venda foi cancelada e todos os produtos foram removidos. O PDV está pronto para iniciar uma nova venda." : isDdg ? "O desconto do gerente foi aplicado à Dipirona com sucesso, dentro do limite permitido." : isFechamentoDeCaixa ? "O caixa foi fechado com sucesso e poderá ser reaberto no horário indicado na tela." : isEncantometro ? "A avaliação do cliente foi registrada no Encantômetro." : isPbm ? "O benefício do PBM foi validado e o desconto foi aplicado ao produto elegível." : isRegistroDeItensDePedidos ? "Os itens do pedido foram carregados e a venda está pronta para o pagamento." : isSaidaDoOperador ? "A Saída do Operador foi realizada com sucesso e o PDV fica disponível para a entrada de um novo operador." : isLeituraX ? (isLeituraOperador ? "O Relatório do Operador foi impresso com o resumo das vendas. Na sequência, vamos emitir o Relatório do Dia." : "O Relatório do Dia foi impresso com o resumo das vendas.") : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
+              {rotuloProximo === "Concluir" && (
+              <button
+                data-tutorial-nav="proximo"
+                onClick={handleProximo}
+                className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] rounded-[8px] transition-all cursor-pointer bg-[#2258e6] hover:bg-[#1a47b8] shadow-[0_4px_14px_rgba(34,88,230,0.5)]"
+              >
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest whitespace-nowrap">{rotuloProximo}</span>
+                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              )}
             </div>
           )}
 
@@ -4793,6 +4894,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isRegistroDeItensDePedidos && tutorialStep === 35) { setShowTutorial(true); }
               else if (isRegistroDeItensDePedidos && tutorialStep === 36) { setPedidoSelecionado(true); setCpf(""); setTutorialStep(35); }
               else if (isRegistroDeItensDePedidos && tutorialStep === 37) { setPedidoSelecionado(true); setTutorialStep(36); }
+              else if (isRegistroDeItensDePedidos && tutorialStep === 145) { setTutorialStep(37); }
               else if (isLocalizarPedidoDoDelivery && tutorialStep === 38) { setShowTutorial(true); }
               else if (isLocalizarPedidoDoDelivery && tutorialStep === 39) { setOvNumero(""); setShowKeyboard(false); setTutorialStep(38); }
               else if (isLocalizarPedidoDoDelivery && tutorialStep === 40) { setOvNumero(""); setCpf(""); setTutorialStep(39); }
@@ -4886,79 +4988,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
           {/* Botão Próximo - tela de login (Abertura de Caixa), steps 0, 1 e 9 */}
           <button
             data-tutorial-nav="proximo"
-            onClick={() => {
-              // O áudio de boas-vindas só deve tocar enquanto a tela à qual
-              // ele pertence estiver visível — ao avançar, ele é cortado,
-              // independentemente do fluxo ou da etapa de destino.
-              stopAudio();
-              if (showAberturaLogin) {
-                setShowAberturaLogin(false);
-                setShowAberturaAutorizacao(true);
-              }
-              else if (showAberturaAutorizacao) {
-                setShowAberturaAutorizacao(false);
-                setShowAberturaGerenteMatricula(true);
-              }
-              else if (showAberturaIdentificacao) {
-                setShowAberturaIdentificacao(false);
-                setTutorialStep(10);
-              }
-              else if (showTutorial) { setTutorialStep(proximaEtapaAposBoasVindas); setShowTutorial(false); }
-              else if (isClienteCadastrado && tutorialStep === 12) { setCpf(""); setTutorialStep(2); setDemoSemIdentificar(true); }
-              else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
-              else if (tutorialStep === 1) setTutorialStep(2);
-              else if (tutorialStep === 9) setTutorialStep(10);
-              else if (isRegistroDeProdutos && tutorialStep === 15) setTutorialStep(16);
-              else if (isRegistroDeProdutos && tutorialStep === 17) setTutorialStep(18);
-              else if (isRegistroDeProdutos && tutorialStep === 20) setTutorialStep(10);
-              else if (isFormasDePagamento && tutorialStep === 26) {
-                if (pagamentoEtapaIndex === 3) {
-                  setTutorialStep(10);
-                } else {
-                  // [SUB TOTAL] já foi pressionado uma vez para revelar a
-                  // grade de formas de pagamento; nas próximas voltas do
-                  // ciclo, "Próximo" leva direto às instruções do método
-                  // seguinte (passo 22), sem repetir o passo 21.
-                  setValorPagamento(0);
-                  setPagamentoEtapaIndex((i) => i + 1);
-                  setTutorialStep(22);
-                }
-              }
-              else if (isFormasDePagamento && tutorialStep === 27) { setTutorialStep(25); }
-              else if (isFormasDePagamento && tutorialStep === 28) { setTutorialStep(25); }
-              else if (isEnvioImpressaoCupom && tutorialStep === 34) {
-                if (cupomEtapaIndex === 0) { setCupomEtapaIndex(1); setTutorialStep(31); }
-                else { setTutorialStep(10); }
-              }
-              else if (isLocalizarPedidoDoDelivery && tutorialStep === 40) { setTutorialStep(10); }
-              else if (isConvenio && tutorialStep === 44) { setTutorialStep(45); }
-              else if (isConvenio && tutorialStep === 45) { setTutorialStep(144); }
-              else if (isConvenio && tutorialStep === 46) { setTutorialStep(10); }
-              else if ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) { setTutorialStep(10); }
-              else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(10); }
-              else if (isCancelamentoParcial && tutorialStep === 56) { setTutorialStep(57); }
-              else if (isCancelamentoParcial && tutorialStep === 58) { setTutorialStep(59); }
-              else if (isCancelamentoParcial && tutorialStep === 62) { setTutorialStep(10); }
-              else if (isCancelamentoTotal && tutorialStep === 67) { setTutorialStep(10); }
-              else if (isDdg && tutorialStep === 75) { setTutorialStep(10); }
-              else if (isEstorno && tutorialStep === 83) { setTutorialStep(84); }
-              else if (isEstorno && tutorialStep === 87) { setTutorialStep(88); }
-              else if (isEstorno && tutorialStep === 89) { setTutorialStep(10); }
-              else if (isTrocaDeMercadoria && tutorialStep === 98) { setTrocaItemIndex(0); setTutorialStep(99); }
-              else if (isTrocaDeMercadoria && tutorialStep === 101) { setTutorialStep(10); }
-              else if (isReimpressaoDeComprovantes && tutorialStep === 109) { setTutorialStep(10); }
-              else if (isDetalheDaVenda && tutorialStep === 114) { setTutorialStep(10); }
-              else if (etapaLeituraX === 4) { setTutorialStep(isLeituraOperador ? 121 : 10); }
-              else if (isSaidaDoOperador && tutorialStep === 128) { setTutorialStep(10); }
-              else if (isFechamentoDeCaixa && tutorialStep === 134) { setTutorialStep(10); }
-              else if (isEncantometro && tutorialStep === 136) { setTutorialStep(10); }
-              else if (isPbm && tutorialStep === 141) { setTutorialStep(142); }
-              else if (isPbm && tutorialStep === 143) { setTutorialStep(10); }
-            }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && [83, 87, 89].includes(tutorialStep)) || (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 101)) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && (tutorialStep === 141 || tutorialStep === 143))) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            onClick={handleProximo}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] rounded-[8px] transition-all ${rotuloProximo === "Concluir" ? "bg-[#2258e6] hover:bg-[#1a47b8] border border-[#2258e6] text-white" : "bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white"} ${((showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && [83, 87, 89].includes(tutorialStep)) || (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 101)) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && (tutorialStep === 141 || tutorialStep === 143)))) && !(bannerConclusaoVisivel && rotuloProximo === "Concluir") ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
-              {isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && tutorialStep === 89) || (isTrocaDeMercadoria && tutorialStep === 101) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || (etapaLeituraX === 4 && !isLeituraOperador) || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && tutorialStep === 143) ? "Concluir" : "Próximo"}
+              {rotuloProximo}
             </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -5213,7 +5247,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               : isTrocaDeMercadoria && tutorialStep === 90
               ? () => { setTutorialStep(91); setShowKeyboard(false); }
               : isRegistroDeItensDePedidos && tutorialStep === 37
-              ? () => { setTutorialStep(10); setShowKeyboard(false); }
+              ? () => { setTutorialStep(145); setShowKeyboard(false); }
               : undefined
           }
           highlightSuprimentoDinheiro={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0}
@@ -5349,7 +5383,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Etapa concluída!
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/80 leading-relaxed max-w-[580px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Parabéns! Você concluiu o treinamento {isEncantometro || isPbm ? "do" : "de"} <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : isConsultaDePreco ? "Consulta de Preço" : isCancelamentoParcial ? "Cancelamento Parcial" : isCancelamentoTotal ? "Cancelamento Total" : isDdg ? "DDG (Desconto Gerencial)" : isEstorno ? "Estorno" : isTrocaDeMercadoria ? "Troca de Mercadoria" : isReimpressaoDeComprovantes ? "Reimpressão de Comprovantes" : isDetalheDaVenda ? "Detalhe da Venda" : isRelatorios ? "Relatórios" : isSaidaDoOperador ? "Saída do Operador" : isFechamentoDeCaixa ? "Fechamento de Caixa" : isEncantometro ? "Encantômetro" : isPbm ? "PBM" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : isConsultaDePreco ? "Agora você está pronto para consultar o preço e as informações de um produto sem adicioná-lo à venda." : isCancelamentoParcial ? "Agora você está pronto para cancelar um produto específico de uma venda em andamento, mantendo os demais itens registrados." : isCancelamentoTotal ? "Agora você está pronto para cancelar uma venda inteira, com a autorização do gerente, removendo todos os produtos registrados." : isDdg ? "Agora você está pronto para aplicar o desconto do gerente a um produto da venda, dentro dos limites definidos." : isEstorno ? "Agora você está pronto para estornar vendas pagas com PIX ou cartão, com a autorização do gerente." : isTrocaDeMercadoria ? "Agora você está pronto para realizar a troca de um produto durante uma nova venda, utilizando o Vale Troca." : isReimpressaoDeComprovantes ? "Agora você está pronto para consultar a Fita Detalhe e reimprimir o cupom fiscal de uma venda, com a autorização do gerente." : isDetalheDaVenda ? "Agora você está pronto para consultar, pela Fita Detalhe, as vendas realizadas no PDV em uma data, com a autorização do gerente." : isRelatorios ? "Agora você está pronto para emitir a Leitura X do operador e do dia, com a autorização do gerente." : isSaidaDoOperador ? "Agora você está pronto para encerrar sua sessão no PDV ao fim do seu turno." : isFechamentoDeCaixa ? "Agora você está pronto para fechar o caixa, conferir os valores e emitir o Fechamento Z ao fim do expediente." : isEncantometro ? "Agora você está pronto para orientar o cliente sobre a avaliação do atendimento no Encantômetro." : isPbm ? "Agora você está pronto para aplicar os descontos do PBM a clientes cadastrados em programas de laboratórios parceiros." : "Agora você está pronto para realizar essa operação no PDV."}
+                  Parabéns! Você concluiu o treinamento de <span className="font-bold text-white">{isSuprimentoInicial ? "Suprimento Inicial" : isSuprimentoAdicional ? "Suprimento Complementar" : isAberturaDeCaixa ? "Abertura de Caixa" : isClienteCadastrado ? "Cliente Cadastrado e Não Cadastrado" : isRegistroDeProdutos ? "Registro de Produtos" : isFormasDePagamento ? "Formas de Pagamento" : isEnvioImpressaoCupom ? "Envio e Impressão de Cupom" : isRegistroDeItensDePedidos ? "Registro de Itens de Pedidos" : isLocalizarPedidoDoDelivery ? "Localizar Pedido do Delivery" : isConvenio ? "Convênios" : isLiberacaoComReceita ? "Liberação de Medicamento Controlado com Receita" : isLiberacaoManual ? "Liberação de Medicamento Controlado Sem Receita" : isConsultaDePreco ? "Consulta de Preço" : isCancelamentoParcial ? "Cancelamento Parcial" : isCancelamentoTotal ? "Cancelamento Total" : isDdg ? "DDG (Desconto Gerencial)" : isEstorno ? "Estorno" : isTrocaDeMercadoria ? "Troca de Mercadoria" : isReimpressaoDeComprovantes ? "Reimpressão de Comprovantes" : isDetalheDaVenda ? "Detalhe da Venda" : isRelatorios ? "Relatórios" : isSaidaDoOperador ? "Saída do Operador" : isFechamentoDeCaixa ? "Fechamento de Caixa" : isEncantometro ? "Encantômetro" : isPbm ? "PBM" : "Sangria de Caixa"}</span>. {isClienteCadastrado ? "Agora você está pronto para iniciar vendas identificando ou não os clientes." : isRegistroDeProdutos ? "Agora você está pronto para adicionar itens durante o processo de venda." : isFormasDePagamento ? "Agora você está pronto para receber pagamentos em Dinheiro, PIX, Débito ou Crédito." : isEnvioImpressaoCupom ? "Agora você está pronto para emitir o cupom fiscal por e-mail ou impressão, conforme a escolha do cliente." : isRegistroDeItensDePedidos ? "Agora você está pronto para localizar pedidos pelo CPF do cliente e carregar seus itens automaticamente no caixa." : isLocalizarPedidoDoDelivery ? "Agora você está pronto para localizar pedidos de delivery pela OV e carregar automaticamente o cliente e os itens já pagos." : isConvenio ? "Agora você está pronto para identificar clientes conveniados e aplicar os benefícios do convênio na venda." : isLiberacaoComReceita ? "Agora você está pronto para autenticar a receita de medicamentos controlados e adicioná-los à venda." : isLiberacaoManual ? "Agora você está pronto para acionar a autorização de um gerente e liberar medicamentos controlados sem receita apresentada." : isConsultaDePreco ? "Agora você está pronto para consultar o preço e as informações de um produto sem adicioná-lo à venda." : isCancelamentoParcial ? "Agora você está pronto para cancelar um produto específico de uma venda em andamento, mantendo os demais itens registrados." : isCancelamentoTotal ? "Agora você está pronto para cancelar uma venda inteira, com a autorização do gerente, removendo todos os produtos registrados." : isDdg ? "Agora você está pronto para aplicar o desconto do gerente a um produto da venda, dentro dos limites definidos." : isEstorno ? "Agora você está pronto para estornar vendas pagas com PIX ou cartão, com a autorização do gerente." : isTrocaDeMercadoria ? "Agora você está pronto para realizar a troca de um produto durante uma nova venda, utilizando o Vale Troca." : isReimpressaoDeComprovantes ? "Agora você está pronto para consultar a Fita Detalhe e reimprimir o cupom fiscal de uma venda, com a autorização do gerente." : isDetalheDaVenda ? "Agora você está pronto para consultar, pela Fita Detalhe, as vendas realizadas no PDV em uma data, com a autorização do gerente." : isRelatorios ? "Agora você está pronto para emitir a Leitura X do operador e do dia, com a autorização do gerente." : isSaidaDoOperador ? "Agora você está pronto para encerrar sua sessão no PDV ao fim do seu turno." : isFechamentoDeCaixa ? "Agora você está pronto para fechar o caixa, conferir os valores e emitir o Fechamento Z ao fim do expediente." : isEncantometro ? "Agora você está pronto para orientar o cliente sobre a avaliação do atendimento no Encantômetro." : isPbm ? "Agora você está pronto para aplicar os descontos do PBM a clientes cadastrados em programas de laboratórios parceiros." : "Agora você está pronto para realizar essa operação no PDV."}
                 </p>
               </div>
             </div>
@@ -5523,9 +5557,6 @@ function ContentBody({ conteudo, hasPDV, slug }: { conteudo: string; hasPDV?: bo
             </div>
             {hasPDV && (
               <div className="mt-[32px]">
-                <h2 className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-[#383838] mb-[12px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Simulador PDV - Prática de Treinamento
-                </h2>
                 <PDVSimulator slug={slug} />
               </div>
             )}
