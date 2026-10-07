@@ -221,7 +221,7 @@ function TagMotivo({ rotulo, selecionada, tocada }: { rotulo: string; selecionad
       }`}
     >
       {tocada && <Toque tamanho={180} cor="rgba(97,186,232,0.45)" />}
-      <p className={`relative font-['Inter',sans-serif] font-medium leading-[normal] text-[14px] whitespace-nowrap transition-colors duration-300 ${selecionada ? "text-white" : "text-[#20516f]"}`}>
+      <p className={`relative font-['Nunito_Sans',sans-serif] font-medium leading-[normal] text-[14px] whitespace-nowrap transition-colors duration-300 ${selecionada ? "text-white" : "text-[#20516f]"}`}>
         {rotulo}
       </p>
     </div>
@@ -231,8 +231,8 @@ function TagMotivo({ rotulo, selecionada, tocada }: { rotulo: string; selecionad
 function TituloAvaliacao({ pergunta }: { pergunta: string }) {
   return (
     <div className="flex flex-col gap-[8px] items-start text-[#292929] w-full">
-      <p className="font-['Inter',sans-serif] font-normal leading-[1.5] text-[14px] w-full">Avalie a sua experiência</p>
-      <p className="font-['Inter',sans-serif] font-bold leading-[1.33] text-[24px] tracking-[-0.24px] w-full">{pergunta}</p>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal leading-[1.5] text-[14px] w-full">Avalie a sua experiência</p>
+      <p className="font-['Nunito_Sans',sans-serif] font-bold leading-[1.33] text-[24px] tracking-[-0.24px] w-full">{pergunta}</p>
     </div>
   );
 }

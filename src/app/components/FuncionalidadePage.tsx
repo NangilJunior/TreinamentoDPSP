@@ -41,6 +41,7 @@ import { ReimpressaoListaScreen, ReimpressaoCampoScreen, FitaDetalheCupomScreen,
 import { TrocaCampoScreen, TrocaItensVendaOriginalScreen, TrocaBloqueadaScreen, ResumoValeTroca, ITENS_VENDA_ORIGINAL, GradeFormasPagamento, ITENS_TROCA_MERCADORIA, CPF_CLIENTE_TROCA, LOJA_TROCA_EXEMPLO, DATA_TROCA_EXEMPLO, PDV_TROCA_EXEMPLO, NOTA_TROCA_EXEMPLO, formatarDataTroca } from "./TrocaMercadoriaScreens";
 import { EstornoTipoScreen, EstornoFormaScreen, EstornoValorScreen, EstornoIdScreen, EstornoProcessandoScreen, EstornoResultadoScreen, BannerEstorno, TeclaIlustracao, TeclaNumericaIlustracao, VALOR_ESTORNO_EXEMPLO_CENTS, ID_ESTORNO_EXEMPLO } from "./EstornoScreens";
 import { EncantometroScreen, type FaseEncantometro } from "./EncantometroScreens";
+import { EscaneamentoOverlay } from "./EscaneamentoOverlay";
 import { PbmProgramasScreen, PbmCpfScreen, PbmAutorizacaoScreen, PbmValidandoScreen, AUTORIZACAO_PBM_EXEMPLO } from "./PbmScreens";
 import { CancelamentoVendaScreen, CancelamentoItemModal, CancelamentoMotivoScreen, ITENS_CANCELAMENTO_PARCIAL, CODIGO_CANCELAMENTO_EXEMPLO, MOTIVOS_CANCELAMENTO, MOTIVOS_CANCELAMENTO_VENDA, filtrarItensCancelamento } from "./CancelamentoParcialScreens";
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
@@ -357,22 +358,11 @@ function formatCpf(digitos: string): string {
 // Cada fluxo tem seu próprio áudio de boas-vindas, tocado assim que a
 // primeira tela do treinamento é exibida — independentemente de qual tela
 // seja (banner de boas-vindas genérico, tela de login da Abertura de Caixa,
-// etc.). Por enquanto só o áudio de Sangria de Caixa foi gravado; os demais
-// fluxos já estão preparados para receber e reproduzir o arquivo
-// correspondente assim que ele for entregue.
-const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {
-  "abertura-de-caixa": "abertura-de-caixa.mp3",
-  "suprimento-inicial": "suprimento-inicial.mp3",
-  "suprimento-complementar": "suprimento-complementar.mp3",
-  "sangria-de-caixa": "sangria-de-caixa.mp3",
-  "cliente-cadastrado-e-nao-cadastrado": "cliente-cadastrado-e-nao-cadastrado.mp3",
-  "registro-de-produtos": "registro-de-produtos.mp3",
-  "formas-de-pagamento": "formas-de-pagamento.mp3",
-  "envio-e-impressao-de-cupom": "envio-e-impressao-de-cupom.mp3",
-  "registro-de-itens-de-pedidos": "registro-de-itens-de-pedidos.mp3",
-  "localizar-pedido-do-delivery": "localizar-pedido-do-delivery.mp3",
-  "convenio": "convenio.mp3"
-};
+// etc.). Fluxos sem áudio cadastrado simplesmente não tocam nada.
+// Nenhum áudio cadastrado no momento: os áudios anteriores foram removidos e
+// a locução será regravada com outra voz. Para ativar, basta incluir aqui
+// "slug-do-fluxo": "arquivo.mp3" (arquivo em public/).
+const AUDIO_BOAS_VINDAS_POR_FLUXO: Record<string, string> = {};
 
 function PDVSimulator({ slug }: { slug?: string }) {
   const navigate = useNavigate();
@@ -666,6 +656,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const [estornoId, setEstornoId] = useState("");
   // Número da autorização digitado no fluxo de PBM (passo 140).
   const [pbmAutorizacao, setPbmAutorizacao] = useState("");
+  // Simulação do escaneamento (botão "Escanear Produtos" de todos os fluxos): passo
+  // para o qual o fluxo segue quando a animação do leitor termina, ou null
+  // quando não há escaneamento em andamento.
+  const [escaneamentoDestino, setEscaneamentoDestino] = useState<number | null>(null);
   // Troca de Mercadoria: campo digitado na tela atual de identificação da
   // venda original (loja, data, PDV e nota — passos 93 a 96).
   const [trocaValor, setTrocaValor] = useState("");
@@ -751,6 +745,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setEstornoValorCents(0);
     setEstornoId("");
     setPbmAutorizacao("");
+    setEscaneamentoDestino(null);
     setTrocaValor("");
     setTrocaItemIndex(0);
     setReimpressaoIndex(0);
@@ -2422,7 +2417,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                         </div>
                         {item.etiqueta && (
                           <div className="bg-[rgba(97,186,232,0.1)] border border-[#61bae8] flex items-center justify-center px-[18px] py-[6px] rounded-full shrink-0">
-                            <p className="font-['Inter',sans-serif] font-semibold text-[12px] leading-[1.5] text-[#61bae8] whitespace-nowrap">{item.etiqueta}</p>
+                            <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[12px] leading-[1.5] text-[#61bae8] whitespace-nowrap">{item.etiqueta}</p>
                           </div>
                         )}
                       </div>
@@ -3305,6 +3300,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
             />
           )}
         </div>
+      )}
+
+      {/* Simulação do escaneamento de um produto (botão "Escanear Produtos"). */}
+      {escaneamentoDestino !== null && (
+        <EscaneamentoOverlay
+          onConcluido={() => { setTutorialStep(escaneamentoDestino); setEscaneamentoDestino(null); }}
+        />
       )}
 
       {/* Fluxo do Encantômetro - telas operadas pelo cliente, animadas
@@ -4834,7 +4836,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           )}
 
           {/* Navegação do tutorial - plataforma de treinamentos */}
-          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${(showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) && !(isEncantometro && tutorialStep === 135) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${escaneamentoDestino === null && (showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) && !(isEncantometro && tutorialStep === 135) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             data-tutorial-nav="anterior"
@@ -5035,7 +5037,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {/* Botão Escanear Produto - substitui o "Exibir Teclado" na segunda
           tela do fluxo de Registro de Produtos (leva à terceira tela) e
           também no passo 19 (leva ao passo 20, com o item multiplicado). */}
-      {isRegistroDeProdutos && tutorialStep === 19 && (
+      {isRegistroDeProdutos && tutorialStep === 19 && escaneamentoDestino === null && (
         <div
           className="fade-in-delay absolute bottom-[160px] left-1/2 pointer-events-none z-[45]"
           style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
@@ -5046,7 +5048,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
-      {isConvenio && tutorialStep === 144 && (
+      {isConvenio && tutorialStep === 144 && escaneamentoDestino === null && (
         <div
           className="fade-in-delay absolute bottom-[160px] left-1/2 pointer-events-none z-[45]"
           style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
@@ -5057,7 +5059,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
-      {isPbm && tutorialStep === 142 && (
+      {isPbm && tutorialStep === 142 && escaneamentoDestino === null && (
         <div
           className="fade-in-delay absolute bottom-[160px] left-1/2 pointer-events-none z-[45]"
           style={{ transform: `translateX(-50%) scale(${trainingScale})`, transformOrigin: "bottom center" }}
@@ -5068,16 +5070,20 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </div>
       )}
 
-      {((isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 2) || (isConsultaDePreco && tutorialStep === 49) || (isCancelamentoParcial && tutorialStep === 57) || (isPbm && tutorialStep === 142) || (isConvenio && tutorialStep === 144)) && (
+      {((isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 19)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 2) || (isConsultaDePreco && tutorialStep === 49) || (isCancelamentoParcial && tutorialStep === 57) || (isPbm && tutorialStep === 142) || (isConvenio && tutorialStep === 144)) && escaneamentoDestino === null && (
         <button
           onClick={() => {
             setSku("");
-            if (isPbm) { setTutorialStep(143); return; }
-            if (isConvenio) { setTutorialStep(46); return; }
-            if (isCancelamentoParcial) { setTutorialStep(58); return; }
-            if (isLiberacaoComReceita || isLiberacaoManual) { setTutorialStep(47); return; }
-            if (isConsultaDePreco) { setTutorialStep(50); return; }
-            setTutorialStep(tutorialStep === 2 ? 15 : 20);
+            // Simula a leitura do código de barras (EscaneamentoOverlay) e,
+            // ao terminar, segue para o passo seguinte de cada fluxo.
+            setEscaneamentoDestino(
+              isPbm ? 143
+              : isConvenio ? 46
+              : isCancelamentoParcial ? 58
+              : isLiberacaoComReceita || isLiberacaoManual ? 47
+              : isConsultaDePreco ? 50
+              : tutorialStep === 2 ? 15 : 20
+            );
           }}
           className="absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] animate-pulse-subtle"
           style={{

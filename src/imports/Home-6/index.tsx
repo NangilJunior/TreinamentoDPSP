@@ -373,7 +373,7 @@ function Frame5() {
   return (
     <div className="bg-white col-1 content-stretch flex gap-[24px] items-center ml-0 mt-0 p-[24px] relative rounded-br-[4px] rounded-tr-[4px] row-1 w-[977px]">
       <div aria-hidden className="absolute border border-[#dadada] border-solid inset-0 pointer-events-none rounded-br-[4px] rounded-tr-[4px]" />
-      <div className="[word-break:break-word] flex flex-col font-['Inter',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#231f20] text-[16px] whitespace-nowrap">
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#231f20] text-[16px] whitespace-nowrap">
         <p className="leading-[1.5]">2/2</p>
       </div>
       <div className="overflow-clip relative shrink-0 size-[24px]" data-name="Icon / archive">
@@ -387,13 +387,13 @@ function Frame5() {
           </svg>
         </div>
       </div>
-      <div className="[word-break:break-word] flex flex-[1_0_0] flex-col font-['Inter',sans-serif] font-normal justify-center leading-[0] min-w-px not-italic relative text-[#565354] text-[16px]">
+      <div className="[word-break:break-word] flex flex-[1_0_0] flex-col font-['Nunito_Sans',sans-serif] font-normal justify-center leading-[0] min-w-px not-italic relative text-[#565354] text-[16px]">
         <p>
-          <span className="[word-break:break-word] font-['Inter',sans-serif] font-semibold leading-[1.5] not-italic">{`Retire o valor `}</span>
+          <span className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-semibold leading-[1.5] not-italic">{`Retire o valor `}</span>
           <span className="leading-[1.5]">{`e `}</span>
-          <span className="[word-break:break-word] font-['Inter',sans-serif] font-semibold leading-[1.5] not-italic">feche a gaveta</span>
+          <span className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-semibold leading-[1.5] not-italic">feche a gaveta</span>
           <span className="leading-[1.5]">{` do caixa. Ao finalizar, `}</span>
-          <span className="[word-break:break-word] font-['Inter',sans-serif] font-semibold leading-[1.5] not-italic">seu comprovante será impresso</span>
+          <span className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-semibold leading-[1.5] not-italic">seu comprovante será impresso</span>
           <span className="leading-[1.5]">{` automaticamente.`}</span>
         </p>
       </div>

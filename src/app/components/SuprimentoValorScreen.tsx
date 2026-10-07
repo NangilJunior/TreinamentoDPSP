@@ -210,7 +210,7 @@ export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false
                 <div className="flex items-start w-full">
                   <div className="bg-[#31a66b] h-[72px] mr-[-1px] rounded-bl-[4px] rounded-tl-[4px] shrink-0 w-[8px] z-[2]" />
                   <div className="bg-white flex gap-[24px] items-center p-[24px] relative rounded-br-[4px] rounded-tr-[4px] flex-1 border border-[#dadada]">
-                    <p className="font-['Inter',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">2/2</p>
+                    <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">2/2</p>
                     <div className="overflow-clip relative shrink-0 size-[24px]">
                       <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 19.5">
                         {archiveIconPaths.map((d) => (
@@ -232,7 +232,7 @@ export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false
                 <div className="flex items-start w-full">
                   <div className="bg-[#ed403d] h-[72px] mr-[-1px] rounded-bl-[4px] rounded-tl-[4px] shrink-0 w-[8px] z-[2]" />
                   <div className="bg-white flex gap-[24px] items-center p-[24px] relative rounded-br-[4px] rounded-tr-[4px] flex-1 border border-[#dadada]">
-                    <p className="font-['Inter',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">1/2</p>
+                    <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[#231f20] text-[16px] whitespace-nowrap leading-[1.5]">1/2</p>
                     <div className="overflow-clip relative shrink-0 size-[24px]">
                       <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
                         {inboxIconPaths.map((d) => (

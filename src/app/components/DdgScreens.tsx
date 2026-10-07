@@ -114,7 +114,7 @@ function OpcaoModo({ tecla, rotulo }: { tecla: string; rotulo: string }) {
   return (
     <div className="border border-[#ddd] flex gap-[20px] h-[70px] items-center px-[18px] py-[10px] rounded-[6px] w-[464px]">
       <div className="border border-[#2258e6] flex items-center justify-center px-[24px] py-[10px] rounded-[8px] w-[64px] shrink-0">
-        <p className="font-['Inter',sans-serif] font-semibold text-[24px] leading-[1.2] text-[#2258e6]">{tecla}</p>
+        <p className="font-['Nunito_Sans',sans-serif] font-semibold text-[24px] leading-[1.2] text-[#2258e6]">{tecla}</p>
       </div>
       <p className="font-['Geist',sans-serif] font-medium text-[12px] leading-[20px] text-[#707070] tracking-[3px] whitespace-pre">{rotulo}</p>
     </div>

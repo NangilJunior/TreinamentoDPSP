@@ -373,7 +373,7 @@ function Frame5() {
   return (
     <div className="bg-white col-1 content-stretch flex gap-[24px] items-center ml-0 mt-0 p-[24px] relative rounded-br-[4px] rounded-tr-[4px] row-1 w-[977px]">
       <div aria-hidden className="absolute border border-[#dadada] border-solid inset-0 pointer-events-none rounded-br-[4px] rounded-tr-[4px]" />
-      <div className="[word-break:break-word] flex flex-col font-['Inter',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#231f20] text-[16px] whitespace-nowrap">
+      <div className="[word-break:break-word] flex flex-col font-['Nunito_Sans',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[#231f20] text-[16px] whitespace-nowrap">
         <p className="leading-[1.5]">1/2</p>
       </div>
       <div className="overflow-clip relative shrink-0 size-[24px]" data-name="Icon / inbox">
@@ -386,12 +386,12 @@ function Frame5() {
           </svg>
         </div>
       </div>
-      <div className="[word-break:break-word] flex flex-[1_0_0] flex-col font-['Inter',sans-serif] font-normal justify-center leading-[0] min-w-px not-italic relative text-[#565354] text-[0px]">
+      <div className="[word-break:break-word] flex flex-[1_0_0] flex-col font-['Nunito_Sans',sans-serif] font-normal justify-center leading-[0] min-w-px not-italic relative text-[#565354] text-[0px]">
         <p className="text-[16px]">
-          <span className="[word-break:break-word] font-['Inter',sans-serif] font-normal leading-[1.5] not-italic">{`Após `}</span>
-          <span className="[word-break:break-word] font-['Inter',sans-serif] font-semibold leading-[1.5] not-italic">{`confirmar o valor. `}</span>
+          <span className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-normal leading-[1.5] not-italic">{`Após `}</span>
+          <span className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-semibold leading-[1.5] not-italic">{`confirmar o valor. `}</span>
           <span className="leading-[1.5]">{`A `}</span>
-          <span className="[word-break:break-word] font-['Inter',sans-serif] font-bold leading-[1.5] not-italic">gaveta do caixa abrirá</span>
+          <span className="[word-break:break-word] font-['Nunito_Sans',sans-serif] font-bold leading-[1.5] not-italic">gaveta do caixa abrirá</span>
           <span className="leading-[1.5]">{` para a realização da sangria.`}</span>
         </p>
       </div>

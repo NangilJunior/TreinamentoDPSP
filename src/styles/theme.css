@@ -126,6 +126,10 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Fonte padrão da plataforma: textos sem fonte explícita usam a Nunito
+       Sans (Geist e Chivo Mono seguem definidas por elemento). */
+    font-family: 'Nunito Sans', sans-serif;
+    font-variation-settings: 'YTLC' 500, 'wdth' 100;
   }
 
   /**
