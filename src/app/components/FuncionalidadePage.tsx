@@ -215,23 +215,48 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   }
 };
 
-// Sugestões exibidas na tela de conclusão (estilo "próximos vídeos"). Textos e
-// imagem padronizados para coincidir com os cards de Sangria de Caixa e
-// Suprimento Complementar em /dashboard.
-const proximosTreinamentos = [
-  {
-    slug: "sangria-de-caixa",
-    titulo: "Sangria de Caixa",
-    descricao: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
-    imagem: imgGestaoDoCaixa,
-  },
-  {
-    slug: "suprimento-complementar",
-    titulo: "Suprimento Complementar",
-    descricao: "O suprimento complementar é a operação de entrada de dinheiro na gaveta do PDV para garantir que o operador tenha cédulas e moedas suficientes para dar troco aos clientes.",
-    imagem: imgGestaoDoCaixa,
-  },
-];
+// Sugestões exibidas na tela de conclusão (estilo "próximos vídeos"). Cada fluxo
+// sugere dois treinamentos de assunto correlato (não necessariamente a etapa
+// seguinte da sequência). Título e descrição vêm de secoesCategorias, a mesma
+// fonte dos cards em /dashboard.
+const sugestoesPorFluxo: Record<string, [string, string]> = {
+  "abertura-de-caixa": ["saida-do-operador", "fechamento-de-caixa"],
+  "suprimento-inicial": ["suprimento-complementar", "sangria-de-caixa"],
+  "sangria-de-caixa": ["suprimento-complementar", "fechamento-de-caixa"],
+  "suprimento-complementar": ["sangria-de-caixa", "suprimento-inicial"],
+  "cliente-cadastrado-e-nao-cadastrado": ["convenio", "pbm"],
+  "registro-de-produtos": ["consulta-de-preco", "cancelamento-parcial"],
+  "formas-de-pagamento": ["estorno", "reimpressao-de-comprovantes"],
+  "envio-e-impressao-de-cupom": ["reimpressao-de-comprovantes", "detalhe-da-venda"],
+  "registro-de-itens-de-pedidos": ["localizar-pedido-do-delivery", "registro-de-produtos"],
+  "localizar-pedido-do-delivery": ["registro-de-itens-de-pedidos", "cliente-cadastrado-e-nao-cadastrado"],
+  "convenio": ["pbm", "cliente-cadastrado-e-nao-cadastrado"],
+  "pbm": ["convenio", "ddg"],
+  "liberacao-com-receita": ["liberacao-manual", "registro-de-produtos"],
+  "liberacao-manual": ["liberacao-com-receita", "ddg"],
+  "consulta-de-preco": ["registro-de-produtos", "ddg"],
+  "cancelamento-parcial": ["cancelamento-total", "registro-de-produtos"],
+  "cancelamento-total": ["cancelamento-parcial", "estorno"],
+  "ddg": ["pbm", "convenio"],
+  "estorno": ["troca-de-mercadoria", "cancelamento-total"],
+  "troca-de-mercadoria": ["estorno", "detalhe-da-venda"],
+  "reimpressao-de-comprovantes": ["envio-e-impressao-de-cupom", "detalhe-da-venda"],
+  "detalhe-da-venda": ["reimpressao-de-comprovantes", "relatorios"],
+  "relatorios": ["fechamento-de-caixa", "detalhe-da-venda"],
+  "saida-do-operador": ["abertura-de-caixa", "fechamento-de-caixa"],
+  "fechamento-de-caixa": ["relatorios", "sangria-de-caixa"],
+  "encantometro": ["envio-e-impressao-de-cupom", "cliente-cadastrado-e-nao-cadastrado"],
+};
+
+const cardsTreinamentos = secoesCategorias.flatMap((secao) => secao.cards);
+
+function getProximosTreinamentos(slug?: string) {
+  const slugs = (slug && sugestoesPorFluxo[slug]) || ["sangria-de-caixa", "suprimento-complementar"];
+  return slugs.flatMap((s) => {
+    const card = cardsTreinamentos.find((c) => c.slug === s);
+    return card ? [{ slug: s, titulo: card.titulo, descricao: card.descricao ?? "", imagem: imgGestaoDoCaixa }] : [];
+  });
+}
 
 function Frame5() {
   const navigate = useNavigate();
@@ -2626,14 +2651,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                     <TutorialTooltip width={460}>
                       {cupomEtapaIndex === 0 ? (
-                        <div className="flex flex-col gap-[12px]">
-                          <p>
-                            No teclado, ao pressionar <span className="font-bold">[1]</span> o cupom é enviado por e-mail, <span className="font-bold">[2]</span> a impressão é realizada na hora e <span className="font-bold">[3]</span> faz ambos.
-                          </p>
-                          <p>
-                            O envio por e-mail é prioritário e a impressão só deve ser realizada se o cliente solicitar. Pressione <span className="font-bold">[1]</span> no teclado virtual para prosseguir.
-                          </p>
-                        </div>
+                        <p>
+                          O envio por e-mail é prioritário, e a impressão só deve ser feita se o cliente solicitar. Pressione <span className="font-bold">[1]</span> no teclado virtual para enviar o cupom por e-mail.
+                        </p>
                       ) : (
                         <p>
                           Agora vamos simular a impressão do cupom. Pressione <span className="font-bold">[2]</span> no teclado virtual.
@@ -5400,7 +5420,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Continue aprendendo
               </p>
               <div className="grid grid-cols-2 gap-[24px]">
-                {proximosTreinamentos.map((s) => (
+                {getProximosTreinamentos(slug).map((s) => (
                   <button
                     key={s.slug}
                     onClick={() => goToTraining(s.slug)}
