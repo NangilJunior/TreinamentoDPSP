@@ -215,46 +215,58 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   }
 };
 
-// Sugestões exibidas na tela de conclusão (estilo "próximos vídeos"). Cada fluxo
-// sugere dois treinamentos de assunto correlato (não necessariamente a etapa
-// seguinte da sequência). Título e descrição vêm de secoesCategorias, a mesma
-// fonte dos cards em /dashboard.
-const sugestoesPorFluxo: Record<string, [string, string]> = {
-  "abertura-de-caixa": ["saida-do-operador", "fechamento-de-caixa"],
-  "suprimento-inicial": ["suprimento-complementar", "sangria-de-caixa"],
-  "sangria-de-caixa": ["suprimento-complementar", "fechamento-de-caixa"],
-  "suprimento-complementar": ["sangria-de-caixa", "suprimento-inicial"],
-  "cliente-cadastrado-e-nao-cadastrado": ["convenio", "pbm"],
-  "registro-de-produtos": ["consulta-de-preco", "cancelamento-parcial"],
-  "formas-de-pagamento": ["estorno", "reimpressao-de-comprovantes"],
-  "envio-e-impressao-de-cupom": ["reimpressao-de-comprovantes", "detalhe-da-venda"],
-  "registro-de-itens-de-pedidos": ["localizar-pedido-do-delivery", "registro-de-produtos"],
-  "localizar-pedido-do-delivery": ["registro-de-itens-de-pedidos", "cliente-cadastrado-e-nao-cadastrado"],
-  "convenio": ["pbm", "cliente-cadastrado-e-nao-cadastrado"],
-  "pbm": ["convenio", "ddg"],
-  "liberacao-com-receita": ["liberacao-manual", "registro-de-produtos"],
-  "liberacao-manual": ["liberacao-com-receita", "ddg"],
-  "consulta-de-preco": ["registro-de-produtos", "ddg"],
-  "cancelamento-parcial": ["cancelamento-total", "registro-de-produtos"],
-  "cancelamento-total": ["cancelamento-parcial", "estorno"],
-  "ddg": ["pbm", "convenio"],
-  "estorno": ["troca-de-mercadoria", "cancelamento-total"],
-  "troca-de-mercadoria": ["estorno", "detalhe-da-venda"],
-  "reimpressao-de-comprovantes": ["envio-e-impressao-de-cupom", "detalhe-da-venda"],
-  "detalhe-da-venda": ["reimpressao-de-comprovantes", "relatorios"],
-  "relatorios": ["fechamento-de-caixa", "detalhe-da-venda"],
-  "saida-do-operador": ["abertura-de-caixa", "fechamento-de-caixa"],
-  "fechamento-de-caixa": ["relatorios", "sangria-de-caixa"],
-  "encantometro": ["envio-e-impressao-de-cupom", "cliente-cadastrado-e-nao-cadastrado"],
+// Cards exibidos na tela de conclusão (estilo "próximos vídeos"): o primeiro
+// sugere um treinamento de assunto correlato e o segundo é o próximo da trilha,
+// na ordem de secoesCategorias (a mesma dos cards em /dashboard). Por isso a
+// sugestão correlata nunca repete o próximo da trilha. Título e descrição vêm
+// de secoesCategorias.
+const sugestaoCorrelata: Record<string, string> = {
+  "abertura-de-caixa": "saida-do-operador",
+  "suprimento-inicial": "suprimento-complementar",
+  "cliente-cadastrado-e-nao-cadastrado": "convenio",
+  "registro-de-produtos": "consulta-de-preco",
+  "formas-de-pagamento": "estorno",
+  "envio-e-impressao-de-cupom": "reimpressao-de-comprovantes",
+  "registro-de-itens-de-pedidos": "registro-de-produtos",
+  "localizar-pedido-do-delivery": "registro-de-itens-de-pedidos",
+  "convenio": "cliente-cadastrado-e-nao-cadastrado",
+  "pbm": "convenio",
+  "liberacao-com-receita": "registro-de-produtos",
+  "liberacao-manual": "liberacao-com-receita",
+  "encantometro": "envio-e-impressao-de-cupom",
+  "consulta-de-preco": "registro-de-produtos",
+  "cancelamento-parcial": "registro-de-produtos",
+  "cancelamento-total": "cancelamento-parcial",
+  "ddg": "pbm",
+  "estorno": "cancelamento-total",
+  "troca-de-mercadoria": "estorno",
+  "reimpressao-de-comprovantes": "envio-e-impressao-de-cupom",
+  "sangria-de-caixa": "fechamento-de-caixa",
+  "suprimento-complementar": "sangria-de-caixa",
+  "detalhe-da-venda": "reimpressao-de-comprovantes",
+  "relatorios": "fechamento-de-caixa",
+  "saida-do-operador": "abertura-de-caixa",
+  "fechamento-de-caixa": "relatorios",
 };
+
+// Último treinamento da trilha (sem próximo): o segundo card vira uma
+// segunda sugestão correlata.
+const segundaSugestaoFimDaTrilha = "sangria-de-caixa";
 
 const cardsTreinamentos = secoesCategorias.flatMap((secao) => secao.cards);
 
 function getProximosTreinamentos(slug?: string) {
-  const slugs = (slug && sugestoesPorFluxo[slug]) || ["sangria-de-caixa", "suprimento-complementar"];
-  return slugs.flatMap((s) => {
+  const indice = cardsTreinamentos.findIndex((c) => c.slug === slug);
+  const proximoDaTrilha = indice >= 0 ? cardsTreinamentos[indice + 1]?.slug : undefined;
+  const itens = [
+    { slug: (slug && sugestaoCorrelata[slug]) || "sangria-de-caixa", subtitulo: "Também pode te interessar" },
+    proximoDaTrilha
+      ? { slug: proximoDaTrilha, subtitulo: "Próximo Treinamento" }
+      : { slug: segundaSugestaoFimDaTrilha, subtitulo: "Também pode te interessar" },
+  ];
+  return itens.flatMap(({ slug: s, subtitulo }) => {
     const card = cardsTreinamentos.find((c) => c.slug === s);
-    return card ? [{ slug: s, titulo: card.titulo, descricao: card.descricao ?? "", imagem: imgGestaoDoCaixa }] : [];
+    return card ? [{ slug: s, subtitulo, titulo: card.titulo, descricao: card.descricao ?? "", imagem: imgGestaoDoCaixa }] : [];
   });
 }
 
@@ -1625,7 +1637,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   }, [tecladoDisponivel]);
 
   // Setas ← / → (todos os fluxos): acionam os botões Anterior / Próximo do tutorial
-  // quando estiverem disponíveis. (O Esc é reservado à tecla [Volta].) O clique é feito no próprio botão, então a
+  // (e o Fechar Gaveta, que faz o papel de Próximo) quando estiverem disponíveis. (O Esc é reservado à tecla [Volta].) O clique é feito no próprio botão, então a
   // regra de disponibilidade é a mesma da tela: botão fora do DOM (navegação
   // oculta no layout dividido) ou com pointer-events desativado (oculto com
   // opacity-0 pointer-events-none, nele ou em um ancestral) não é acionado.
@@ -1634,8 +1646,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
     const handleArrows = (e: KeyboardEvent) => {
       const nav = e.key === "ArrowLeft" ? "anterior" : e.key === "ArrowRight" ? "proximo" : null;
       if (!nav) return;
-      const button = document.querySelector<HTMLButtonElement>(`[data-tutorial-nav="${nav}"]`);
-      if (!button || button.disabled || getComputedStyle(button).pointerEvents === "none") return;
+      // Mais de um botão pode ter o mesmo papel (ex.: Fechar Gaveta e o
+      // Próximo oculto); aciona o primeiro que estiver disponível.
+      const button = Array.from(document.querySelectorAll<HTMLButtonElement>(`[data-tutorial-nav="${nav}"]`))
+        .find((b) => !b.disabled && getComputedStyle(b).pointerEvents !== "none");
+      if (!button) return;
       e.preventDefault();
       button.click();
       button.blur();
@@ -2792,7 +2807,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
-              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 {isSuprimentoInicial ? (
                   <>
                     Selecione na lista o tipo de suprimento que deseja realizar. Nesta tela, a opção{" "}
@@ -2913,7 +2928,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M12 8v4M12 16h.01" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
-              <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.75)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 <span className="font-bold text-white">Escaneie o produto para consulta.</span>
                 <br />
                 Neste exemplo, vamos simular o uso do leitor para escanear o código de barras do produto. Clique no botão abaixo para seguir.
@@ -3888,10 +3903,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoInicial ? "O Suprimento Inicial inicia no botão de Sangria" : isSuprimentoAdicional ? "O Suprimento Complementar inicia no botão de Sangria" : "Iniciando a Sangria de Caixa"}
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoAdicional ? (
                     <>Para iniciar o processo de {isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
                   ) : (
@@ -3930,10 +3945,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Faça o registro do primeiro produto
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Neste exemplo, vamos simular o uso do leitor para registrar um produto. Clique no botão abaixo para seguir.
                 </p>
               </div>
@@ -3956,10 +3971,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Registre o medicamento controlado
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Neste exemplo, vamos simular o uso do leitor para registrar um medicamento controlado. Clique no botão abaixo para seguir.
                 </p>
               </div>
@@ -3981,10 +3996,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Identificando um cliente conveniado
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para iniciar, pressione a tecla <span className="font-bold text-white">[R] Convênio</span> no teclado virtual.
                 </p>
               </div>
@@ -4013,10 +4028,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Consulte o preço de um produto
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para consultar as informações de um produto, sem adicioná-lo à venda, pressione a tecla <span className="font-bold text-white">[L] Consulta Item</span> no teclado virtual.
                 </p>
               </div>
@@ -4042,10 +4057,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Iniciando o Cancelamento Parcial
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para cancelar um produto da venda em andamento, pressione a tecla <span className="font-bold text-white">[Z] Cancelar</span> no teclado virtual.
                 </p>
               </div>
@@ -4070,10 +4085,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Iniciando o Desconto do Gerente
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para aplicar um desconto a um produto da venda em andamento, pressione a tecla <span className="font-bold text-white">[U] DDG</span> no teclado virtual.
                 </p>
               </div>
@@ -4098,10 +4113,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Selecione o produto
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Escolha o produto que receberá o desconto. Use as teclas <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓) para navegar entre os itens da venda. Neste exemplo, mantenha a <span className="font-bold text-white">Dipirona</span> selecionada e pressione <span className="font-bold text-white">[Entra]</span>.
                 </p>
               </div>
@@ -4121,10 +4136,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Escolha a forma de aplicar o desconto
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   O desconto pode ser aplicado de três formas: <span className="font-bold text-white">[1] Percentual</span>, informando a porcentagem de desconto; <span className="font-bold text-white">[2] Subtração</span>, informando o valor a ser subtraído; ou <span className="font-bold text-white">[3] Preço Final</span>, informando o novo preço do produto. Neste exemplo, pressione <span className="font-bold text-white">[3]</span> no teclado virtual.
                 </p>
               </div>
@@ -4277,10 +4292,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Iniciando o Cancelamento Total
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Neste exemplo, a venda já foi totalizada e está na etapa de pagamento, mas não poderá ser concluída. Para cancelar a venda inteira, removendo todos os produtos registrados, pressione a tecla <span className="font-bold text-white">[Z] Cancelar</span> no teclado virtual.
                 </p>
               </div>
@@ -4306,10 +4321,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Selecione o produto a ser cancelado
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Existem três formas de selecionar o produto: navegando pela lista com as teclas <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓), escaneando o código de barras do produto ou digitando o seu código. Vamos começar utilizando as setas, clique em Exibir Teclado e pressione <span className="font-bold text-white">[V]</span> ou <span className="font-bold text-white">[K]</span>.
                 </p>
               </div>
@@ -4328,10 +4343,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Escaneie o produto
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Outra forma é escanear o código de barras do produto que será cancelado. Neste exemplo, vamos simular o uso do leitor. Clique no botão abaixo para seguir.
                 </p>
               </div>
@@ -4354,10 +4369,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Chegou um pedido do delivery!
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para localizar o pedido, inicie pressionando a tecla <span className="font-bold text-white">[F] Delivery</span> no teclado.
                 </p>
               </div>
@@ -4386,10 +4401,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Pedido localizado
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   O cliente foi identificado e os itens do pedido foram carregados automaticamente. Como o pagamento já foi realizado no momento da compra online, a venda já está concluída. Clique em <span className="font-bold text-white">Concluir</span> para finalizar o exemplo.
                 </p>
               </div>
@@ -4411,10 +4426,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Agora vamos fazer um registro manual
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Nem sempre o leitor é capaz de registrar o produto. Nesses casos, você poderá digitar os números que acompanham o código de barras, normalmente entre 8 e 13 dígitos. Pressione o botão Exibir Teclado, digite os números 11122233 e pressione <span className="font-bold text-white">[Entra]</span>
                 </p>
               </div>
@@ -4437,10 +4452,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </div>
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Multiplicando produtos
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Para registrar mais de um item no ponto de venda, o operador pode multiplicar a quantidade digitando o número de itens que o cliente irá levar e, em seguida, a tecla de <span className="font-bold text-white">multiplicação [*]</span>. Em seguida, o código de barras pode ser escaneado ou digitado.
                 </p>
               </div>
@@ -4460,10 +4475,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Iniciando o pagamento
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Pressione a tecla <span className="font-bold text-white">[SUB TOTAL]</span> no teclado virtual para visualizar as formas de pagamento disponíveis.
                 </p>
               </div>
@@ -4484,10 +4499,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {pagamentoEtapaIndex === 0 ? "Selecione a forma de pagamento" : pagamentoEtapaIndex === 1 ? "Pagamento por PIX" : pagamentoEtapaIndex === 2 ? "Pagamento no Débito" : "Pagamento no Crédito"}
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {pagamentoEtapaIndex === 0 && (
                     <>As formas de pagamento disponíveis são exibidas. Para este exemplo, vamos começar recebendo um pagamento em dinheiro. Selecione a opção <span className="font-bold text-white">[Suprimento Dinheiro]</span> no teclado virtual.</>
                   )}
@@ -4518,10 +4533,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {pagamentoEtapaIndex === 0 ? "Informe o valor recebido" : "Informe o valor da compra"}
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {pagamentoEtapaIndex === 0 && (
                     <>Informe o valor recebido do cliente para o pagamento em dinheiro. Neste exemplo, o cliente entregou <span className="font-bold text-white">R$ 50,00</span>. Digite o valor no teclado virtual e pressione <span className="font-bold text-white">[Entra]</span> para continuar.</>
                   )}
@@ -4552,10 +4567,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Categorias Promocionais
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Alguns cartões de crédito possuem parcerias com a loja e oferecem condições especiais de parcelamento sem juros. Use as teclas <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓) para navegar entre as categorias e pressione <span className="font-bold text-white">[Entra]</span> para confirmar a categoria destacada.
                 </p>
               </div>
@@ -4574,10 +4589,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Parcelamento no Cartão de Crédito
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   O cartão de crédito permite dividir o valor da compra em várias parcelas. Muitos clientes desconhecem que, dependendo da categoria promocional escolhida, o parcelamento pode ser feito sem juros — o custo é absorvido pela loja, e não pelo cliente. Use <span className="font-bold text-white">[V]</span> (↑) e <span className="font-bold text-white">[K]</span> (↓) para navegar e <span className="font-bold text-white">[Entra]</span> para confirmar a quantidade de parcelas.
                 </p>
               </div>
@@ -4599,10 +4614,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Conclusão do pagamento
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {pagamentoEtapaIndex === 0 && (
                     <>O pagamento com dinheiro foi concluído. Em seguida, vamos explorar outros métodos.</>
                   )}
@@ -4634,10 +4649,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </svg>
               </div>
               <div className="flex flex-col gap-[8px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Conclusão da emissão do cupom
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {cupomEtapaIndex === 0 && (
                     <>O cupom é enviado por e-mail para o endereço cadastrado do cliente. Em seguida, vamos explorar a impressão do cupom.</>
                   )}
@@ -4694,17 +4709,17 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white" />
                 </svg>
               </div>
-              <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <div className="flex flex-col gap-[4px]">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Ação do Gerente
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Esta operação requer a presença e autenticação do gerente responsável pela loja.
                 </p>
               </div>
               <div className="shrink-0 ml-auto flex items-center gap-[7px] rounded-full px-[14px] py-[7px] bg-white/10 border border-white/20">
                 <div className="w-[6px] h-[6px] rounded-full bg-white animate-pulse" />
-                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[11px] text-white uppercase tracking-widest">Aguardando</span>
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest">Aguardando</span>
               </div>
             </div>
           )}
@@ -4718,17 +4733,17 @@ function PDVSimulator({ slug }: { slug?: string }) {
               <div className="shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full ml-[8px] bg-white/10 border border-white/20">
                 <UserRound size={20} className="text-white" fill="white" />
               </div>
-              <div className="flex flex-col gap-[2px]">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <div className="flex flex-col gap-[4px]">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Ação do Cliente
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   O cliente avalia o atendimento no Encantômetro. Cabe ao operador apenas orientá-lo sobre a avaliação.
                 </p>
               </div>
               <div className="shrink-0 ml-auto flex items-center gap-[7px] rounded-full px-[14px] py-[7px] bg-white/10 border border-white/20">
                 <div className="w-[6px] h-[6px] rounded-full bg-white animate-pulse" />
-                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[11px] text-white uppercase tracking-widest">Aguardando</span>
+                <span className="font-['Nunito_Sans',sans-serif] font-bold text-[13px] text-white uppercase tracking-widest">Aguardando</span>
               </div>
             </div>
           )}
@@ -4743,15 +4758,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white" />
                 </svg>
               </div>
-              <div className="flex flex-col gap-[2px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <div className="flex flex-col gap-[4px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Gaveta Aberta
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoAdicional ? "Feche a gaveta após inserir o valor informado." : "Feche a gaveta após retirar o valor indicado."}
                 </p>
               </div>
               <button
+                data-tutorial-nav="proximo"
                 onClick={() => { setTutorialStep(9); setValorRetirada(0); }}
                 className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] rounded-full transition-all cursor-pointer bg-[#2258e6] hover:bg-[#1a47b8] shadow-[0_4px_14px_rgba(34,88,230,0.5)]"
                 style={{
@@ -4776,15 +4792,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="white" />
                 </svg>
               </div>
-              <div className="flex flex-col gap-[2px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <div className="flex flex-col gap-[4px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Gaveta Aberta
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Feche a gaveta após guardar o dinheiro recebido e retirar o troco.
                 </p>
               </div>
               <button
+                data-tutorial-nav="proximo"
                 onClick={() => setTutorialStep(25)}
                 className="shrink-0 flex items-center gap-[8px] px-[20px] h-[48px] rounded-full transition-all cursor-pointer bg-[#2258e6] hover:bg-[#1a47b8] shadow-[0_4px_14px_rgba(34,88,230,0.5)]"
                 style={{
@@ -4811,11 +4828,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <rect x="3" y="14" width="7" height="7" rx="1" stroke="white" strokeWidth="1.6" />
                 </svg>
               </div>
-              <div className="flex flex-col gap-[2px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <div className="flex flex-col gap-[4px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   Aguardando o pagamento
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   O cliente escaneia o QR Code e realiza o pagamento no seu app bancário. Após o processamento do pagamento, o sistema avança automaticamente.
                 </p>
               </div>
@@ -4832,11 +4849,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <div className="flex flex-col gap-[2px] flex-1">
-                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+              <div className="flex flex-col gap-[4px] flex-1">
+                <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white leading-tight" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isEncantometro ? "Concluído!" : "Parabéns!"}
                 </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoInicial ? "O suprimento inicial foi realizado e concluído com sucesso." : isSuprimentoAdicional ? "O suprimento complementar foi realizado e concluído com sucesso." : isAberturaDeCaixa ? "A abertura de caixa foi realizada e concluída com sucesso." : isConvenio ? "O convênio foi identificado e os descontos aplicados à venda com sucesso." : isLiberacaoComReceita ? "A receita foi autenticada e o medicamento foi adicionado à venda com sucesso." : isLiberacaoManual ? "Com a autorização da gerência, o medicamento foi adicionado à venda com sucesso." : isConsultaDePreco ? "O produto foi consultado com sucesso, sem qualquer alteração na venda." : isCancelamentoParcial ? "O produto foi cancelado com sucesso e os demais itens permanecem registrados na venda." : isCancelamentoTotal ? "A venda foi cancelada e todos os produtos foram removidos. O PDV está pronto para iniciar uma nova venda." : isDdg ? "O desconto do gerente foi aplicado à Dipirona com sucesso, dentro do limite permitido." : isFechamentoDeCaixa ? "O caixa foi fechado com sucesso e poderá ser reaberto no horário indicado na tela." : isEncantometro ? "A avaliação do cliente foi registrada no Encantômetro." : isPbm ? "O benefício do PBM foi validado e o desconto foi aplicado ao produto elegível." : isRegistroDeItensDePedidos ? "Os itens do pedido foram carregados e a venda está pronta para o pagamento." : isSaidaDoOperador ? "A Saída do Operador foi realizada com sucesso e o PDV fica disponível para a entrada de um novo operador." : isLeituraX ? (isLeituraOperador ? "O Relatório do Operador foi impresso com o resumo das vendas. Na sequência, vamos emitir o Relatório do Dia." : "O Relatório do Dia foi impresso com o resumo das vendas.") : "A sangria de caixa foi realizada e concluída com sucesso."}
                 </p>
               </div>
@@ -5421,31 +5438,35 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
               <div className="grid grid-cols-2 gap-[24px]">
                 {getProximosTreinamentos(slug).map((s) => (
-                  <button
-                    key={s.slug}
-                    onClick={() => goToTraining(s.slug)}
-                    className="group flex gap-[20px] items-center p-[16px] rounded-[14px] bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-left cursor-pointer"
-                  >
-                    <div className="relative w-[160px] h-[100px] rounded-[10px] overflow-hidden shrink-0">
-                      <img src={s.imagem} alt="" className="absolute inset-0 size-full object-cover" />
-                      <div className="absolute inset-0 bg-[rgba(51,50,67,0.45)] group-hover:bg-[rgba(51,50,67,0.3)] transition-colors" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-[44px] h-[44px] rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
-                          <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none">
-                            <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
-                          </svg>
+                  <div key={s.slug} className="flex flex-col gap-[10px]">
+                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[11px] text-white/60 uppercase tracking-widest text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      {s.subtitulo}
+                    </p>
+                    <button
+                      onClick={() => goToTraining(s.slug)}
+                      className="group flex-1 flex gap-[20px] items-center p-[16px] rounded-[14px] bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-left cursor-pointer"
+                    >
+                      <div className="relative w-[160px] h-[100px] rounded-[10px] overflow-hidden shrink-0">
+                        <img src={s.imagem} alt="" className="absolute inset-0 size-full object-cover" />
+                        <div className="absolute inset-0 bg-[rgba(51,50,67,0.45)] group-hover:bg-[rgba(51,50,67,0.3)] transition-colors" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-[44px] h-[44px] rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                            <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none">
+                              <path d="M8 5v14l11-7L8 5z" fill="#2258e6" />
+                            </svg>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex flex-col gap-[6px] flex-1 min-w-0">
-                      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[17px] text-white leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        {s.titulo}
-                      </p>
-                      <p className="font-['Nunito_Sans',sans-serif] text-[13px] text-white/60 leading-relaxed line-clamp-2" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        {s.descricao}
-                      </p>
-                    </div>
-                  </button>
+                      <div className="flex flex-col gap-[6px] flex-1 min-w-0">
+                        <p className="font-['Nunito_Sans',sans-serif] font-bold text-[17px] text-white leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                          {s.titulo}
+                        </p>
+                        <p className="font-['Nunito_Sans',sans-serif] text-[13px] text-white/60 leading-relaxed line-clamp-2" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                          {s.descricao}
+                        </p>
+                      </div>
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>

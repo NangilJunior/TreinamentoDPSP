@@ -29,10 +29,10 @@ function Frame5({
 }: { onNext?: () => void; titulo?: string; descricao?: ReactNode }) {
   return (
     <div className="[word-break:break-word] content-stretch flex flex-col gap-[16px] items-start leading-[1.2] relative shrink-0 w-full">
-      <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[20px] text-white w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-bold relative shrink-0 text-[22px] text-white w-full" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         {titulo}
       </p>
-      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[18px] text-[rgba(255,255,255,0.8)] w-full leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+      <p className="font-['Nunito_Sans',sans-serif] font-normal relative shrink-0 text-[20px] text-[rgba(255,255,255,0.8)] w-full leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
         {descricao}
       </p>
     </div>

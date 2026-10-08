@@ -18,7 +18,7 @@ export function TutorialTooltip({ children, width, fitContent, seta = "baixo" }:
           <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-[#111]" />
         </div>
       )}
-      <div className="bg-[#111] text-white text-[18px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+      <div className="bg-[#111] text-white text-[20px] font-['Nunito_Sans',sans-serif] leading-[1.6] px-[20px] py-[16px] rounded-[10px] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
         {children}
       </div>
       {seta === "baixo" && (

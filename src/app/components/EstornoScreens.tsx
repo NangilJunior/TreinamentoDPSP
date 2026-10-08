@@ -80,10 +80,10 @@ export function BannerEstorno({ titulo, children, tecla }: { titulo: string; chi
           </svg>
         </div>
         <div className="flex flex-col gap-[8px] flex-1">
-          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={fontVariation}>
+          <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={fontVariation}>
             {titulo}
           </p>
-          <p className="font-['Nunito_Sans',sans-serif] text-[18px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={fontVariation}>
+          <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={fontVariation}>
             {children}
           </p>
         </div>
