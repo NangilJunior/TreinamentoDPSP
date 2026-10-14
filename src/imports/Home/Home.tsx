@@ -439,7 +439,7 @@ function Frame28() {
         <p className="leading-[1.2]">Subtotal:</p>
       </div>
       <div className="flex flex-col justify-center relative shrink-0" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        <p className="leading-[1.2]">R$ 0.00</p>
+        <p className="leading-[1.2]">R$ 0,00</p>
       </div>
     </div>
   );
@@ -452,7 +452,7 @@ function Frame29() {
         <p className="leading-[1.2]">Total:</p>
       </div>
       <div className="flex flex-col justify-center relative shrink-0" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-        <p className="leading-[1.2]">R$ 0.00</p>
+        <p className="leading-[1.2]">R$ 0,00</p>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ interface TutorialTooltipProps {
 
 export function TutorialTooltip({ children, width, fitContent, seta = "baixo" }: TutorialTooltipProps) {
   return (
-    <div className={fitContent ? "whitespace-nowrap" : undefined} style={width ? { width } : undefined}>
+    <div data-tutorial-tooltip className={fitContent ? "whitespace-nowrap" : undefined} style={width ? { width } : undefined}>
       {seta === "cima" && (
         <div className="flex justify-center">
           <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[10px] border-b-[#111]" />

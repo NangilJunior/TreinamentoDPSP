@@ -73,132 +73,132 @@ interface FuncionalidadeContent {
 const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   "suprimento-inicial": {
     titulo: "Suprimento Inicial",
-    conteudo: "O Suprimento Inicial é a entrada de dinheiro no PDV antes do início das vendas, garantindo ao operador cédulas e moedas suficientes para realizar os primeiros trocos.",
+    conteudo: "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas.",
     hasPDV: true
   },
   "abertura-de-caixa": {
     titulo: "Abertura de Caixa",
-    conteudo: "A abertura de caixa é o protocolo de segurança que autoriza o início das atividades de um operador no PDV. O processo exige a validação prévia de um gerente, seguida da autenticação do operador, garantindo rastreabilidade e prevenção de acessos não autorizados ao caixa.",
+    conteudo: "A Abertura de Caixa é o processo que permite ao operador iniciar suas atividades em um PDV. Para abrir o caixa, primeiro é necessária a autorização de um usuário com perfil de gerente, por meio de senha. Em seguida, o operador realiza sua própria autenticação. O sistema verifica se o caixa está disponível para abertura e registra a operação, garantindo segurança e rastreabilidade durante o atendimento.",
     hasPDV: true
   },
   "sangria-de-caixa": {
     titulo: "Sangria de Caixa",
-    conteudo: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) do caixa durante o expediente. Este processo visa reduzir riscos de assaltos e garantir que o caixa mantenha apenas o valor necessário para o troco das operações diárias.",
+    conteudo: "A sangria de caixa é um procedimento de segurança que consiste na retirada do excesso de dinheiro (notas físicas) da gaveta do PDV durante o turno de trabalho. Essa operação é realizada sempre que o valor acumulado atinge um limite estabelecido, com o objetivo de reduzir o risco de perdas financeiras em casos de assalto.",
     hasPDV: true
   },
   "suprimento-complementar": {
     titulo: "Suprimento Complementar",
-    conteudo: "O Suprimento Complementar é a entrada adicional de dinheiro no PDV durante a operação, realizada quando é necessário reforçar o caixa para continuar dando troco.",
+    conteudo: "O Suprimento Complementar é a operação de entrada adicional de dinheiro na gaveta do PDV durante o período de operação. Ele é utilizado quando o caixa precisa de mais cédulas ou moedas para continuar realizando trocos, evitando que a falta de dinheiro interrompa ou dificulte o atendimento. O aporte complementa o valor disponível no caixa e pode ser realizado sempre que houver necessidade de reforçar o fundo de troco.",
     hasPDV: true
   },
   "cliente-cadastrado-e-nao-cadastrado": {
     titulo: "Cliente Cadastrado e Não Cadastrado",
-    conteudo: "Para iniciar o atendimento, o operador pode informar o CPF ou CNPJ do cliente caso este deseje ser identificado na venda.",
+    conteudo: "Ao iniciar uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se a identificação do cliente deve ser informada na nota fiscal. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos.",
     hasPDV: true
   },
   "registro-de-produtos": {
     titulo: "Registro de Produtos",
-    conteudo: "Etapa em que produtos são adicionados à venda. O registro pode ser feito pelo código de barras, utilizando um leitor ou digitando sua numeração. Após a identificação, os dados do produto são exibidos na tela.",
+    conteudo: "O Registro de Produtos é a etapa em que os itens são adicionados à venda. Para tal, o operador deve utilizar o leitor, posicionando-o sobre o código de barras do produto, ou, alternativamente, digitar o número do código no campo indicado e confirmar a operação. Após a identificação, o item é incluído na venda com suas informações e quantidades correspondentes. O processo deve ser repetido para cada produto da compra.",
     hasPDV: true
   },
   "formas-de-pagamento": {
     titulo: "Formas de Pagamento",
-    conteudo: "Na etapa de pagamento, o operador seleciona o método escolhido pelo cliente e realiza o recebimento em dinheiro ou por meio de algum outro método (como crédito, débito ou PIX).",
+    conteudo: "Após o registro dos produtos, é hora de receber o pagamento do cliente. O sistema aceita várias formas de pagamento, que podem ser selecionadas pelo teclado do PDV. Cada uma possui um fluxo próprio de confirmação. Neste tutorial, vamos cobrir o pagamento feito em dinheiro, PIX, débito e crédito.",
     hasPDV: true
   },
   "envio-e-impressao-de-cupom": {
     titulo: "Envio e Impressão de Cupom",
-    conteudo: "Ao finalizar a venda, o operador pode selecionar a forma de emissão do cupom fiscal, que pode ser enviado para o e-mail cadastrado do cliente ou impresso na hora.",
+    conteudo: "Após a finalização da venda, o operador pode escolher como o cliente deseja receber o cupom fiscal. É possível enviá-lo para o e-mail cadastrado do cliente, imprimir uma cópia na hora ou selecionar as duas opções. O envio por e-mail utiliza o endereço já registrado no cadastro do cliente.",
     hasPDV: true
   },
   "registro-de-itens-de-pedidos": {
     titulo: "Registro de Itens de Pedidos",
-    conteudo: "Quando os produtos do pedido já foram registrados pelo farmacêutico, o operador consegue carregá-los no caixa para realizar o pagamento, sem a necessidade de escaneá-los.",
+    conteudo: "Quando o cliente solicita itens ao farmacêutico, este os registra em um pedido vinculado ao CPF. Ao chegar ao caixa, o cliente informa seu CPF, permitindo que o operador localize o pedido. Os itens são carregados automaticamente, sem a necessidade de escanear ou digitar os códigos de barras. O operador pode então seguir para a etapa de pagamento e finalizar a venda.",
     hasPDV: true
   },
   "localizar-pedido-do-delivery": {
     titulo: "Localizar Pedido do Delivery",
-    conteudo: "Quando entregadores se dirigem ao caixa para fazer uma retirada, eles informam o número da ordem de venda, que permite localizar os dados do pedido.",
+    conteudo: "Quando o entregador chegar à loja para retirar um pedido de Delivery, ele deve informar ao operador o número da ordem de venda. O operador digita o número para localizar o pedido. Após a identificação, os dados do cliente e os itens da venda são carregados automaticamente na tela, permitindo conferir as informações e prosseguir com a retirada do pedido.",
     hasPDV: true
   },
   "convenio": {
     titulo: "Convênios",
-    conteudo: "Para que as condições do Convênio, como promoções e descontos, sejam aplicadas à venda, é necessário realizar uma autenticação com o provedor.",
+    conteudo: "Quando o cliente quiser informar o seu convênio no pedido, é necessário identificá-lo pelo CPF ou número da carteirinha. O sistema realiza a autenticação junto ao provedor e, após a validação, os descontos são automaticamente aplicados aos itens da venda.",
     hasPDV: true
   },
   "liberacao-com-receita": {
     titulo: "Liberação de Medicamento Controlado com Receita",
-    conteudo: "Ao registrar um medicamento controlado, o operador informa o número da receita para que o sistema realize sua autenticação antes de adicionar o item à venda.",
+    conteudo: "Ao registrar um medicamento controlado, o sistema solicita o número da receita. O operador deve informar o número indicado no documento e aguardar a autenticação. Se a receita for autorizada, o medicamento será adicionado à venda e o operador poderá continuar o atendimento.",
     hasPDV: true
   },
   "liberacao-manual": {
     titulo: "Liberação de Medicamento Controlado Sem Receita",
-    conteudo: "Quando um medicamento controlado não possui receita, sua liberação no PDV depende da autorização de um gerente antes que o item possa ser adicionado à venda.",
+    conteudo: "Ao registrar um medicamento controlado sem receita, o sistema solicitará a autorização da gerência. O operador deve acionar o/a responsável para que realize a autorização necessária. Após a liberação, o medicamento será adicionado à venda e o operador poderá continuar o atendimento.",
     hasPDV: true
   },
   "consulta-de-preco": {
     titulo: "Consulta de Preço",
-    conteudo: "Permite verificar o preço e as informações de um produto a partir da leitura ou digitação do seu código de barras, sem adicioná-lo à venda.",
+    conteudo: "Para consultar um produto, o operador deve selecionar Consulta Item no teclado e, em seguida, escanear ou digitar seu código de barras. O sistema exibirá na tela as informações e o preço do produto consultado. A consulta não adiciona o produto à venda.",
     hasPDV: true
   },
   "cancelamento-parcial": {
     titulo: "Cancelamento Parcial",
-    conteudo: "O Cancelamento Parcial permite remover um produto específico de uma venda que ainda não foi finalizada, mantendo os demais itens registrados.",
+    conteudo: "O Cancelamento Parcial permite excluir um produto específico de uma venda que ainda está em andamento. Esse recurso pode ser utilizado quando o cliente desiste de um produto, quando um item é registrado por engano ou quando é necessário corrigir um produto incluído incorretamente na venda. Os demais itens permanecem registrados.",
     hasPDV: true
   },
   "ddg": {
     titulo: "DDG (Desconto Gerencial)",
-    conteudo: "O DDG permite que o gerente aplique descontos diretamente no PDV, dentro dos limites definidos, para responder a situações comerciais durante a venda.",
+    conteudo: "O Desconto do Gerente (DDG) permite aplicar um desconto manual a um produto durante a venda, mediante autenticação do gerente. O recurso pode ser utilizado em situações como igualar a oferta de um concorrente, compensar uma avaria ou facilitar a venda de produtos próximos da validade. O desconto respeita os limites definidos para a operação.",
     hasPDV: true
   },
   "cancelamento-total": {
     titulo: "Cancelamento Total",
-    conteudo: "O Cancelamento Total permite remover todos os itens registrados e encerrar uma venda que ainda não foi finalizada, mediante autorização do gerente.",
+    conteudo: "O Cancelamento Total remove todos os produtos registrados em uma venda que ainda não foi finalizada, encerrando a operação de uma só vez. Essa opção pode ser utilizada quando o cliente desiste da compra ou quando ocorre algum problema que impede a conclusão da venda. Por cancelar todos os itens, a operação exige a autorização do gerente.",
     hasPDV: true
   },
   "estorno": {
     titulo: "Estorno",
-    conteudo: "O estorno permite devolver ao cliente o valor de uma venda já realizada, mediante aprovação do gerente e de acordo com a forma de pagamento utilizada.",
+    conteudo: "O Estorno permite devolver ao cliente o valor de uma venda já realizada. Para iniciar o processo, o operador deve solicitar a aprovação do gerente e selecionar a forma de pagamento utilizada na venda.",
     hasPDV: true
   },
   "troca-de-mercadoria": {
     titulo: "Troca de Mercadoria",
-    conteudo: "A troca de mercadoria permite substituir um produto de uma venda anterior por outro durante uma nova venda, utilizando o valor do item devolvido para compor a nova compra.",
+    conteudo: "Durante uma nova venda, o operador pode realizar a troca de um produto adquirido anteriormente. Para isso, registra a nova mercadoria e, na etapa de pagamento, utiliza a opção Vale Troca para localizar a venda original e selecionar o item que será substituído. O valor do produto devolvido é considerado na nova venda, sem gerar crédito ou saldo para utilização futura.",
     hasPDV: true
   },
   "reimpressao-de-comprovantes": {
     titulo: "Reimpressão de Comprovantes",
-    conteudo: "A reimpressão permite emitir novamente um comprovante de uma venda já realizada. O processo requer aprovação do gerente e pode ser feito para comprovantes TEF ou cupons fiscais.",
+    conteudo: "Para reimprimir um comprovante, o operador deve solicitar a aprovação do gerente e informar os dados da venda para localizá-la. Para cupons fiscais e comprovantes TEF, dados como a data da compra e o número da NF ou do NSU devem ser informados. Após localizar o documento, o comprovante correspondente poderá ser reimpresso.",
     hasPDV: true
   },
   "detalhe-da-venda": {
     titulo: "Detalhe da Venda",
-    conteudo: "A Fita Detalhe permite consultar as vendas realizadas em um PDV em uma determinada data, incluindo seus itens, valores e formas de pagamento.",
+    conteudo: "Por meio da Fita Detalhe, o operador pode consultar as operações realizadas em um PDV em uma determinada data. O extrato apresenta cada venda com seus itens, valores e formas de pagamento, auxiliando na conferência das operações e no esclarecimento de dúvidas.",
     hasPDV: true
   },
   "relatorios": {
     titulo: "Relatórios",
-    conteudo: "O relatório de movimentação permite consultar as vendas e demais operações realizadas no PDV, reunindo informações sobre valores e formas de pagamento para acompanhar e conferir o movimento do caixa.",
+    conteudo: "Também conhecido como Leitura X, o relatório apresenta um resumo das movimentações realizadas no PDV até o momento da emissão. A consulta reúne informações sobre vendas, valores por forma de pagamento e outras movimentações do caixa, auxiliando no acompanhamento e na conferência das operações.",
     hasPDV: true
   },
   "saida-do-operador": {
     titulo: "Saída do Operador",
-    conteudo: "A Saída do Operador encerra a sessão do operador no PDV, mantendo o caixa aberto para que outro operador possa assumir o atendimento.",
+    conteudo: "Trata-se do encerramento do turno do operador no PDV ao final de suas atividades, sem fechar o caixa. Dessa forma, o mesmo caixa permanece disponível para que outro operador realize sua entrada e continue o atendimento.",
     hasPDV: true
   },
   "pbm": {
     titulo: "PBM",
-    conteudo: "O PBM permite aplicar benefícios e descontos em medicamentos participantes durante a venda, após a identificação do programa e do cliente.",
+    conteudo: "Para aplicar um benefício de PBM, o operador deve selecionar o programa correspondente e informar os dados solicitados para identificar o cliente e validar o benefício. Após a validação, os descontos disponíveis são aplicados aos produtos elegíveis da cesta, e o operador pode continuar com a venda.",
     hasPDV: true
   },
   "encantometro": {
     titulo: "Encantômetro",
-    conteudo: "O Encantômetro permite que o cliente avalie sua experiência de atendimento após a venda, atribuindo uma nota de 1 a 5 estrelas.",
+    conteudo: "Após a venda, o cliente pode avaliar sua experiência de atendimento no Encantômetro, atribuindo uma nota de 1 a 5 estrelas. O operador deve apenas orientá-lo sobre a possibilidade de realizar a avaliação, caso queira. Quando a nota indicar insatisfação, o cliente poderá selecionar uma das opções disponíveis para informar o motivo.",
     hasPDV: true
   },
   "fechamento-de-caixa": {
     titulo: "Fechamento de Caixa",
-    conteudo: "O Fechamento Z encerra o movimento do PDV ao final da operação, consolidando as vendas e demais movimentações realizadas no caixa.",
+    conteudo: "O Fechamento Z encerra o movimento do PDV ao final da operação, consolidando as vendas e demais movimentações realizadas no caixa. Para realizar o fechamento, o operador deve seguir o fluxo indicado no sistema e concluir a operação. Após o fechamento, o movimento do período é encerrado e os valores ficam disponíveis para a conferência do caixa.",
     hasPDV: true
   },
   "entrada-saida-operador": {
@@ -456,108 +456,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Fechamento Z) os steps 129 a 134, exibindo a tela "Entrada de Operador
   // ou Fechamento" já nas boas-vindas.
   const proximaEtapaAposBoasVindas = isEstorno ? 76 : isTrocaDeMercadoria ? 90 : isReimpressaoDeComprovantes ? 102 : isDetalheDaVenda ? 110 : isLeituraX ? 115 : isSaidaDoOperador ? 125 : isFechamentoDeCaixa ? 129 : isEncantometro ? 135 : isPbm ? 137 : isPosVenda || isConsultasERelatorios || isEncerramentoDaOperacao ? 10 : isCancelamentoParcial ? 52 : isCancelamentoTotal ? 63 : isDdg ? 68 : isFormasDePagamento ? 21 : isEnvioImpressaoCupom ? 31 : isRegistroDeItensDePedidos ? 35 : isLocalizarPedidoDoDelivery ? 38 : pulaTelaLimiteCaixa ? 2 : 1;
-  const welcomeTitulo = isSuprimentoInicial
-    ? "Olá, boas vindas ao tutorial de Suprimento Inicial."
-    : isSuprimentoAdicional
-    ? "Olá, boas vindas ao tutorial de Suprimento Complementar."
-    : isAberturaDeCaixa
-    ? "Olá, boas vindas ao tutorial de Abertura de Caixa."
-    : isClienteCadastrado
-    ? "Olá, boas vindas ao tutorial de Cliente Cadastrado e Não Cadastrado."
-    : isRegistroDeProdutos
-    ? "Olá, boas vindas ao tutorial de Registro de Produtos."
-    : isFormasDePagamento
-    ? "Olá, boas vindas ao tutorial de Formas de Pagamento."
-    : isEnvioImpressaoCupom
-    ? "Olá, boas vindas ao tutorial de Envio e Impressão de Cupom."
-    : isRegistroDeItensDePedidos
-    ? "Olá, boas vindas ao tutorial de Registro de Itens de Pedidos."
-    : isLocalizarPedidoDoDelivery
-    ? "Olá, boas vindas ao tutorial de Localizar Pedido do Delivery."
-    : isConvenio
-    ? "Olá, boas vindas ao tutorial de Convênios."
-    : isLiberacaoComReceita
-    ? "Olá, boas vindas ao tutorial de Liberação de Medicamento Controlado com Receita."
-    : isLiberacaoManual
-    ? "Olá, boas vindas ao tutorial de Liberação de Medicamento Controlado Sem Receita."
-    : isConsultaDePreco
-    ? "Olá, boas vindas ao tutorial de Consulta de Preço."
-    : isCancelamentoParcial
-    ? "Olá, boas vindas ao tutorial de Cancelamento Parcial."
-    : isCancelamentoTotal
-    ? "Olá, boas vindas ao tutorial de Cancelamento Total."
-    : isDdg
-    ? "Olá, boas vindas ao tutorial de DDG (Desconto Gerencial)."
-    : isEstorno
-    ? "Olá, boas vindas ao tutorial de Estorno."
-    : isTrocaDeMercadoria
-    ? "Olá, boas vindas ao tutorial de Troca de Mercadoria."
-    : isReimpressaoDeComprovantes
-    ? "Olá, boas vindas ao tutorial de Reimpressão de Comprovantes."
-    : isDetalheDaVenda
-    ? "Olá, boas vindas ao tutorial de Detalhe da Venda."
-    : isRelatorios
-    ? "Olá, boas vindas ao tutorial de Relatórios."
-    : isSaidaDoOperador
-    ? "Olá, boas vindas ao tutorial de Saída do Operador."
-    : isFechamentoDeCaixa
-    ? "Olá, boas vindas ao tutorial de Fechamento de Caixa."
-    : isEncantometro
-    ? "Olá, boas vindas ao tutorial de Encantômetro."
-    : isPbm
-    ? "Olá, boas vindas ao tutorial de PBM."
-    : undefined;
-  const welcomeDescricao = isSuprimentoInicial
-    ? "O Suprimento Inicial é a operação de entrada de dinheiro na gaveta do PDV antes do início das vendas. Esse valor, também conhecido como Fundo de Troco, é disponibilizado para que o operador comece o atendimento com cédulas e moedas suficientes para realizar o troco aos clientes. O valor definido para o suprimento inicial deve permanecer disponível no caixa durante a operação, garantindo as condições necessárias para o funcionamento das vendas."
-    : isSuprimentoAdicional
-    ? "O Suprimento Complementar é a operação de entrada adicional de dinheiro na gaveta do PDV durante o período de operação. Ele é utilizado quando o caixa precisa de mais cédulas ou moedas para continuar realizando trocos, evitando que a falta de dinheiro interrompa ou dificulte o atendimento. O aporte complementa o valor disponível no caixa e pode ser realizado sempre que houver necessidade de reforçar o fundo de troco."
-    : isAberturaDeCaixa
-    ? "A Abertura de Caixa é o processo que permite ao operador iniciar suas atividades em um PDV (Ponto de Venda). Para abrir o caixa, primeiro é necessária a autorização de um usuário com perfil de gerente, por meio de senha. Em seguida, o operador realiza sua própria autenticação. O sistema verifica se o caixa está disponível para abertura e registra a operação, garantindo segurança e rastreabilidade durante o atendimento."
-    : isClienteCadastrado
-    ? "Ao iniciar uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se a identificação do cliente deve ser informada na nota fiscal. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos."
-    : isRegistroDeProdutos
-    ? "O Registro de Produtos é a etapa em que os itens são adicionados à venda. Para tal, o operador deve utilizar o leitor, posicionando-o sobre o código de barras do produto, ou, alternativamente, digitar o número do código no campo indicado e confirmar a operação. Após a identificação, o item é incluído na venda com suas informações e quantidades correspondentes. O processo deve ser repetido para cada produto da compra."
-    : isFormasDePagamento
-    ? "Após o registro dos produtos, é hora de receber o pagamento do cliente. O sistema aceita várias formas de pagamento, que podem ser selecionadas pelo teclado do PDV. Cada uma possui um fluxo próprio de confirmação. Neste tutorial, vamos cobrir o pagamento feito em dinheiro, PIX, débito e crédito."
-    : isEnvioImpressaoCupom
-    ? "Após a finalização da venda, o operador pode escolher como o cliente deseja receber o cupom fiscal. É possível enviá-lo para o e-mail cadastrado do cliente, imprimir uma cópia na hora ou selecionar as duas opções. O envio por e-mail utiliza o endereço já registrado no cadastro do cliente."
-    : isRegistroDeItensDePedidos
-    ? "Quando o cliente solicita itens ao farmacêutico, este os registra em um pedido vinculado ao CPF. Ao chegar ao caixa, o cliente informa seu CPF, permitindo que o operador localize o pedido. Os itens são carregados automaticamente, sem a necessidade de escanear ou digitar os códigos de barras. O operador pode então seguir para a etapa de pagamento e finalizar a venda."
-    : isLocalizarPedidoDoDelivery
-    ? "Quando o entregador chegar à loja para retirar um pedido de Delivery, ele deve informar ao operador o número da ordem de venda. O operador digita o número para localizar o pedido. Após a identificação, os dados do cliente e os itens da venda são carregados automaticamente na tela, permitindo conferir as informações e prosseguir com a retirada do pedido."
-    : isConvenio
-    ? "Quando o cliente quiser informar o seu convênio no pedido, é necessário identificá-lo pelo CPF ou número da carteirinha. O sistema realiza a autenticação junto ao provedor e, após a validação, os descontos são automaticamente aplicados aos itens da venda."
-    : isLiberacaoComReceita
-    ? "Ao registrar um medicamento controlado, o sistema solicita o número da receita. O operador deve informar o número indicado no documento e aguardar a autenticação. Se a receita for autorizada, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
-    : isLiberacaoManual
-    ? "Ao registrar um medicamento controlado sem receita, o sistema solicitará a autorização da gerência. O operador deve acionar o/a responsável para que realize a autorização necessária. Após a liberação, o medicamento será adicionado à venda e o operador poderá continuar o atendimento."
-    : isConsultaDePreco
-    ? "Para consultar um produto, o operador deve selecionar Consulta Item no teclado e, em seguida, escanear ou digitar seu código de barras. O sistema exibirá na tela as informações e o preço do produto consultado. A consulta não adiciona o produto à venda."
-    : isCancelamentoParcial
-    ? "O Cancelamento Parcial permite excluir um produto específico de uma venda que ainda está em andamento. Esse recurso pode ser utilizado quando o cliente desiste de um produto, quando um item é registrado por engano ou quando é necessário corrigir um produto incluído incorretamente na venda. Os demais itens permanecem registrados."
-    : isCancelamentoTotal
-    ? "O Cancelamento Total remove todos os produtos registrados em uma venda que ainda não foi finalizada, encerrando a operação de uma só vez. Essa opção pode ser utilizada quando o cliente desiste da compra ou quando ocorre algum problema que impede a conclusão da venda. Por cancelar todos os itens, a operação exige a autorização do gerente."
-    : isDdg
-    ? <>O <span className="font-bold text-white">Desconto do Gerente (DDG)</span> permite aplicar um desconto manual a um produto durante a venda, mediante autenticação do gerente. O recurso pode ser utilizado em situações como igualar a oferta de um concorrente, compensar uma avaria ou facilitar a venda de produtos próximos da validade. O desconto respeita os limites definidos para a operação.</>
-    : isEstorno
-    ? "O Estorno permite devolver ao cliente o valor de uma venda já realizada. Para iniciar o processo, o operador deve solicitar a aprovação do gerente e selecionar a forma de pagamento utilizada na venda."
-    : isTrocaDeMercadoria
-    ? "Durante uma nova venda, o operador pode realizar a troca de um produto adquirido anteriormente. Para isso, registra a nova mercadoria e, na etapa de pagamento, utiliza a opção Vale Troca para localizar a venda original e selecionar o item que será substituído. O valor do produto devolvido é considerado na nova venda, sem gerar crédito ou saldo para utilização futura."
-    : isReimpressaoDeComprovantes
-    ? "Para reimprimir um comprovante, o operador deve solicitar a aprovação do gerente e informar os dados da venda para localizá-la. Para cupons fiscais e comprovantes TEF, dados como a data da compra e o número da NF ou do NSU devem ser informados. Após localizar o documento, o comprovante correspondente poderá ser reimpresso."
-    : isDetalheDaVenda
-    ? "Por meio da Fita Detalhe, o operador pode consultar as operações realizadas em um PDV em uma determinada data. O extrato apresenta cada venda com seus itens, valores e formas de pagamento, auxiliando na conferência das operações e no esclarecimento de dúvidas."
-    : isRelatorios
-    ? "Também conhecido como Leitura X, o relatório apresenta um resumo das movimentações realizadas no PDV até o momento da emissão. A consulta reúne informações sobre vendas, valores por forma de pagamento e outras movimentações do caixa, auxiliando no acompanhamento e na conferência das operações."
-    : isSaidaDoOperador
-    ? "Trata-se do encerramento do turno do operador no PDV ao final de suas atividades, sem fechar o caixa. Dessa forma, o mesmo caixa permanece disponível para que outro operador realize sua entrada e continue o atendimento."
-    : isFechamentoDeCaixa
-    ? "O Fechamento Z encerra o movimento do PDV ao final da operação, consolidando as vendas e demais movimentações realizadas no caixa. Para realizar o fechamento, o operador deve seguir o fluxo indicado no sistema e concluir a operação. Após o fechamento, o movimento do período é encerrado e os valores ficam disponíveis para a conferência do caixa."
-    : isEncantometro
-    ? "Após a venda, o cliente pode avaliar sua experiência de atendimento no Encantômetro, atribuindo uma nota de 1 a 5 estrelas. O operador deve apenas orientá-lo sobre a possibilidade de realizar a avaliação, caso queira. Quando a nota indicar insatisfação, o cliente poderá selecionar uma das opções disponíveis para informar o motivo."
-    : isPbm
-    ? "Para aplicar um benefício de PBM, o operador deve selecionar o programa correspondente e informar os dados solicitados para identificar o cliente e validar o benefício. Após a validação, os descontos disponíveis são aplicados aos produtos elegíveis da cesta, e o operador pode continuar com a venda."
-    : undefined;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
   // Escala o PDV em tela cheia (1280×800) durante o treinamento para caber em
@@ -605,7 +503,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
     transformOrigin: "bottom center",
   };
   const [showKeyboard, setShowKeyboard] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
   const [showAberturaLogin, setShowAberturaLogin] = useState(false);
   const [showAberturaAutorizacao, setShowAberturaAutorizacao] = useState(false);
   const [showAberturaGerenteMatricula, setShowAberturaGerenteMatricula] = useState(false);
@@ -621,10 +518,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Telas de demonstração (steps 15 a 17) do fluxo de Registro de Produtos:
   // não usadas por nenhum outro fluxo, para não colidir com os steps 0-14
   // já existentes.
-  // Envio e Impressão de Cupom não tem uma tela inicial própria: começa
-  // direto na tela "Pagamento realizado" (passo 31), então a pré-visualização
-  // (antes de "Iniciar Treinamento") já deve nascer nesse passo.
-  const [tutorialStep, setTutorialStep] = useState(isEnvioImpressaoCupom ? 31 : 0);
+  // Não há tela de boas-vindas: o treinamento começa direto na primeira
+  // etapa de instruções, e a pré-visualização (antes de "Iniciar
+  // Treinamento") já nasce nessa etapa para mostrar a mesma tela.
+  const primeiraEtapa = isAberturaDeCaixa ? 0 : proximaEtapaAposBoasVindas;
+  const [tutorialStep, setTutorialStep] = useState(primeiraEtapa);
   // Relatórios explora em sequência a Leitura do Operador (passos 115 a 119)
   // e a Leitura do Dia (passos 121 a 124), com a mesma estrutura deslocada
   // pela base de cada rodada: [P] Leitura X (+0, só na primeira rodada),
@@ -715,7 +613,14 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // genérico (demais fluxos, exibido sobre a tela de fundo independentemente
   // de qual tutorialStep ela representa — ex.: Envio e Impressão de Cupom
   // inicia direto no passo 31) ou a tela de login (Abertura de Caixa).
-  const isPrimeiraTelaTreinamento = showAberturaLogin || showTutorial;
+  const isPrimeiraEtapa = isAberturaDeCaixa
+    ? showAberturaAutorizacao
+    : tutorialStep === primeiraEtapa &&
+      !showEntradaOperadorMatricula && !showEntradaOperadorSenha &&
+      !showAberturaGerenteMatricula && !showAberturaGerenteSenha &&
+      !(isClienteCadastrado && demoSemIdentificar) &&
+      !(isEnvioImpressaoCupom && cupomEtapaIndex !== 0);
+  const isPrimeiraTelaTreinamento = isTrainingMode && isPrimeiraEtapa;
   const audioArquivo = slug ? AUDIO_BOAS_VINDAS_POR_FLUXO[slug] : undefined;
 
   useEffect(() => {
@@ -743,7 +648,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const exitTraining = () => {
     stopAudio();
     setShowKeyboard(false);
-    setShowTutorial(false);
     setShowAberturaLogin(false);
     setShowAberturaAutorizacao(false);
     setShowAberturaGerenteMatricula(false);
@@ -756,7 +660,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     setAberturaMatricula("");
     setAberturaSenha("");
     setAberturaEntraState("disabled");
-    setTutorialStep(0);
+    setTutorialStep(primeiraEtapa);
     setIsTrainingMode(false);
     setIsFirstAccess(true);
     setMotivoIndex(0);
@@ -820,7 +724,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // outro), toca em Avaliar e chega à tela de agradecimento (passo 136).
   const [encantometroFase, setEncantometroFase] = useState<FaseEncantometro>("inicial");
   useEffect(() => {
-    if (!isEncantometro || tutorialStep !== 135) return;
+    if (!isTrainingMode || !isEncantometro || tutorialStep !== 135) return;
     let cancelled = false;
     const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
     const sequencia: [number, FaseEncantometro][] = [
@@ -848,7 +752,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     return () => {
       cancelled = true;
     };
-  }, [isEncantometro, tutorialStep]);
+  }, [isTrainingMode, isEncantometro, tutorialStep]);
 
   // Simulação da Ação do Gerente na tela de login da Abertura de Caixa:
   // digita a matrícula e libera o botão Entra, na mesma cadência usada em
@@ -957,9 +861,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
       (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) ||
       (isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 19 || tutorialStep === 20)) ||
       (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) ||
-      (isEnvioImpressaoCupom && ((tutorialStep === 31 && showTutorial) || tutorialStep === 34)) ||
-      (isRegistroDeItensDePedidos && tutorialStep === 35 && showTutorial) ||
-      (isLocalizarPedidoDoDelivery && ((tutorialStep === 38 && showTutorial) || tutorialStep === 40)) ||
+      (isEnvioImpressaoCupom && tutorialStep === 34) ||
+      (isLocalizarPedidoDoDelivery && tutorialStep === 40) ||
       (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46 || tutorialStep === 144)) ||
       ((isLiberacaoComReceita || isLiberacaoManual) && (tutorialStep === 2 || tutorialStep === 48)) ||
       (isConsultaDePreco && (tutorialStep === 49 || tutorialStep === 51)) ||
@@ -1594,8 +1497,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // disponível ou teclado aberto), mesmo antes de abri-lo. Mapeamento:
   // letras = tecla com a mesma letra impressa (V Sangria, R Convênio...),
   // dígitos = teclas numéricas, setas ↑/↓ = V/K (navegação em listas),
-  // [Enter] = Entra, [Esc] = Volta, [Backspace] = Limpa, [F8] = Sub Total e
-  // [*] = Multiplica. Anula, Suprimento Dinheiro e 00 não têm atalho.
+  // [Enter] = Entra, [Esc] = Volta, [Backspace] = Limpa, [F8] = Sub Total,
+  // [*] = Multiplica e [Espaço] = Suprimento Dinheiro. Anula e 00 não têm
+  // atalho.
   const tecladoVirtualRef = useRef<HTMLDivElement>(null);
   const tecladoDisponivel = isTrainingMode && (showKeyboard || !keyboardOcultoNestaEtapa);
   useEffect(() => {
@@ -1613,6 +1517,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
         : k === "Backspace" ? "LIMPA"
         : k === "F8" ? "SUB TOTAL"
         : k === "*" ? "MULTIPLICA"
+        // A tecla Suprimento Dinheiro tem o nome em duas linhas; o clique na
+        // primeira ("SUPRIMENTO") sobe para a tecla.
+        : k === " " ? "SUPRIMENTO"
         : null;
       const letra = /^[a-zA-Z]$/.test(k) ? k.toUpperCase() : k === "ArrowUp" ? "V" : k === "ArrowDown" ? "K" : null;
       const textos = Array.from(teclado.querySelectorAll("p"));
@@ -1658,6 +1565,20 @@ function PDVSimulator({ slug }: { slug?: string }) {
     window.addEventListener("keydown", handleArrows);
     return () => window.removeEventListener("keydown", handleArrows);
   }, [isTrainingMode]);
+
+  // Esc fecha o tutorial apenas na tela de conclusão (passo 10); nas demais
+  // etapas ele continua reservado à tecla [Volta].
+  useEffect(() => {
+    if (!isTrainingMode || tutorialStep !== 10) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      exitTraining();
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTrainingMode, tutorialStep]);
 
   // Próximo dígito do CPF de exemplo a ser destacado no teclado virtual
   // (passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado).
@@ -1811,8 +1732,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Item do pedido carregado automaticamente ao localizar o OV (passo 40 do
   // fluxo de Localizar Pedido do Delivery), exatamente como no node
   // 3978:57290 do Figma.
+  // Valores por unidade: R$ 8,50 com 10% de desconto = R$ 7,65 cada.
   const itensDemoLocalizarPedidoDoDelivery = [
-    { nome: "Dipirona 500mg", ref: "30039069", cod: "646156", quantidade: 2, precoUnit: 8.5, descontoPct: "-10%", desconto: 0.85, precoFinal: 8.5 },
+    { nome: "Dipirona 500mg", ref: "30039069", cod: "646156", quantidade: 2, precoUnit: 8.5, descontoPct: "-10%", desconto: 0.85, precoFinal: 7.65 },
   ];
   // Itens carregados automaticamente após a identificação do conveniado
   // (passo 46 do fluxo de Convênio), exatamente como no node 2210:30571 do
@@ -1868,17 +1790,18 @@ function PDVSimulator({ slug }: { slug?: string }) {
     31: 88.91,
     37: 142.5,
     145: 142.5,
-    40: 8.5,
+    40: 17.0,
     46: 44.9,
     48: 8.13,
     143: 8.5,
   };
-  // Consulta de Preço reaproveita o step 0 (compartilhado com Formas de
-  // Pagamento/Envio e Impressão de Cupom) apenas para exibir o carrinho já
-  // no banner de boas-vindas — os valores de exemplo (Dipirona x2) não têm
-  // relação com os das outras tabelas indexadas por step, por isso usa
-  // sempre o total calculado a partir dos itens visíveis.
-  const subtotalRegistroDeProdutos = isConsultaDePreco ? totalRegistroDeProdutos : (subtotalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos);
+  // Consulta de Preço não usa as tabelas indexadas por step (os steps 0 e 2
+  // são compartilhados com outros fluxos): os totais vêm dos itens visíveis.
+  // Os valores do item são por unidade, então a soma considera a quantidade
+  // (Dipirona x2: 17,00 − 1,70 = 15,30).
+  const somaConsultaDePreco = (campo: "precoUnit" | "precoFinal" | "desconto") =>
+    itensVisiveisRegistroDeProdutos.reduce((soma, item) => soma + item[campo] * item.quantidade, 0);
+  const subtotalRegistroDeProdutos = isConsultaDePreco ? somaConsultaDePreco("precoUnit") : (subtotalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos);
   // Economizou informado individualmente por tela; enquanto uma tela não
   // tiver valor definido aqui, usa a soma dos descontos dos itens visíveis.
   const economizouPorStepRegistroDeProdutos: Record<number, number> = {
@@ -1890,24 +1813,25 @@ function PDVSimulator({ slug }: { slug?: string }) {
     31: 42.37,
     37: 11.4,
     145: 11.4,
-    40: 0.85,
+    40: 1.7,
     46: 3.68,
     48: 0.9,
   };
   const economizouExibidoRegistroDeProdutos = isConsultaDePreco
-    ? economizouRegistroDeProdutos
+    ? somaConsultaDePreco("desconto")
     : (economizouPorStepRegistroDeProdutos[tutorialStep] ?? economizouRegistroDeProdutos);
   // Total informado individualmente por tela; enquanto uma tela não tiver
   // valor definido aqui, usa a soma do preço final dos itens visíveis.
   const totalPorStepRegistroDeProdutos: Record<number, number> = {
     37: 131.1,
     145: 131.1,
-    40: 8.5,
+    40: 15.3,
     46: 41.22,
     48: 8.13,
   };
-  const totalExibidoRegistroDeProdutos =
-    totalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos;
+  const totalExibidoRegistroDeProdutos = isConsultaDePreco
+    ? somaConsultaDePreco("precoFinal")
+    : (totalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos);
 
   // Banner de conclusão (título "Parabéns!") exibido abaixo da tela final
   // dos fluxos; quando visível na tela final, o botão Concluir fica dentro
@@ -1935,7 +1859,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 setShowAberturaIdentificacao(false);
                 setTutorialStep(10);
               }
-              else if (showTutorial) { setTutorialStep(proximaEtapaAposBoasVindas); setShowTutorial(false); }
               else if (isClienteCadastrado && tutorialStep === 12) { setCpf(""); setTutorialStep(2); setDemoSemIdentificar(true); }
               else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
               else if (tutorialStep === 1) setTutorialStep(2);
@@ -2220,7 +2143,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                       <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                         <TutorialTooltip width={480}>
                           Para seguir sem identificar o cliente, clique em{" "}
-                          <span className="font-bold">[Volta]</span> no teclado virtual. Outra opção é clicar em{" "}
+                          <span className="font-bold">[Esc] Volta</span> no teclado virtual. Outra opção é clicar em{" "}
                           <span className="font-bold">[Entra]</span> sem ter informado o número do CPF.
                         </TutorialTooltip>
                       </div>
@@ -2241,7 +2164,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                         </TutorialTooltip>
                       </div>
                     )}
-                    {tutorialStep === 35 && isRegistroDeItensDePedidos && !showTutorial && (
+                    {tutorialStep === 35 && isRegistroDeItensDePedidos && (
                       <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                         <TutorialTooltip width={480}>
                           Informe o CPF do cliente para localizar o pedido registrado pelo farmacêutico. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
@@ -2397,7 +2320,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                       {isRegistroDeItensDePedidos && tutorialStep === 37 && idx === 0 && (
                         <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                           <TutorialTooltip width={420}>
-                            Os itens do pedido foram carregados automaticamente, sem a necessidade de leitura ou digitação dos códigos de barras. Pressione <span className="font-bold">[Sub Total]</span> para seguir com o pagamento.
+                            Os itens do pedido foram carregados automaticamente, sem a necessidade de leitura ou digitação dos códigos de barras. Pressione <span className="font-bold">[F8] Sub Total</span> para seguir com o pagamento.
                           </TutorialTooltip>
                         </div>
                       )}
@@ -2491,7 +2414,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                           Qtd: {item.qty}
                         </p>
                         <p className="font-['Nunito_Sans',sans-serif] font-bold text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                          R$ {(item.price * item.qty).toFixed(2)}
+                          R$ {formatarValorBR(item.price * item.qty)}
                         </p>
                       </div>
                     </div>
@@ -2532,7 +2455,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Subtotal:
               </p>
               <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                R$ {mostrarCardDipirona ? formatarValorBR(subtotalRegistroDeProdutos) : subtotal.toFixed(2)}
+                R$ {mostrarCardDipirona ? formatarValorBR(subtotalRegistroDeProdutos) : formatarValorBR(subtotal)}
               </p>
             </div>
 
@@ -2543,7 +2466,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 Total:
               </p>
               <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[20px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                R$ {mostrarCardDipirona ? formatarValorBR(totalExibidoRegistroDeProdutos) : subtotal.toFixed(2)}
+                R$ {mostrarCardDipirona ? formatarValorBR(totalExibidoRegistroDeProdutos) : formatarValorBR(subtotal)}
               </p>
             </div>
 
@@ -2580,7 +2503,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                     Débito:
                   </p>
                   <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                    R$ 8,50
+                    R$ 15,30
                   </p>
                 </div>
               </>
@@ -2662,7 +2585,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                     </TutorialTooltip>
                   </div>
                   )}
-                  {isEnvioImpressaoCupom && tutorialStep === 31 && !showTutorial && isTrainingMode && (
+                  {isEnvioImpressaoCupom && tutorialStep === 31 && isTrainingMode && (
                   <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                     <TutorialTooltip width={460}>
                       {cupomEtapaIndex === 0 ? (
@@ -3111,7 +3034,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             <CancelamentoVendaScreen
               modo="venda"
               destacadoNumero={ddgItemIndex + 1}
-              avisoItens="Selecione o ítem e tecle [Entra] para aplicar o desconto"
+              avisoItens="Selecione o item e tecle [Entra] para aplicar o desconto"
             />
           )}
           {tutorialStep === 75 && (
@@ -3614,7 +3537,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {/* Autorização do gerente (passo 54) — mesma animação de matrícula e
           senha do fluxo de Suprimento Inicial, encerrada logo após a senha. */}
       {isTrainingMode && isCancelamentoParcial && tutorialStep === 54 && (
-        <SangriaFlow onAuthComplete={() => setTutorialStep(55)} trilha="Cancelamento de Ítem" />
+        <SangriaFlow onAuthComplete={() => setTutorialStep(55)} trilha="Cancelamento de Item" />
       )}
 
       {/* Overlay de dimming para destacar o footer */}
@@ -3651,7 +3574,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           {/* Tooltip acima do modal */}
           <div className="fade-in-delay absolute bottom-[220px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
             <TutorialTooltip width={700}>
-              Será exibido um modal perguntando se o cliente deseja que o CPF/CNPJ seja identificado na nota fiscal. Pressione a tecla <span className="font-bold">[Entra]</span> para confirmar a identificação ou <span className="font-bold">[Volta]</span> para prosseguir sem identificação.
+              Será exibido um modal perguntando se o cliente deseja que o CPF/CNPJ seja identificado na nota fiscal. Pressione a tecla <span className="font-bold">[Entra]</span> para confirmar a identificação ou <span className="font-bold">[Esc] Volta</span> para prosseguir sem identificação.
             </TutorialTooltip>
           </div>
 
@@ -3736,32 +3659,21 @@ function PDVSimulator({ slug }: { slug?: string }) {
   if (!isTrainingMode) {
     return (
       <ScaleToFit designWidth={1280}>
-        {/* PDV + máscara dentro do mesmo wrapper escalado → sempre alinhados */}
-        <div className="relative w-[1280px]">
-          {isAberturaDeCaixa ? <AberturaCaixaLoginScreen /> : isFechamentoDeCaixa ? <EntradaOperadorScreen campo="matricula" /> : pdvContent}
+        {/* PDV + máscara dentro do mesmo wrapper escalado → sempre alinhados.
+            A pré-visualização mostra só a tela da primeira etapa, sem as
+            tooltips de instrução. */}
+        <div className="relative w-[1280px] [&_[data-tutorial-tooltip]]:hidden">
+          {isAberturaDeCaixa ? <AberturaCaixaLoginScreen /> : pdvContent}
 
           {/* Play Overlay */}
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-[20px] cursor-pointer group hover:bg-black/70 transition-colors" onClick={() => {
             setShowKeyboard(false);
-            // Envio e Impressão de Cupom parte direto da tela "Pagamento
-            // realizado" (passo 31), retomando de onde o fluxo de Formas de
-            // Pagamento terminou — sem a tela inicial (passo 0) com o
-            // carrinho vazio usada pelos demais fluxos.
-            setTutorialStep(isEnvioImpressaoCupom ? 31 : 0);
+            // Sem tela de boas-vindas: o treinamento abre direto na primeira
+            // etapa de instruções. Na Abertura de Caixa, é a tela de login
+            // com o pedido de autorização do gerente.
+            setTutorialStep(primeiraEtapa);
             setIsTrainingMode(true);
-            if (isAberturaDeCaixa) {
-              // Fluxo de Abertura de Caixa começa pela tela de login do PDV;
-              // o restante do fluxo (boas-vindas + demais passos) só é
-              // acionado quando o operador clica em Avançar nessa tela.
-              setShowAberturaLogin(true);
-              return;
-            }
-            // O áudio de boas-vindas toca sozinho quando a primeira tela
-            // (banner de boas-vindas) aparece — ver efeito ligado a
-            // isPrimeiraTelaTreinamento.
-            setTimeout(() => {
-              setShowTutorial(true);
-            }, 300);
+            if (isAberturaDeCaixa) setShowAberturaAutorizacao(true);
           }}>
             <div className="flex flex-col items-center gap-[24px]">
               <div className="w-[88px] h-[88px] bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
@@ -3855,15 +3767,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
             </TutorialTooltip>
           </div>
         )}
-
-        {/* Tutorial Box - Positioned at bottom of PDV */}
-        <div className={`absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20 transition-opacity duration-700 ease-in-out ${showTutorial || showAberturaLogin ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          <Inicio
-            onNext={() => { stopAudio(); setTutorialStep(proximaEtapaAposBoasVindas); setShowTutorial(false); }}
-            titulo={welcomeTitulo}
-            descricao={welcomeDescricao}
-          />
-        </div>
 
         {/* Caixa preta de encerramento (mesmo box do passo inicial de
             boas-vindas), reaproveitada na última tela do fluxo de Cliente
@@ -4206,7 +4109,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             (o passo 100 usa uma tooltip sobre a própria tela de bloqueio). */}
         {isTrocaDeMercadoria && tutorialStep === 90 && (
           <BannerEstorno titulo="Siga para o pagamento" tecla={<TeclaIlustracao letra="" rotulo="SUB TOTAL" />}>
-            A troca é feita durante uma nova venda. Com a nova mercadoria já registrada, pressione a tecla <span className="font-bold text-white">[Sub Total]</span> no teclado virtual para seguir para o pagamento.
+            A troca é feita durante uma nova venda. Com a nova mercadoria já registrada, pressione a tecla <span className="font-bold text-white">[F8] Sub Total</span> no teclado virtual para seguir para o pagamento.
           </BannerEstorno>
         )}
         {isTrocaDeMercadoria && tutorialStep === 91 && (
@@ -4261,7 +4164,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         )}
         {isEstorno && tutorialStep === 79 && (
           <BannerEstorno titulo="Selecione a forma de pagamento da venda" tecla={<TeclaIlustracao letra="Y" rotulo="VOUCHER" />}>
-            Escolha a forma de pagamento utilizada na venda original: <span className="font-bold text-white">[Voucher]</span> para PIX, <span className="font-bold text-white">[Débito]</span> ou <span className="font-bold text-white">[Crédito]</span>. Vamos começar pelo estorno de uma venda paga com PIX. Pressione <span className="font-bold text-white">[Voucher]</span> no teclado virtual.
+            Escolha a forma de pagamento utilizada na venda original: <span className="font-bold text-white">[Y] Voucher</span> para PIX, <span className="font-bold text-white">[N] Débito</span> ou <span className="font-bold text-white">[M] Crédito</span>. Vamos começar pelo estorno de uma venda paga com PIX. Pressione <span className="font-bold text-white">[Y] Voucher</span> no teclado virtual.
           </BannerEstorno>
         )}
         {isEstorno && tutorialStep === 83 && (
@@ -4271,7 +4174,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         )}
         {isEstorno && tutorialStep === 84 && (
           <BannerEstorno titulo="Estorno com cartão" tecla={<TeclaIlustracao letra="M" rotulo="CRÉDITO" />}>
-            O estorno para vendas realizadas no crédito ou no débito é bastante similar. Neste exemplo, vamos explorar a opção Crédito. Pressione <span className="font-bold text-white">[Crédito]</span> no teclado virtual.
+            O estorno para vendas realizadas no crédito ou no débito é bastante similar. Neste exemplo, vamos explorar a opção Crédito. Pressione <span className="font-bold text-white">[M] Crédito</span> no teclado virtual.
           </BannerEstorno>
         )}
         {isEstorno && tutorialStep === 89 && (
@@ -4479,7 +4382,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Iniciando o pagamento
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Pressione a tecla <span className="font-bold text-white">[SUB TOTAL]</span> no teclado virtual para visualizar as formas de pagamento disponíveis.
+                  Pressione a tecla <span className="font-bold text-white">[F8] Sub Total</span> no teclado virtual para visualizar as formas de pagamento disponíveis.
                 </p>
               </div>
             </div>
@@ -4504,16 +4407,16 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {pagamentoEtapaIndex === 0 && (
-                    <>As formas de pagamento disponíveis são exibidas. Para este exemplo, vamos começar recebendo um pagamento em dinheiro. Selecione a opção <span className="font-bold text-white">[Suprimento Dinheiro]</span> no teclado virtual.</>
+                    <>As formas de pagamento disponíveis são exibidas. Para este exemplo, vamos começar recebendo um pagamento em dinheiro. Selecione a opção <span className="font-bold text-white">[Espaço] Suprimento Dinheiro</span> no teclado virtual.</>
                   )}
                   {pagamentoEtapaIndex === 1 && (
-                    <>Agora vamos simular um pagamento via PIX. Pressione a tecla <span className="font-bold text-white">[Voucher]</span> no teclado virtual.</>
+                    <>Agora vamos simular um pagamento via PIX. Pressione a tecla <span className="font-bold text-white">[Y] Voucher</span> no teclado virtual.</>
                   )}
                   {pagamentoEtapaIndex === 2 && (
-                    <>Agora vamos simular um pagamento no cartão de Débito. Pressione a tecla <span className="font-bold text-white">[Débito]</span> no teclado virtual.</>
+                    <>Agora vamos simular um pagamento no cartão de Débito. Pressione a tecla <span className="font-bold text-white">[N] Débito</span> no teclado virtual.</>
                   )}
                   {pagamentoEtapaIndex === 3 && (
-                    <>Por fim, vamos simular um pagamento no cartão de Crédito. Pressione a tecla <span className="font-bold text-white">[Crédito]</span> no teclado virtual.</>
+                    <>Por fim, vamos simular um pagamento no cartão de Crédito. Pressione a tecla <span className="font-bold text-white">[M] Crédito</span> no teclado virtual.</>
                   )}
                 </p>
               </div>
@@ -4873,11 +4776,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
           )}
 
           {/* Navegação do tutorial - plataforma de treinamentos */}
-          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${escaneamentoDestino === null && (showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) && !(isEncantometro && tutorialStep === 135) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${escaneamentoDestino === null && (showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) && !(isEncantometro && tutorialStep === 135) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             data-tutorial-nav="anterior"
             onClick={() => {
+              // Na primeira etapa não há para onde voltar (o botão fica oculto).
+              if (isPrimeiraEtapa) return;
               if (showAberturaIdentificacao) { setShowAberturaIdentificacao(false); setShowEntradaOperadorSenha(true); setOperadorSenha(""); }
               else if (showAberturaAutorizacao) { setShowAberturaAutorizacao(false); setShowAberturaLogin(true); }
               else if (showEntradaOperadorSenha) { setShowEntradaOperadorSenha(false); setOperadorSenha(""); setShowEntradaOperadorMatricula(true); setOperadorMatricula(""); }
@@ -4885,12 +4790,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 setShowEntradaOperadorMatricula(false);
                 setOperadorMatricula("");
                 if (isEnvioImpressaoCupom) { setTutorialStep(31); }
-                else { setShowAberturaLogin(true); }
+                else { setShowAberturaAutorizacao(true); }
               }
-              else if (isAberturaDeCaixa && tutorialStep === 0) { stopAudio(); setShowTutorial(false); setShowAberturaLogin(true); }
               else if (tutorialStep === 2) {
                 if (isClienteCadastrado && demoSemIdentificar) { setTutorialStep(12); setDemoSemIdentificar(false); }
-                else if (pulaTelaLimiteCaixa) { setTutorialStep(0); setShowTutorial(true); setCpf(""); setDemoSemIdentificar(false); }
                 else setTutorialStep(1);
               }
               else if (tutorialStep === 3) { setTutorialStep(2); setShowKeyboard(false); }
@@ -4909,7 +4812,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
               else if (tutorialStep === 8) setTutorialStep(7);
               else if (tutorialStep === 9) setTutorialStep(8);
-              else if (isFormasDePagamento && tutorialStep === 21) { setTutorialStep(0); setShowTutorial(true); setPagamentoEtapaIndex(0); }
               else if (isFormasDePagamento && tutorialStep === 22) {
                 if (pagamentoEtapaIndex === 0) { setTutorialStep(21); }
                 else { setPagamentoEtapaIndex((i) => i - 1); setTutorialStep(26); }
@@ -4923,18 +4825,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isFormasDePagamento && tutorialStep === 29) { setTutorialStep(23); setValorPagamento(0); }
               else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(29); }
               else if (isEnvioImpressaoCupom && tutorialStep === 31) {
-                if (cupomEtapaIndex === 0) { setShowTutorial(true); }
-                else { setCupomEtapaIndex(0); setShowKeyboard(false); setTutorialStep(34); }
+                setCupomEtapaIndex(0); setShowKeyboard(false); setTutorialStep(34);
               }
               else if (isEnvioImpressaoCupom && tutorialStep === 34) {
                 setTutorialStep(31);
                 if (cupomEtapaIndex === 1) { setOperadorSenha(""); setShowEntradaOperadorSenha(true); }
               }
-              else if (isRegistroDeItensDePedidos && tutorialStep === 35) { setShowTutorial(true); }
               else if (isRegistroDeItensDePedidos && tutorialStep === 36) { setPedidoSelecionado(true); setCpf(""); setTutorialStep(35); }
               else if (isRegistroDeItensDePedidos && tutorialStep === 37) { setPedidoSelecionado(true); setTutorialStep(36); }
               else if (isRegistroDeItensDePedidos && tutorialStep === 145) { setTutorialStep(37); }
-              else if (isLocalizarPedidoDoDelivery && tutorialStep === 38) { setShowTutorial(true); }
               else if (isLocalizarPedidoDoDelivery && tutorialStep === 39) { setOvNumero(""); setShowKeyboard(false); setTutorialStep(38); }
               else if (isLocalizarPedidoDoDelivery && tutorialStep === 40) { setOvNumero(""); setCpf(""); setTutorialStep(39); }
               else if (isConvenio && tutorialStep === 41) { setTutorialStep(2); }
@@ -4949,7 +4848,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isConsultaDePreco && tutorialStep === 49) { setTutorialStep(2); }
               else if (isConsultaDePreco && tutorialStep === 50) { setTutorialStep(49); }
               else if (isConsultaDePreco && tutorialStep === 51) { setTutorialStep(50); }
-              else if (isCancelamentoParcial && tutorialStep === 52) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isCancelamentoParcial && tutorialStep === 53) { setShowKeyboard(false); setTutorialStep(52); }
               else if (isCancelamentoParcial && tutorialStep === 55) { setShowKeyboard(false); setTutorialStep(53); }
               else if (isCancelamentoParcial && tutorialStep === 56) { setTutorialStep(55); }
@@ -4959,18 +4857,15 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isCancelamentoParcial && tutorialStep === 60) { setShowKeyboard(false); setCancelamentoCodigo(""); setTutorialStep(59); }
               else if (isCancelamentoParcial && tutorialStep === 61) { setShowKeyboard(false); setMotivoCancelamentoIndex(0); setTutorialStep(60); }
               else if (isCancelamentoParcial && tutorialStep === 62) { setMotivoCancelamentoIndex(0); setTutorialStep(61); }
-              else if (isCancelamentoTotal && tutorialStep === 63) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isCancelamentoTotal && tutorialStep === 64) { setShowKeyboard(false); setTutorialStep(63); }
               else if (isCancelamentoTotal && tutorialStep === 66) { setShowKeyboard(false); setMotivoCancelamentoVendaIndex(0); setTutorialStep(64); }
               else if (isCancelamentoTotal && tutorialStep === 67) { setMotivoCancelamentoVendaIndex(0); setTutorialStep(66); }
-              else if (isDdg && tutorialStep === 68) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isDdg && tutorialStep === 69) { setShowKeyboard(false); setTutorialStep(68); }
               else if (isDdg && tutorialStep === 71) { setShowKeyboard(false); setDdgItemIndex(0); setTutorialStep(69); }
               else if (isDdg && tutorialStep === 72) { setShowKeyboard(false); setDdgMotivoIndex(0); setTutorialStep(71); }
               else if (isDdg && tutorialStep === 73) { setShowKeyboard(false); setTutorialStep(72); }
               else if (isDdg && tutorialStep === 74) { setShowKeyboard(false); setDdgValorCents(0); setTutorialStep(73); }
               else if (isDdg && tutorialStep === 75) { setDdgValorCents(0); setTutorialStep(74); }
-              else if (isEstorno && tutorialStep === 76) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isEstorno && tutorialStep === 78) { setShowKeyboard(false); setTutorialStep(76); }
               else if (isEstorno && tutorialStep === 79) { setShowKeyboard(false); setTutorialStep(78); }
               else if (isEstorno && (tutorialStep === 80 || tutorialStep === 85)) { setShowKeyboard(false); setEstornoValorCents(0); setTutorialStep(tutorialStep - 1); }
@@ -4978,31 +4873,25 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isEstorno && (tutorialStep === 83 || tutorialStep === 87)) { setEstornoId(""); setTutorialStep(tutorialStep === 83 ? 81 : 86); }
               else if (isEstorno && tutorialStep === 84) { setShowKeyboard(false); setTutorialStep(83); }
               else if (isEstorno && tutorialStep === 89) { setTutorialStep(87); }
-              else if (isTrocaDeMercadoria && tutorialStep === 90) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isTrocaDeMercadoria && tutorialStep === 91) { setShowKeyboard(false); setTutorialStep(90); }
               else if (isTrocaDeMercadoria && tutorialStep === 93) { setShowKeyboard(false); setTrocaValor(""); setTutorialStep(91); }
               else if (isTrocaDeMercadoria && tutorialStep >= 94 && tutorialStep <= 97) { setShowKeyboard(false); setTrocaValor(""); setTrocaItemIndex(0); setTutorialStep(tutorialStep - 1); }
               else if (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 100)) { setShowKeyboard(false); setTrocaItemIndex(tutorialStep === 98 ? 0 : 2); setTutorialStep(tutorialStep - 1); }
               else if (isTrocaDeMercadoria && tutorialStep === 99) { setShowKeyboard(false); setTutorialStep(98); }
               else if (isTrocaDeMercadoria && tutorialStep === 101) { setTutorialStep(100); }
-              else if (isReimpressaoDeComprovantes && tutorialStep === 102) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isReimpressaoDeComprovantes && tutorialStep === 104) { setShowKeyboard(false); setReimpressaoIndex(0); setTutorialStep(102); }
               else if (isReimpressaoDeComprovantes && tutorialStep === 105) { setShowKeyboard(false); setReimpressaoValor(""); setReimpressaoIndex(2); setTutorialStep(104); }
               else if (isReimpressaoDeComprovantes && tutorialStep === 106) { setShowKeyboard(false); setReimpressaoValor(""); setTutorialStep(105); }
               else if (isReimpressaoDeComprovantes && tutorialStep === 107) { setShowKeyboard(false); setReimpressaoIndex(0); setTutorialStep(106); }
               else if (isReimpressaoDeComprovantes && tutorialStep === 108) { setShowKeyboard(false); setReimpressaoValor(""); setReimpressaoIndex(1); setTutorialStep(107); }
               else if (isReimpressaoDeComprovantes && tutorialStep === 109) { setReimpressaoValor(""); setTutorialStep(108); }
-              else if (isDetalheDaVenda && tutorialStep === 110) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isDetalheDaVenda && tutorialStep === 112) { setShowKeyboard(false); setReimpressaoIndex(0); setTutorialStep(110); }
               else if (isDetalheDaVenda && tutorialStep === 113) { setShowKeyboard(false); setReimpressaoValor(""); setReimpressaoIndex(1); setTutorialStep(112); }
               else if (isDetalheDaVenda && tutorialStep === 114) { setReimpressaoValor(""); setTutorialStep(113); }
-              else if (isFechamentoDeCaixa && tutorialStep === 129) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isFechamentoDeCaixa && tutorialStep === 130) { setShowKeyboard(false); setTutorialStep(129); }
               else if (isFechamentoDeCaixa && tutorialStep === 133) { setShowKeyboard(false); setTutorialStep(130); }
               else if (isFechamentoDeCaixa && tutorialStep === 134) { setTutorialStep(133); }
-              else if (isSaidaDoOperador && tutorialStep === 125) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isEncantometro && tutorialStep === 136) { setTutorialStep(135); }
-              else if (isPbm && tutorialStep === 137) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (isPbm && tutorialStep === 138) { setShowKeyboard(false); setTutorialStep(137); }
               else if (isPbm && tutorialStep === 139) { setShowKeyboard(false); setCpf(""); setTutorialStep(138); }
               else if (isPbm && tutorialStep === 140) { setShowKeyboard(false); setCpf(""); setPbmAutorizacao(""); setTutorialStep(139); }
@@ -5011,12 +4900,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isPbm && tutorialStep === 143) { setSku(""); setTutorialStep(142); }
               else if (isSaidaDoOperador && tutorialStep === 126) { setShowKeyboard(false); setTutorialStep(125); }
               else if (isSaidaDoOperador && tutorialStep === 128) { setTutorialStep(126); }
-              else if (etapaLeituraX === 0) { setShowKeyboard(false); setTutorialStep(0); setShowTutorial(true); }
               else if (etapaLeituraX === 1) { setShowKeyboard(false); setTutorialStep(isLeituraOperador ? 115 : 119); }
               else if (etapaLeituraX === 4) { setTutorialStep(leituraXBase + 1); }
-              else { setTutorialStep(0); setShowTutorial(true); }
+              else { setTutorialStep(primeiraEtapa); }
             }}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaGerenteMatricula || showAberturaGerenteSenha) || (!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || (tutorialStep === 0 && !(isAberturaDeCaixa && showTutorial)) || (isEnvioImpressaoCupom && tutorialStep === 31 && showTutorial) || (isRegistroDeItensDePedidos && tutorialStep === 35 && showTutorial) || (isLocalizarPedidoDoDelivery && tutorialStep === 38 && showTutorial))) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white rounded-[8px] transition-all ${(showAberturaGerenteMatricula || showAberturaGerenteSenha) || isPrimeiraEtapa || (!showAberturaAutorizacao && !showAberturaIdentificacao && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (showAberturaLogin || tutorialStep === 0)) ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -5028,7 +4916,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <button
             data-tutorial-nav="proximo"
             onClick={handleProximo}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] rounded-[8px] transition-all ${rotuloProximo === "Concluir" ? "bg-[#2258e6] hover:bg-[#1a47b8] border border-[#2258e6] text-white" : "bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white"} ${((showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showTutorial || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && [83, 87, 89].includes(tutorialStep)) || (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 101)) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && (tutorialStep === 141 || tutorialStep === 143)))) && !(bannerConclusaoVisivel && rotuloProximo === "Concluir") ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] rounded-[8px] transition-all ${rotuloProximo === "Concluir" ? "bg-[#2258e6] hover:bg-[#1a47b8] border border-[#2258e6] text-white" : "bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white"} ${((showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && [83, 87, 89].includes(tutorialStep)) || (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 101)) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && (tutorialStep === 141 || tutorialStep === 143)))) && !(bannerConclusaoVisivel && rotuloProximo === "Concluir") ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
               {rotuloProximo}
@@ -5604,7 +5492,7 @@ function ContentBody({ conteudo, hasPDV, slug }: { conteudo: string; hasPDV?: bo
             </div>
             {hasPDV && (
               <div className="mt-[32px]">
-                <PDVSimulator slug={slug} />
+                <PDVSimulator key={slug} slug={slug} />
               </div>
             )}
           </div>

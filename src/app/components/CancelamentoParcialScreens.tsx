@@ -467,7 +467,7 @@ export function CancelamentoMotivoScreen({
   selectedIndex,
   item,
   tooltip,
-  trilha = "Cancelamento de Ítem",
+  trilha = "Cancelamento de Item",
   titulo = "Selecione o Motivo do Cancelamento",
   motivos = MOTIVOS_CANCELAMENTO,
 }: {

@@ -1,4 +1,4 @@
-import { BadgeDollarSign, Search, ScanBarcode, ReceiptText } from "lucide-react";
+import { BadgeDollarSign, Search, ScanBarcode, ReceiptText, Delete } from "lucide-react";
 import { PDVHeader } from "./ValorRetiradaScreen";
 import { TutorialTooltip } from "./TutorialTooltip";
 
@@ -84,7 +84,7 @@ export function ConsultaValorResultadoScreen() {
       <PDVHeader trilha={[]} />
       <div className="fade-in-delay absolute top-[11px] left-1/2 -translate-x-1/2 pointer-events-none z-[45]">
         <TutorialTooltip width={480}>
-          As informações sobre o produto escaneado são exibidas. Clique em <span className="font-bold">[Limpa]</span> para retornar aonde estava antes da consulta.
+          As informações sobre o produto escaneado são exibidas. Clique em <span className="font-bold">[<Delete aria-label="Backspace" className="inline-block size-[1.1em] align-[-0.2em]" strokeWidth={2.5} />] Limpa</span> para retornar aonde estava antes da consulta.
         </TutorialTooltip>
       </div>
       <div className="flex-1 flex flex-col items-center gap-[12px] p-[16px] overflow-y-auto">

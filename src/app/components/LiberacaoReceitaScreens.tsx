@@ -12,7 +12,7 @@ export function ReceitaScreen({ numero, numeroCompleto, semReceita = false }: { 
       icon={<img src={iconePillBottle} alt="" className="size-[32px]" />}
       titulo="Clonazepam 2mg · 30 comprimidos"
       tooltip={semReceita
-        ? <>O cliente não possui receita médica para apresentar. Portanto, o medicamento só poderá ser incluído na venda com a liberação da gerência. Clique em <span className="font-bold text-white">[Volta]</span> para prosseguir dessa forma.</>
+        ? <>O cliente não possui receita médica para apresentar. Portanto, o medicamento só poderá ser incluído na venda com a liberação da gerência. Clique em <span className="font-bold text-white">[Esc] Volta</span> para prosseguir dessa forma.</>
         : numeroCompleto
         ? <>O número da receita foi informado. Pressione <span className="font-bold text-white">[Entra]</span> para autenticar.</>
         : <>Digite o número da receita no teclado virtual. Neste exemplo, informe <span className="font-bold text-white">111222333</span>.</>}
