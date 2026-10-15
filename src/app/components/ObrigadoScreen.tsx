@@ -1,15 +1,13 @@
 import { User, ArrowLeft, Search, SquareDashed, ShoppingCart, FileSpreadsheet, Receipt, Check } from "lucide-react";
 import { PDVHeader } from "./ValorRetiradaScreen";
+import ItensDaVendaVazio from "./ItensDaVendaVazio";
 
 // Tela final do fluxo de Formas de Pagamento (node 1559:25489 do Figma):
 // reproduz o estado padrão/vazio do PDV (carrinho zerado, cliente ainda não
 // identificado) com a confirmação "Obrigado pela preferência" sobreposta no
 // painel direito — ilustrando o encerramento da venda, sem depender do
 // estado real do carrinho de exemplo usado no restante do tutorial.
-// novoEstadoVazio: "Itens da Venda" vazio no layout novo (node 9066:70611 do
-// Figma — ícone do carrinho + instrução), usado por enquanto só no fluxo de
-// Envio e Impressão de Cupom.
-export default function ObrigadoScreen({ novoEstadoVazio = false }: { novoEstadoVazio?: boolean }) {
+export default function ObrigadoScreen() {
   return (
     <div className="absolute inset-0 bg-white overflow-hidden rounded-[20px] flex flex-col">
       <PDVHeader trilha={[]} />
@@ -72,25 +70,7 @@ export default function ObrigadoScreen({ novoEstadoVazio = false }: { novoEstado
 
           <div className="h-px bg-[#bdbdbd]" />
 
-          {novoEstadoVazio ? (
-            <div className="bg-white flex-1 flex flex-col gap-[16px] items-center justify-center p-[20px]">
-              <ShoppingCart size={48} className="text-[#d1d5db]" strokeWidth={1.5} />
-              <div className="flex flex-col gap-[4px] items-center">
-                <p className="font-['Nunito_Sans',sans-serif] text-[#6b7280] text-[12.8px] leading-[1.2]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                  Nenhum produto adicionado
-                </p>
-                <p className="font-['Nunito_Sans',sans-serif] text-[#9ca3af] text-[12.8px] leading-[1.2]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                  Escaneie ou digite o código de um produto
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white flex-1 flex items-center justify-center">
-              <p className="font-['Nunito_Sans',sans-serif] text-[#404040] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                Nenhum produto adicionado
-              </p>
-            </div>
-          )}
+          <ItensDaVendaVazio />
         </div>
 
         <div className="w-px bg-[#bdbdbd]" />

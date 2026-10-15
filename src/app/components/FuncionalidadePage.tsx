@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { CheckCircle2, Check, ArrowRight, Mail, Printer, FileBadge2, Coins, UserMinus, CirclePower, UserRound } from "lucide-react";
+import { FileBadge2, Coins, UserMinus, CirclePower, UserRound } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
@@ -25,6 +25,8 @@ import PagamentoValorScreen, { type MetodoPagamento } from "./PagamentoValorScre
 import GavetaTrocoScreen from "./GavetaTrocoScreen";
 import ObrigadoScreen from "./ObrigadoScreen";
 import ImprimirCupomModal from "./ImprimirCupomModal";
+import PagamentoRealizadoCard from "./PagamentoRealizadoCard";
+import ItensDaVendaVazio from "./ItensDaVendaVazio";
 import PixAguardandoScreen from "./PixAguardandoScreen";
 import MaquininhaAguardandoScreen from "./MaquininhaAguardandoScreen";
 import CreditoCategoriasScreen, { CATEGORIAS_PROMOCIONAIS } from "./CreditoCategoriasScreen";
@@ -194,7 +196,7 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   },
   "encantometro": {
     titulo: "Encantômetro",
-    conteudo: "Após a venda, o cliente pode avaliar sua experiência de atendimento no Encantômetro, atribuindo uma nota de 1 a 5 estrelas. O operador deve apenas orientá-lo sobre a possibilidade de realizar a avaliação, caso queira. Quando a nota indicar insatisfação, o cliente poderá selecionar uma das opções disponíveis para informar o motivo.",
+    conteudo: "Antes ou durante a venda, o cliente pode avaliar sua experiência de atendimento no Encantômetro, atribuindo uma nota de 1 a 5 estrelas. O operador deve apenas orientá-lo sobre a possibilidade de realizar a avaliação, caso queira. Quando a nota indicar insatisfação, o cliente poderá selecionar uma das opções disponíveis para informar o motivo.",
     hasPDV: true
   },
   "fechamento-de-caixa": {
@@ -2402,11 +2404,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </div>
               </div>
             ) : items.length === 0 ? (
-              <div className="flex items-center justify-center h-full p-[20px]">
-                <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  Nenhum produto adicionado
-                </p>
-              </div>
+              <ItensDaVendaVazio />
             ) : (
               <div className="p-[20px]">
                 <div className="space-y-[12px]">
@@ -2592,161 +2590,44 @@ function PDVSimulator({ slug }: { slug?: string }) {
               ))}
             </div>
           ) : isEnvioImpressaoCupom && (tutorialStep === 31 || tutorialStep === 32) ? (
-            /* Pagamento realizado - layout novo (nodes 9060:69378 e
-               9060:69488 do Figma), tela inicial do fluxo de Envio e
+            /* Pagamento realizado - tela inicial do fluxo de Envio e
                Impressão de Cupom (passo 31, e fundo do modal do passo 32).
-               Com o cliente identificado: [1] Imprimir cupom / [2] Enviar
-               por e-mail; sem identificação: [1] Imprimir cupom / [2] Seguir
-               sem imprimir. Os botões são ilustrativos — o avanço acontece
-               pelas teclas do teclado virtual. */
-            <div className="flex-1 flex flex-col items-center justify-center p-[16px]">
-              <div className="border border-[#f2f2f2] rounded-[8px] w-[449px] h-[363px] flex flex-col gap-[36px] items-center justify-center">
-                <div className="flex flex-col gap-[12px] items-center">
-                  {/* Tooltip ancorada acima do ícone, para não cobrir o título nem os botões. */}
-                  <div className="relative">
-                    {tutorialStep === 31 && isTrainingMode && (
-                    <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
-                      <TutorialTooltip width={460}>
-                        {cupomEtapaIndex === 0 ? (
-                          <p>
-                            Com o pagamento realizado, escolha como o cliente vai receber o cupom fiscal. Neste exemplo, pressione <span className="font-bold">[1]</span> no teclado virtual para imprimir o cupom.
-                          </p>
-                        ) : cupomEtapaIndex === 1 ? (
-                          <p>
-                            Com o cliente identificado, o cupom também pode ser enviado para o e-mail cadastrado. Pressione <span className="font-bold">[2]</span> no teclado virtual para enviar o cupom por e-mail.
-                          </p>
-                        ) : (
-                          <p>
-                            Nesta venda o cliente não foi identificado, então não há e-mail para envio. Neste caso, o cliente pode seguir sem impressão. Pressione <span className="font-bold">[2]</span> no teclado virtual.
-                          </p>
-                        )}
-                      </TutorialTooltip>
-                    </div>
-                    )}
-                    <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
-                      <Check size={32} className="text-[#00ae8e]" strokeWidth={2} />
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-[6px] items-center text-center">
-                    <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#1a1a1a] text-[20px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                      Pagamento realizado
-                    </p>
-                    <p className="font-['Nunito_Sans',sans-serif] text-[#747474] text-[16px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                      A transação foi realizada com sucesso
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-[12px] w-[407px]">
-                  <div className="bg-[#2258e6] border-2 border-[#2258e6] flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
-                    <div className="flex gap-[8px] items-center">
-                      <Printer size={24} className="text-[#fafafa]" />
-                      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] leading-[1.2] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        Imprimir cupom
-                      </p>
-                    </div>
-                    <div className="bg-[rgba(255,255,255,0.2)] px-[8px] py-[4px] rounded-[4px]">
-                      <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2] text-[#fafafa]">1</p>
-                    </div>
-                  </div>
-                  <div className="bg-white border-2 border-[#2258e6] flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
-                    <div className="flex gap-[8px] items-center">
-                      {cupomEtapaIndex === 2 ? <ArrowRight size={24} className="text-[#2258e6]" /> : <Mail size={24} className="text-[#2258e6]" />}
-                      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] leading-[1.2] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                        {cupomEtapaIndex === 2 ? "Seguir sem imprimir" : "Enviar por e-mail"}
-                      </p>
-                    </div>
-                    <div className="bg-[rgba(34,88,230,0.2)] px-[8px] py-[4px] rounded-[4px]">
-                      <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2] text-[#2258e6]">2</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+               Na 3ª situação (venda sem identificação), a opção [2] é
+               "Seguir sem imprimir". */
+            <PagamentoRealizadoCard
+              opcaoSecundaria={cupomEtapaIndex === 2 ? "semImprimir" : "email"}
+              tooltip={tutorialStep === 31 && isTrainingMode ? (
+                cupomEtapaIndex === 0 ? (
+                  <p>
+                    Com o pagamento realizado, escolha como o cliente vai receber o cupom fiscal. Neste exemplo, pressione <span className="font-bold">[1]</span> no teclado virtual para imprimir o cupom.
+                  </p>
+                ) : cupomEtapaIndex === 1 ? (
+                  <p>
+                    Com o cliente identificado, o cupom também pode ser enviado para o e-mail cadastrado. Pressione <span className="font-bold">[2]</span> no teclado virtual para enviar o cupom por e-mail.
+                  </p>
+                ) : (
+                  <p>
+                    Nesta venda o cliente não foi identificado, então não há e-mail para envio. Neste caso, o cliente pode seguir sem impressão. Pressione <span className="font-bold">[2]</span> no teclado virtual.
+                  </p>
+                )
+              ) : undefined}
+            />
           ) : isFormasDePagamento && tutorialStep === 25 ? (
             /* Pagamento realizado - passo 25 do fluxo de Formas de
-               Pagamento (node 1559:24598 do Figma). Substitui o botão
-               "Totalizar Venda" com a confirmação de sucesso e as ações de
-               comprovante — meramente ilustrativas neste tutorial, já que o
-               avanço real acontece ao pressionar [1] no teclado virtual. */
-            <div className="flex flex-col items-center justify-center gap-[36px] p-[16px]">
-              <div className="flex flex-col gap-[12px] items-center">
-                <div className="relative">
-                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
-                    <TutorialTooltip width={460}>
-                      As opções de emissão de comprovante são exibidas. Neste exemplo, pressione <span className="font-bold">[1]</span> para enviar para o e-mail do cliente.
-                    </TutorialTooltip>
-                  </div>
-                  <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
-                    <CheckCircle2 size={32} className="text-[#00ae8e]" strokeWidth={1.8} />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-[6px] items-center text-center">
-                  <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#1a1a1a] text-[20px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                    Pagamento realizado
-                  </p>
-                  <p className="font-['Nunito_Sans',sans-serif] text-[#747474] text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                    A transação foi realizada com sucesso
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-[12px] items-start w-full">
-                <div className="bg-[#2258e6] flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
-                  <div className="flex gap-[8px] items-center">
-                    <Mail size={24} className="text-white" />
-                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                      Enviar por e-mail
-                    </p>
-                  </div>
-                  <div className="bg-[rgba(255,255,255,0.2)] px-[8px] py-[4px] rounded-[4px]">
-                    <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-white">1</p>
-                  </div>
-                </div>
-                <div className="bg-white flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
-                  <div className="flex gap-[8px] items-center">
-                    <Printer size={24} className="text-[#2258e6]" />
-                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                      Imprimir
-                    </p>
-                  </div>
-                  <div className="bg-[#d3defa] px-[8px] py-[4px] rounded-[4px]">
-                    <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#2258e6]">2</p>
-                  </div>
-                </div>
-                <div className="bg-white flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
-                  <div className="flex gap-[8px] items-center">
-                    <Mail size={24} className="text-[#2258e6]" />
-                    <Printer size={24} className="text-[#2258e6]" />
-                    <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                      Enviar por e-mail e imprimir
-                    </p>
-                  </div>
-                  <div className="bg-[#d3defa] px-[8px] py-[4px] rounded-[4px]">
-                    <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#2258e6]">3</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+               Pagamento, ao fim de cada forma de pagamento. O avanço
+               acontece ao pressionar [2] (Enviar por e-mail). */
+            <PagamentoRealizadoCard
+              tooltip={
+                <>As opções de emissão de comprovante são exibidas. Neste exemplo, pressione <span className="font-bold">[2]</span> para enviar para o e-mail do cliente.</>
+              }
+            />
           ) : isLocalizarPedidoDoDelivery && tutorialStep === 40 ? (
             /* Pagamento realizado - passo 40 do fluxo de Localizar Pedido do
-               Delivery (node 3978:57290 do Figma). O pedido do delivery já
-               chega pago (via Débito, feito no momento da compra online),
-               então, diferente dos outros fluxos, não há opções de
-               comprovante aqui — a venda já está concluída. */
-            <div className="flex flex-col items-center justify-center gap-[36px] p-[16px]">
-              <div className="flex flex-col gap-[12px] items-center">
-                <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
-                  <CheckCircle2 size={32} className="text-[#00ae8e]" strokeWidth={1.8} />
-                </div>
-                <div className="flex flex-col gap-[6px] items-center text-center">
-                  <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#1a1a1a] text-[20px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                    Pagamento realizado
-                  </p>
-                  <p className="font-['Nunito_Sans',sans-serif] text-[#747474] text-[16px]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                    A transação foi realizada com sucesso
-                  </p>
-                </div>
-              </div>
-            </div>
+               Delivery. O pedido do delivery já chega pago (via Débito,
+               feito no momento da compra online), então, diferente dos
+               outros fluxos, não há opções de comprovante aqui — a venda
+               já está concluída. */
+            <PagamentoRealizadoCard semBotoes />
           ) : (
             <div className="flex flex-col items-center justify-center py-[15px]">
               <button className="bg-[#2258e6] flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[53px] rounded-[8px] w-[460px] hover:bg-[#1a47b8] transition-colors">
@@ -2873,7 +2754,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       )}
       {isEnvioImpressaoCupom && tutorialStep === 34 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <ObrigadoScreen novoEstadoVazio />
+          <ObrigadoScreen />
         </div>
       )}
       {isRegistroDeItensDePedidos && tutorialStep === 36 && (
@@ -4844,7 +4725,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Aguardando o pagamento
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  O cliente escaneia o QR Code e realiza o pagamento no seu app bancário. Após o processamento do pagamento, o sistema avança automaticamente.
+                  O cliente escaneia o QR Code no pinpad e realiza o pagamento no seu app bancário. Após o processamento do pagamento, o sistema avança automaticamente.
                 </p>
               </div>
             </div>
@@ -5371,20 +5252,20 @@ function PDVSimulator({ slug }: { slug?: string }) {
             }
             else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(28); setShowKeyboard(false); }
           } : undefined}
-          highlightKey1={(isPbm && tutorialStep === 138) || proximoDigitoPbm === "1" || (tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1" || proximoDigitoOv === "1" || proximoDigitoConvenio === "1" || proximoDigitoConvenioCpf === "1" || proximoDigitoReceita === "1" || (isFormasDePagamento && tutorialStep === 25) || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0) || proximoDigitoEstorno === "1" || (isEstorno && tutorialStep === 78) || proximoDigitoTroca === "1" || proximoDigitoReimpressao === "1" || (isLeituraOperador && etapaLeituraX === 1)}
+          highlightKey1={(isPbm && tutorialStep === 138) || proximoDigitoPbm === "1" || (tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1" || proximoDigitoOv === "1" || proximoDigitoConvenio === "1" || proximoDigitoConvenioCpf === "1" || proximoDigitoReceita === "1" || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0) || proximoDigitoEstorno === "1" || (isEstorno && tutorialStep === 78) || proximoDigitoTroca === "1" || proximoDigitoReimpressao === "1" || (isLeituraOperador && etapaLeituraX === 1)}
           onKey1Press={
             tutorialStep === 5 && !isSuprimentoAdicional
               ? () => { setTutorialStep(6); setShowKeyboard(false); }
-              : isFormasDePagamento && tutorialStep === 25
-              ? () => setTutorialStep(26)
               : isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0
               ? () => { setShowKeyboard(false); setTutorialStep(32); }
               : undefined
           }
-          highlightKey2={proximoDigitoPbm === "2" || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2" || proximoDigitoPagamento === "2" || proximoDigitoOv === "2" || proximoDigitoConvenio === "2" || proximoDigitoConvenioCpf === "2" || proximoDigitoReceita === "2" || (isConvenio && tutorialStep === 41) || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex !== 0) || proximoDigitoEstorno === "2" || proximoDigitoTroca === "2" || proximoDigitoReimpressao === "2" || (isLeituraX && !isLeituraOperador && etapaLeituraX === 1)}
+          highlightKey2={proximoDigitoPbm === "2" || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2" || proximoDigitoPagamento === "2" || proximoDigitoOv === "2" || proximoDigitoConvenio === "2" || proximoDigitoConvenioCpf === "2" || proximoDigitoReceita === "2" || (isConvenio && tutorialStep === 41) || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex !== 0) || (isFormasDePagamento && tutorialStep === 25) || proximoDigitoEstorno === "2" || proximoDigitoTroca === "2" || proximoDigitoReimpressao === "2" || (isLeituraX && !isLeituraOperador && etapaLeituraX === 1)}
           onKey2Press={
             isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex !== 0
               ? () => { setShowKeyboard(false); setTutorialStep(34); }
+              : isFormasDePagamento && tutorialStep === 25
+              ? () => setTutorialStep(26)
               : undefined
           }
           highlightKey0={proximoDigitoPbm === "0" || (tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0" || proximoDigitoPagamento === "0" || proximoDigitoOv === "0" || proximoDigitoConvenio === "0" || proximoDigitoConvenioCpf === "0" || proximoDigitoCancelamento === "0" || proximoDigitoDdg === "0" || proximoDigitoEstorno === "0" || proximoDigitoTroca === "0" || proximoDigitoReimpressao === "0"}
