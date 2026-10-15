@@ -253,7 +253,7 @@ function SenhaScreen({ dotCount, entraState, trilha }: { dotCount: number; entra
 
 // ── Screen 3: Seleção ─────────────────────────────────────────────────────────
 
-function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean }) {
+function SelectionScreen() {
   return (
     <div className="relative h-full w-full flex flex-col">
       <PDVHeader />
@@ -272,13 +272,11 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
           {/* Realizar Sangria */}
           <div className="relative">
             {/* Tooltip */}
-            {!isSuprimentoAdicional && (
-              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none">
-                <TutorialTooltip fitContent>
-                  Para realizar a <span className="font-bold">Sangria de Caixa</span>, pressione a tecla <span className="font-bold">[1]</span> no teclado do PDV.
-                </TutorialTooltip>
-              </div>
-            )}
+            <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none">
+              <TutorialTooltip fitContent>
+                Para realizar a <span className="font-bold">Sangria de Caixa</span>, pressione a tecla <span className="font-bold">[1]</span> no teclado do PDV.
+              </TutorialTooltip>
+            </div>
             <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
               <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
               <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
@@ -305,14 +303,6 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
           </div>
           {/* Consultar Suprimento */}
           <div className="relative">
-            {/* Tooltip */}
-            {isSuprimentoAdicional && (
-              <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none">
-                <TutorialTooltip fitContent>
-                  Para realizar o <span className="font-bold">{isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}</span>, pressione a tecla <span className="font-bold">[2]</span> no teclado do PDV.
-                </TutorialTooltip>
-              </div>
-            )}
             <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
               <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
               <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
@@ -348,7 +338,7 @@ function SelectionScreen({ isSuprimentoAdicional, isSuprimentoInicial }: { isSup
 // onAuthComplete: usado por fluxos que só precisam da autorização do
 // gerente (ex.: Cancelamento Parcial) — encerra a animação logo após a
 // senha, sem exibir a tela de seleção de Sangria/Suprimento.
-export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, isSuprimentoInicial, onAuthComplete, trilha }: { onReachSelection?: () => void; isSuprimentoAdicional?: boolean; isSuprimentoInicial?: boolean; onAuthComplete?: () => void; trilha?: string }) {
+export default function SangriaFlow({ onReachSelection, onAuthComplete, trilha }: { onReachSelection?: () => void; onAuthComplete?: () => void; trilha?: string }) {
   const [screen, setScreen] = useState<Screen>(1);
   const [opacity, setOpacity] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -444,7 +434,7 @@ export default function SangriaFlow({ onReachSelection, isSuprimentoAdicional, i
       <div className="size-full transition-opacity duration-300" style={{ opacity }}>
         {screen === 1 && <MatriculaScreen typedText={typedText} entraState={entraState} trilha={trilha} />}
         {screen === 2 && <SenhaScreen dotCount={dotCount} entraState={entraState} trilha={trilha} />}
-        {screen === 3 && <SelectionScreen isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} />}
+        {screen === 3 && <SelectionScreen />}
       </div>
     </div>
   );

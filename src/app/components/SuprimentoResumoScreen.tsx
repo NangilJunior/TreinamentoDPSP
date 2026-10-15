@@ -116,15 +116,7 @@ function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
-          <div className="h-[10px] relative shrink-0 w-[7px]">
-            <div className="absolute inset-[-5%_-7.14%]">
-              <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
-                <path d={svgH5.p37db7a18} stroke="#A5A5A5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SUPRIMENTO COMPLEMENTAR</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Suprimento de Caixa</p>
         </div>
       </div>
     </>
@@ -149,7 +141,7 @@ export default function SuprimentoResumoScreen({ selectedIndex = 0 }: { selected
               </svg>
             </div>
             <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#7e7e7e] text-[25.008px] whitespace-nowrap" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-              Suprimento Complementar
+              Suprimento de Caixa
             </p>
           </div>
 

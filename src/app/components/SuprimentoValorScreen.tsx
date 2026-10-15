@@ -21,7 +21,7 @@ const archiveIconPaths = [
   "M12.75 9C13.1642 9 13.5 9.33579 13.5 9.75C13.5 10.1642 13.1642 10.5 12.75 10.5H8.75C8.33579 10.5 8 10.1642 8 9.75C8 9.33579 8.33579 9 8.75 9H12.75Z",
 ];
 
-export function PDVHeader() {
+export function PDVHeader({ isSuprimentoInicial = false }: { isSuprimentoInicial?: boolean }) {
   return (
     <>
       <div className="bg-white flex items-center justify-between px-[20px] py-[20px] shrink-0 w-full">
@@ -121,7 +121,7 @@ export function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Sangria / Suprimento</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] uppercase whitespace-nowrap">Suprimento de Caixa</p>
           <div className="h-[10px] relative shrink-0 w-[7px]">
             <div className="absolute inset-[-5%_-7.14%]">
               <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
@@ -129,7 +129,7 @@ export function PDVHeader() {
               </svg>
             </div>
           </div>
-          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">SUPRIMENTO COMPLEMENTAR</p>
+          <p className="font-['Geist',sans-serif] font-medium text-[#4d4d4d] text-[14px] tracking-[3px] whitespace-nowrap">{isSuprimentoInicial ? "SUPRIMENTO INICIAL" : "SUPRIMENTO COMPLEMENTAR"}</p>
           <div className="h-[10px] relative shrink-0 w-[7px]">
             <div className="absolute inset-[-5%_-7.14%]">
               <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 8.00004 11.0001">
@@ -150,7 +150,7 @@ export default function SuprimentoValorScreen({ valorCents, gavetaAberta = false
 
   return (
     <div className="absolute inset-0 bg-white overflow-hidden rounded-[20px] flex flex-col">
-      <PDVHeader />
+      <PDVHeader isSuprimentoInicial={isSuprimentoInicial} />
 
       {/* Main content */}
       <div className="bg-white flex-1 relative overflow-hidden">

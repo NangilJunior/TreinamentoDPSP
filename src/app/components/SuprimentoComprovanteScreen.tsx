@@ -7,6 +7,8 @@ interface SuprimentoComprovanteScreenProps {
   valorCents?: number;
   /** Saldo do caixa antes do suprimento, em centavos. */
   saldoAnteriorCents?: number;
+  /** Breadcrumb do Suprimento Inicial (padrão: Suprimento Complementar). */
+  isSuprimentoInicial?: boolean;
 }
 
 function AuditRow({
@@ -36,12 +38,13 @@ function AuditRow({
 export default function SuprimentoComprovanteScreen({
   valorCents = 20000,
   saldoAnteriorCents = 50,
+  isSuprimentoInicial = false,
 }: SuprimentoComprovanteScreenProps) {
   const caixaCents = saldoAnteriorCents + valorCents;
 
   return (
     <div className="absolute inset-0 bg-white overflow-hidden rounded-[20px] flex flex-col">
-      <PDVHeader />
+      <PDVHeader isSuprimentoInicial={isSuprimentoInicial} />
 
       {/* Main content */}
       <div className="bg-white flex-1 flex flex-col gap-[32px] items-center p-[20px] overflow-hidden">

@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router";
-import { CheckCircle2, Mail, Printer, FileBadge2, Coins, UserMinus, CirclePower, UserRound } from "lucide-react";
+import { CheckCircle2, Check, ArrowRight, Mail, Printer, FileBadge2, Coins, UserMinus, CirclePower, UserRound } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
@@ -24,6 +24,7 @@ import EntradaOperadorScreen from "./EntradaOperadorScreen";
 import PagamentoValorScreen, { type MetodoPagamento } from "./PagamentoValorScreen";
 import GavetaTrocoScreen from "./GavetaTrocoScreen";
 import ObrigadoScreen from "./ObrigadoScreen";
+import ImprimirCupomModal from "./ImprimirCupomModal";
 import PixAguardandoScreen from "./PixAguardandoScreen";
 import MaquininhaAguardandoScreen from "./MaquininhaAguardandoScreen";
 import CreditoCategoriasScreen, { CATEGORIAS_PROMOCIONAIS } from "./CreditoCategoriasScreen";
@@ -108,7 +109,7 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   },
   "envio-e-impressao-de-cupom": {
     titulo: "Envio e Impressão de Cupom",
-    conteudo: "Após a finalização da venda, o operador pode escolher como o cliente deseja receber o cupom fiscal. É possível enviá-lo para o e-mail cadastrado do cliente, imprimir uma cópia na hora ou selecionar as duas opções. O envio por e-mail utiliza o endereço já registrado no cadastro do cliente.",
+    conteudo: "Após a finalização da venda, o operador pode escolher como o cliente deseja receber o cupom fiscal. Com o cliente identificado, é possível imprimir o cupom na hora ou enviá-lo para o e-mail já registrado no cadastro. Quando a venda é feita sem identificação, a única opção de emissão é a impressão.",
     hasPDV: true
   },
   "registro-de-itens-de-pedidos": {
@@ -565,10 +566,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const [valorPagamento, setValorPagamento] = useState(0);
   const [categoriaPromocionalIndex, setCategoriaPromocionalIndex] = useState(0);
   const [parcelaIndex, setParcelaIndex] = useState(0);
-  // Fluxo de Envio e Impressão de Cupom: 0 = demonstração do envio por
-  // e-mail, 1 = demonstração da impressão do cupom (com matrícula/senha do
-  // operador) — as duas opções guiadas pelo tutorial, na tela de escolha do
-  // comprovante (passo 31).
+  // Fluxo de Envio e Impressão de Cupom: 0 = impressão do cupom (cliente
+  // identificado), 1 = envio por e-mail (cliente identificado), 2 = venda
+  // sem identificação, seguindo sem imprimir — as três situações guiadas
+  // pelo tutorial a partir da tela de escolha do comprovante (passo 31). Só
+  // a impressão passa pelo modal de confirmação (passo 32).
   const [cupomEtapaIndex, setCupomEtapaIndex] = useState(0);
   // Fluxo de Registro de Itens de Pedidos: indica se o Pedido #4521 já foi
   // marcado na tela "Selecione o Pedido" (passo 36), habilitando o [Entra]
@@ -1271,16 +1273,24 @@ function PDVSimulator({ slug }: { slug?: string }) {
       return;
     }
     // Escolha do comprovante (passo 31 do fluxo de Envio e Impressão de
-    // Cupom): só a tecla da demonstração atual avança — [1] envia por e-mail
-    // e vai direto para "Obrigado"; [2] exige a matrícula/senha do operador
-    // antes de imprimir.
-    if (isEnvioImpressaoCupom && tutorialStep === 31 && !showEntradaOperadorMatricula && !showEntradaOperadorSenha) {
+    // Cupom): só a tecla da demonstração atual avança — [1] Imprimir cupom
+    // abre o modal de confirmação (passo 32); [2] Enviar por e-mail / Seguir
+    // sem imprimir vai direto para "Obrigado" (passo 34).
+    if (isEnvioImpressaoCupom && tutorialStep === 31) {
       if (key === "1" && cupomEtapaIndex === 0) {
         setShowKeyboard(false);
-        setTutorialStep(34);
-      } else if (key === "2" && cupomEtapaIndex === 1) {
+        setTutorialStep(32);
+      } else if (key === "2" && cupomEtapaIndex !== 0) {
         setShowKeyboard(false);
-        setShowEntradaOperadorMatricula(true);
+        setTutorialStep(34);
+      }
+      return;
+    }
+    // Modal "Imprimir cupom fiscal" (passo 32): [Entra] confirma a impressão.
+    if (isEnvioImpressaoCupom && tutorialStep === 32) {
+      if (key === "ENTRA" || key === "Enter") {
+        setShowKeyboard(false);
+        setTutorialStep(34);
       }
       return;
     }
@@ -1307,8 +1317,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           setShowKeyboard(false);
           setShowEntradaOperadorSenha(false);
           setOperadorSenha("");
-          if (isEnvioImpressaoCupom) { setTutorialStep(34); }
-          else { setShowAberturaIdentificacao(true); }
+          setShowAberturaIdentificacao(true);
         }
       } else if (key === "LIMPA") {
         setOperadorSenha("");
@@ -1696,7 +1705,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const mostrarCardDipirona =
     (isRegistroDeProdutos && tutorialStep >= 15 && tutorialStep <= 20) ||
     (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)) ||
-    (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31)) ||
+    (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31 || tutorialStep === 32)) ||
     (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) ||
     (isLocalizarPedidoDoDelivery && tutorialStep === 40) ||
     (isConvenio && tutorialStep === 46) ||
@@ -1704,7 +1713,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     (isConsultaDePreco && (tutorialStep === 0 || tutorialStep === 2 || tutorialStep === 51)) ||
     (isPbm && tutorialStep === 143);
   const quantidadeCardsDipirona =
-    (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)) || (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31))
+    (isFormasDePagamento && (tutorialStep === 0 || tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 25)) || (isEnvioImpressaoCupom && (tutorialStep === 0 || tutorialStep === 31 || tutorialStep === 32))
       ? 3
       : isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145) ? 3
       : isLocalizarPedidoDoDelivery && tutorialStep === 40 ? 1
@@ -1841,7 +1850,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Rótulo do botão de avançar do tutorial: "Concluir" na última tela de
   // cada fluxo (destacado em azul), "Avançar" nas telas de demonstração do
   // Registro de Produtos e "Próximo" nas demais.
-  const rotuloProximo = tutorialStep === 9 || showAberturaIdentificacao || (isClienteCadastrado && tutorialStep === 14) || (isRegistroDeProdutos && tutorialStep === 20) || (isRegistroDeItensDePedidos && tutorialStep === 145) ? "Concluir" : isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 1) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && tutorialStep === 89) || (isTrocaDeMercadoria && tutorialStep === 101) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || (etapaLeituraX === 4 && !isLeituraOperador) || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && tutorialStep === 143) ? "Concluir" : "Próximo";
+  const rotuloProximo = tutorialStep === 9 || showAberturaIdentificacao || (isClienteCadastrado && tutorialStep === 14) || (isRegistroDeProdutos && tutorialStep === 20) || (isRegistroDeItensDePedidos && tutorialStep === 145) ? "Concluir" : isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17) ? "Avançar" : (isFormasDePagamento && tutorialStep === 26 && pagamentoEtapaIndex === 3) || (isEnvioImpressaoCupom && tutorialStep === 34 && cupomEtapaIndex === 2) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && tutorialStep === 46) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && tutorialStep === 62) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && tutorialStep === 89) || (isTrocaDeMercadoria && tutorialStep === 101) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || (etapaLeituraX === 4 && !isLeituraOperador) || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && tutorialStep === 143) ? "Concluir" : "Próximo";
   const handleProximo = () => {
               // O áudio de boas-vindas só deve tocar enquanto a tela à qual
               // ele pertence estiver visível — ao avançar, ele é cortado,
@@ -1882,7 +1891,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isFormasDePagamento && tutorialStep === 27) { setTutorialStep(25); }
               else if (isFormasDePagamento && tutorialStep === 28) { setTutorialStep(25); }
               else if (isEnvioImpressaoCupom && tutorialStep === 34) {
-                if (cupomEtapaIndex === 0) { setCupomEtapaIndex(1); setTutorialStep(31); }
+                if (cupomEtapaIndex < 2) { setCupomEtapaIndex(cupomEtapaIndex + 1); setTutorialStep(31); }
                 else { setTutorialStep(10); }
               }
               else if (isLocalizarPedidoDoDelivery && tutorialStep === 40) { setTutorialStep(10); }
@@ -2082,7 +2091,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || isEnvioImpressaoCupom || (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 46 || tutorialStep === 144)) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || (isPbm && tutorialStep >= 142) ? (
+            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || (isEnvioImpressaoCupom && cupomEtapaIndex !== 2) || (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 46 || tutorialStep === 144)) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || (isPbm && tutorialStep >= 142) ? (
               /* Cliente já identificado após o CPF informado na etapa anterior
                  (também usado como tela de fundo dos fluxos de Registro de
                  Produtos, Formas de Pagamento, Liberação de Medicamento
@@ -2117,8 +2126,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   )}
                 </div>
               </div>
-            ) : isClienteCadastrado && tutorialStep === 14 ? (
-              /* Venda seguiu sem identificar o cliente (exemplo a partir da revisita ao passo 2) */
+            ) : (isClienteCadastrado && tutorialStep === 14) || (isEnvioImpressaoCupom && cupomEtapaIndex === 2) ? (
+              /* Venda seguiu sem identificar o cliente (exemplo a partir da
+                 revisita ao passo 2; também a 3ª situação do fluxo de Envio
+                 e Impressão de Cupom) */
               <div className="flex items-stretch w-full isolate">
                 <div className="bg-[#9d9d9d] w-[8px] rounded-l-[4px] shrink-0" />
                 <div className="bg-white border border-[#dadada] flex-1 flex items-center gap-[24px] px-[24px] py-[15px] rounded-r-[4px]">
@@ -2257,7 +2268,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 onChange={(e) => setSku(e.target.value)}
                 onKeyDown={handleAddProduct}
                 onFocus={() => setActiveInput("sku")}
-                placeholder="SKU do produto - Escaneie o código do produto ou digite"
+                placeholder={isEnvioImpressaoCupom && (tutorialStep === 31 || tutorialStep === 32) ? "Aguardando pagamento..." : "SKU do produto - Escaneie o código do produto ou digite"}
                 className={`w-full bg-white h-[56px] rounded-[8px] px-[16px] border font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none ${
                   sku.length > 0
                     ? "border-[#2258e6] shadow-[0px_0px_0px_3px_#d4d4d4]"
@@ -2495,6 +2506,20 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </>
             )}
 
+            {isEnvioImpressaoCupom && (tutorialStep === 31 || tutorialStep === 32) && (
+              <>
+                <div className="h-px bg-[#bdbdbd]" />
+                <div className="flex justify-between">
+                  <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    Débito:
+                  </p>
+                  <p className="font-['Nunito_Sans',sans-serif] text-[16px] text-[#404040]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    R$ {formatarValorBR(totalExibidoRegistroDeProdutos)}
+                  </p>
+                </div>
+              </>
+            )}
+
             {isLocalizarPedidoDoDelivery && tutorialStep === 40 && (
               <>
                 <div className="h-px bg-[#bdbdbd]" />
@@ -2566,40 +2591,91 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </div>
               ))}
             </div>
-          ) : (isFormasDePagamento && tutorialStep === 25) || (isEnvioImpressaoCupom && tutorialStep === 31) ? (
+          ) : isEnvioImpressaoCupom && (tutorialStep === 31 || tutorialStep === 32) ? (
+            /* Pagamento realizado - layout novo (nodes 9060:69378 e
+               9060:69488 do Figma), tela inicial do fluxo de Envio e
+               Impressão de Cupom (passo 31, e fundo do modal do passo 32).
+               Com o cliente identificado: [1] Imprimir cupom / [2] Enviar
+               por e-mail; sem identificação: [1] Imprimir cupom / [2] Seguir
+               sem imprimir. Os botões são ilustrativos — o avanço acontece
+               pelas teclas do teclado virtual. */
+            <div className="flex-1 flex flex-col items-center justify-center p-[16px]">
+              <div className="border border-[#f2f2f2] rounded-[8px] w-[449px] h-[363px] flex flex-col gap-[36px] items-center justify-center">
+                <div className="flex flex-col gap-[12px] items-center">
+                  {/* Tooltip ancorada acima do ícone, para não cobrir o título nem os botões. */}
+                  <div className="relative">
+                    {tutorialStep === 31 && isTrainingMode && (
+                    <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
+                      <TutorialTooltip width={460}>
+                        {cupomEtapaIndex === 0 ? (
+                          <p>
+                            Com o pagamento realizado, escolha como o cliente vai receber o cupom fiscal. Neste exemplo, pressione <span className="font-bold">[1]</span> no teclado virtual para imprimir o cupom.
+                          </p>
+                        ) : cupomEtapaIndex === 1 ? (
+                          <p>
+                            Com o cliente identificado, o cupom também pode ser enviado para o e-mail cadastrado. Pressione <span className="font-bold">[2]</span> no teclado virtual para enviar o cupom por e-mail.
+                          </p>
+                        ) : (
+                          <p>
+                            Nesta venda o cliente não foi identificado, então não há e-mail para envio. Neste caso, o cliente pode seguir sem impressão. Pressione <span className="font-bold">[2]</span> no teclado virtual.
+                          </p>
+                        )}
+                      </TutorialTooltip>
+                    </div>
+                    )}
+                    <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
+                      <Check size={32} className="text-[#00ae8e]" strokeWidth={2} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-[6px] items-center text-center">
+                    <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#1a1a1a] text-[20px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      Pagamento realizado
+                    </p>
+                    <p className="font-['Nunito_Sans',sans-serif] text-[#747474] text-[16px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                      A transação foi realizada com sucesso
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-[12px] w-[407px]">
+                  <div className="bg-[#2258e6] border-2 border-[#2258e6] flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
+                    <div className="flex gap-[8px] items-center">
+                      <Printer size={24} className="text-[#fafafa]" />
+                      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] leading-[1.2] text-[#fafafa]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        Imprimir cupom
+                      </p>
+                    </div>
+                    <div className="bg-[rgba(255,255,255,0.2)] px-[8px] py-[4px] rounded-[4px]">
+                      <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2] text-[#fafafa]">1</p>
+                    </div>
+                  </div>
+                  <div className="bg-white border-2 border-[#2258e6] flex items-center justify-between px-[24px] py-[16px] rounded-[8px] w-full">
+                    <div className="flex gap-[8px] items-center">
+                      {cupomEtapaIndex === 2 ? <ArrowRight size={24} className="text-[#2258e6]" /> : <Mail size={24} className="text-[#2258e6]" />}
+                      <p className="font-['Nunito_Sans',sans-serif] font-bold text-[20px] leading-[1.2] text-[#2258e6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                        {cupomEtapaIndex === 2 ? "Seguir sem imprimir" : "Enviar por e-mail"}
+                      </p>
+                    </div>
+                    <div className="bg-[rgba(34,88,230,0.2)] px-[8px] py-[4px] rounded-[4px]">
+                      <p className="font-['Nunito_Sans',sans-serif] text-[16px] leading-[1.2] text-[#2258e6]">2</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : isFormasDePagamento && tutorialStep === 25 ? (
             /* Pagamento realizado - passo 25 do fluxo de Formas de
                Pagamento (node 1559:24598 do Figma). Substitui o botão
                "Totalizar Venda" com a confirmação de sucesso e as ações de
                comprovante — meramente ilustrativas neste tutorial, já que o
-               avanço real acontece ao pressionar [1] no teclado virtual.
-               Reaproveitada como tela inicial do fluxo de Envio e Impressão
-               de Cupom (passo 31), sem a tooltip (específica do fluxo de
-               Formas de Pagamento). */
+               avanço real acontece ao pressionar [1] no teclado virtual. */
             <div className="flex flex-col items-center justify-center gap-[36px] p-[16px]">
               <div className="flex flex-col gap-[12px] items-center">
                 <div className="relative">
-                  {isFormasDePagamento && tutorialStep === 25 && (
                   <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                     <TutorialTooltip width={460}>
                       As opções de emissão de comprovante são exibidas. Neste exemplo, pressione <span className="font-bold">[1]</span> para enviar para o e-mail do cliente.
                     </TutorialTooltip>
                   </div>
-                  )}
-                  {isEnvioImpressaoCupom && tutorialStep === 31 && isTrainingMode && (
-                  <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
-                    <TutorialTooltip width={460}>
-                      {cupomEtapaIndex === 0 ? (
-                        <p>
-                          O envio por e-mail é prioritário, e a impressão só deve ser feita se o cliente solicitar. Pressione <span className="font-bold">[1]</span> no teclado virtual para enviar o cupom por e-mail.
-                        </p>
-                      ) : (
-                        <p>
-                          Agora vamos simular a impressão do cupom. Pressione <span className="font-bold">[2]</span> no teclado virtual.
-                        </p>
-                      )}
-                    </TutorialTooltip>
-                  </div>
-                  )}
                   <div className="bg-[#f2fbf9] flex items-center justify-center p-[10px] rounded-full">
                     <CheckCircle2 size={32} className="text-[#00ae8e]" strokeWidth={1.8} />
                   </div>
@@ -2712,9 +2788,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {isSangriaDeCaixa && <Frame19557 />}
       </div>
 
-      {/* Fluxo animado de Sangria (telas do gerente) */}
+      {/* Fluxo animado de Sangria (telas do gerente). Suprimento Inicial/
+          Complementar não tem a tela de seleção Sangria/Suprimento (step 5):
+          após a senha, segue direto para os motivos (step 6). */}
       {isTrainingMode && tutorialStep >= 4 && tutorialStep <= 5 && (
-        <SangriaFlow onReachSelection={() => setTutorialStep(5)} isSuprimentoAdicional={isSuprimentoAdicional} isSuprimentoInicial={isSuprimentoInicial} />
+        isSuprimentoAdicional
+          ? <SangriaFlow onAuthComplete={() => setTutorialStep(6)} trilha="Suprimento de Caixa" />
+          : <SangriaFlow onReachSelection={() => setTutorialStep(5)} />
       )}
 
       {/* Motivos Sangria - step 6 */}
@@ -2768,7 +2848,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       {isTrainingMode && tutorialStep === 9 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
           {isSuprimentoAdicional ? (
-            <SuprimentoComprovanteScreen valorCents={20000} saldoAnteriorCents={50} />
+            <SuprimentoComprovanteScreen valorCents={20000} saldoAnteriorCents={50} isSuprimentoInicial={isSuprimentoInicial} />
           ) : (
             <ComprovanteScreen valorCents={100000} saldoAnteriorCents={125000} />
           )}
@@ -2793,7 +2873,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       )}
       {isEnvioImpressaoCupom && tutorialStep === 34 && (
         <div className="absolute inset-0 z-[40] rounded-[20px] overflow-hidden">
-          <ObrigadoScreen />
+          <ObrigadoScreen novoEstadoVazio />
         </div>
       )}
       {isRegistroDeItensDePedidos && tutorialStep === 36 && (
@@ -3565,6 +3645,23 @@ function PDVSimulator({ slug }: { slug?: string }) {
         </>
       )}
 
+      {/* Modal - Imprimir cupom fiscal (Envio e Impressão de Cupom, passo 32) */}
+      {isTrainingMode && isEnvioImpressaoCupom && tutorialStep === 32 && (
+        <>
+          <div className="fade-in-delay absolute inset-0 bg-black/20 backdrop-blur-[4px] rounded-[20px] z-[20]" />
+
+          <div className="fade-in-delay absolute bottom-[240px] left-1/2 -translate-x-1/2 z-[35] pointer-events-none">
+            <TutorialTooltip width={700}>
+              Antes de imprimir, o PDV pede a confirmação da impressão do cupom fiscal. Pressione a tecla <span className="font-bold">[Entra]</span> no teclado virtual para confirmar.
+            </TutorialTooltip>
+          </div>
+
+          <div className="fade-in-delay absolute bottom-0 left-0 right-0 z-[30] rounded-tl-[24px] rounded-tr-[24px] overflow-hidden">
+            <ImprimirCupomModal />
+          </div>
+        </>
+      )}
+
       {/* Modal - Identificar CPF/CNPJ na nota? (Cliente Cadastrado e Não Cadastrado) */}
       {isTrainingMode && tutorialStep === 11 && isClienteCadastrado && (
         <>
@@ -3807,17 +3904,24 @@ function PDVSimulator({ slug }: { slug?: string }) {
               {/* Texto */}
               <div className="flex flex-col gap-[8px] flex-1">
                 <p className="font-['Nunito_Sans',sans-serif] font-bold text-[22px] text-white" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  {isSuprimentoInicial ? "O Suprimento Inicial inicia no botão de Sangria" : isSuprimentoAdicional ? "O Suprimento Complementar inicia no botão de Sangria" : "Iniciando a Sangria de Caixa"}
+                  {isSuprimentoInicial ? "O Suprimento Inicial inicia no botão Suprimento Dinheiro" : isSuprimentoAdicional ? "O Suprimento Complementar inicia no botão Suprimento Dinheiro" : "Iniciando a Sangria de Caixa"}
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {isSuprimentoAdicional ? (
-                    <>Para iniciar o processo de {isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
+                    <>Para iniciar o processo de {isSuprimentoInicial ? "Suprimento Inicial" : "Suprimento Complementar"}, pressione a tecla Suprimento Dinheiro no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[Espaço] Suprimento Dinheiro</span>.</>
                   ) : (
                     <>Para iniciar o processo de Sangria de Caixa, pressione a tecla de Sangria no teclado do PDV, correspondente à tecla <span className="font-bold text-white">[V] Sangria</span>.</>
                   )}
                 </p>
               </div>
-              {/* Botão Sangria ilustração */}
+              {/* Botão Suprimento Dinheiro ilustração (fluxos de Suprimento) */}
+              {isSuprimentoAdicional ? (
+              <div className="bg-[#2258e6] flex flex-col items-center justify-center h-[123px] p-[10px] relative rounded-[8px] w-[142px] shrink-0">
+                <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
+                <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[22px]">SUPRIMENTO<br />DINHEIRO</div>
+              </div>
+              ) : (
+              /* Botão Sangria ilustração */
               <div className="bg-[#2258e6] flex flex-col justify-between h-[123px] items-start p-[10px] relative rounded-[8px] w-[142px] shrink-0">
                 <div aria-hidden="true" className="absolute border-2 border-solid border-white inset-0 pointer-events-none rounded-[8px]" />
                 <div className="flex flex-col items-start w-full gap-[4px]">
@@ -3830,6 +3934,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </div>
                 <div className="font-['Geist',sans-serif] font-bold text-[16px] text-center text-white w-full leading-[16px]">SANGRIA</div>
               </div>
+              )}
             </div>
           </div>
         )}
@@ -4557,10 +4662,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-[rgba(255,255,255,0.8)] leading-[1.6]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                   {cupomEtapaIndex === 0 && (
-                    <>O cupom é enviado por e-mail para o endereço cadastrado do cliente. Em seguida, vamos explorar a impressão do cupom.</>
+                    <>O cupom fiscal foi impresso e a venda foi encerrada. O PDV já está pronto para iniciar um novo atendimento. Em seguida, vamos explorar o envio do cupom por e-mail.</>
                   )}
                   {cupomEtapaIndex === 1 && (
-                    <>O cupom foi impresso com sucesso, após a confirmação da matrícula e senha do operador.</>
+                    <>O cupom fiscal foi enviado para o e-mail cadastrado do cliente e a venda foi encerrada. Em seguida, vamos ver como emitir o cupom de uma venda feita sem identificação do cliente.</>
+                  )}
+                  {cupomEtapaIndex === 2 && (
+                    <>A venda foi encerrada sem a impressão do cupom fiscal. Sem a identificação do cliente, a impressão é a única forma de emissão disponível, e o operador só a realiza se o cliente quiser o cupom.</>
                   )}
                 </p>
               </div>
@@ -4789,8 +4897,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (showEntradaOperadorMatricula) {
                 setShowEntradaOperadorMatricula(false);
                 setOperadorMatricula("");
-                if (isEnvioImpressaoCupom) { setTutorialStep(31); }
-                else { setShowAberturaAutorizacao(true); }
+                setShowAberturaAutorizacao(true);
               }
               else if (tutorialStep === 2) {
                 if (isClienteCadastrado && demoSemIdentificar) { setTutorialStep(12); setDemoSemIdentificar(false); }
@@ -4808,7 +4915,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (tutorialStep === 12) { setTutorialStep(11); setShowKeyboard(false); }
               else if (tutorialStep === 11) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(false); }
               else if (tutorialStep === 5) setTutorialStep(3);
-              else if (tutorialStep === 6) setTutorialStep(5);
+              else if (tutorialStep === 6) setTutorialStep(isSuprimentoAdicional ? 2 : 5);
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
               else if (tutorialStep === 8) setTutorialStep(7);
               else if (tutorialStep === 9) setTutorialStep(8);
@@ -4825,11 +4932,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (isFormasDePagamento && tutorialStep === 29) { setTutorialStep(23); setValorPagamento(0); }
               else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(29); }
               else if (isEnvioImpressaoCupom && tutorialStep === 31) {
-                setCupomEtapaIndex(0); setShowKeyboard(false); setTutorialStep(34);
+                setCupomEtapaIndex(cupomEtapaIndex - 1); setShowKeyboard(false); setTutorialStep(34);
               }
+              else if (isEnvioImpressaoCupom && tutorialStep === 32) { setShowKeyboard(false); setTutorialStep(31); }
               else if (isEnvioImpressaoCupom && tutorialStep === 34) {
-                setTutorialStep(31);
-                if (cupomEtapaIndex === 1) { setOperadorSenha(""); setShowEntradaOperadorSenha(true); }
+                // A impressão (0) volta ao modal de confirmação; o e-mail (1) e o seguir sem imprimir (2), à escolha do comprovante.
+                setTutorialStep(cupomEtapaIndex === 0 ? 32 : 31);
               }
               else if (isRegistroDeItensDePedidos && tutorialStep === 36) { setPedidoSelecionado(true); setCpf(""); setTutorialStep(35); }
               else if (isRegistroDeItensDePedidos && tutorialStep === 37) { setPedidoSelecionado(true); setTutorialStep(36); }
@@ -4939,9 +5047,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
           }
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
-          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? 'animate-pulse-subtle' : ''
+          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isEnvioImpressaoCupom && !showKeyboard && (tutorialStep === 31 || tutorialStep === 32)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? 'animate-pulse-subtle' : ''
         } ${keyboardOcultoNestaEtapa || isKeyboardSplit ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? {
+        style={isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isEnvioImpressaoCupom && !showKeyboard && (tutorialStep === 31 || tutorialStep === 32)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
         } : {}}
@@ -5090,7 +5198,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           const target = e.target as HTMLElement;
           const buttonText = target.textContent?.trim();
 
-          if (tutorialStep === 2 && buttonText === "SANGRIA" && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco) {
+          if (tutorialStep === 2 && buttonText === "SANGRIA" && !isSuprimentoAdicional && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco) {
             setTutorialStep(3);
             setShowKeyboard(false);
             return;
@@ -5160,9 +5268,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
       >
         <VirtualKeyboard
           key={tutorialStep}
-          highlightSangria={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco}
-          onSangriaPress={tutorialStep === 2 && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
-          highlightEntra={(isPbm && ((tutorialStep === 139 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 140 && pbmAutorizacao === AUTORIZACAO_PBM_EXEMPLO))) || tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && ((tutorialStep === 35 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 36 && pedidoSelecionado))) || (isLocalizarPedidoDoDelivery && tutorialStep === 39 && ovNumero.length === OV_EXEMPLO.length) || (isConvenio && ((tutorialStep === 42 && convenioCodigo.length === CONVENIO_CODIGO_EXEMPLO.length) || (tutorialStep === 43 && convenioCpf.length === CPF_EXEMPLO.length))) || (isLiberacaoComReceita && tutorialStep === 47 && receitaNumero.length === RECEITA_EXEMPLO.length) || (isCancelamentoParcial && (tutorialStep === 53 || tutorialStep === 60 || tutorialStep === 61)) || (isCancelamentoTotal && (tutorialStep === 64 || tutorialStep === 66)) || (isDdg && (tutorialStep === 69 || (tutorialStep === 71 && ddgItemIndex === 0) || tutorialStep === 72 || (tutorialStep === 74 && ddgValorCents === VALOR_DDG_EXEMPLO_CENTS))) || (isEstorno && ((((tutorialStep === 80 || tutorialStep === 85) && estornoValorCents === VALOR_ESTORNO_EXEMPLO_CENTS)) || ((tutorialStep === 81 || tutorialStep === 86) && estornoId === ID_ESTORNO_EXEMPLO))) || (esperadoTroca !== null && trocaValor === esperadoTroca) || (isTrocaDeMercadoria && ((tutorialStep === 97 && trocaItemIndex === 0) || (tutorialStep === 99 && trocaItemIndex === 2) || tutorialStep === 100)) || (isReimpressaoDeComprovantes && ((tutorialStep === 104 && reimpressaoIndex === 2) || tutorialStep === 106 || (tutorialStep === 107 && reimpressaoIndex === 1) || (esperadoReimpressao !== null && reimpressaoValor === esperadoReimpressao))) || (isDetalheDaVenda && ((tutorialStep === 112 && reimpressaoIndex === 1) || (tutorialStep === 113 && reimpressaoValor === DATA_REIMPRESSAO_EXEMPLO))) || (isSaidaDoOperador && tutorialStep === 126) || (isFechamentoDeCaixa && (tutorialStep === 130 || tutorialStep === 133))}
+          highlightSangria={tutorialStep === 2 && !isSuprimentoAdicional && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco}
+          onSangriaPress={tutorialStep === 2 && !isSuprimentoAdicional && !isClienteCadastrado && !isConvenio && !isLiberacaoComReceita && !isLiberacaoManual && !isConsultaDePreco ? () => { setTutorialStep(3); setShowKeyboard(false); } : undefined}
+          highlightEntra={(isEnvioImpressaoCupom && tutorialStep === 32) || (isPbm && ((tutorialStep === 139 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 140 && pbmAutorizacao === AUTORIZACAO_PBM_EXEMPLO))) || tutorialStep === 3 || (tutorialStep === 6 && (!isSuprimentoAdicional || motivoIndex === (isSuprimentoInicial ? 0 : 1))) || (tutorialStep === 7 && valorRetirada === valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length === 6) || (showEntradaOperadorSenha && operadorSenha.length === 6) || (isClienteCadastrado && ((tutorialStep === 2 && (demoSemIdentificar || cpf.length === CPF_EXEMPLO.length)) || tutorialStep === 11 || tutorialStep === 13)) || (isRegistroDeProdutos && tutorialStep === 16 && sku.length === SKU_MANUAL_EXEMPLO.length) || (isFormasDePagamento && ((tutorialStep === 23 && valorPagamento === valorAlvoPagamento) || tutorialStep === 29 || tutorialStep === 30)) || (isRegistroDeItensDePedidos && ((tutorialStep === 35 && cpf.length === CPF_EXEMPLO.length) || (tutorialStep === 36 && pedidoSelecionado))) || (isLocalizarPedidoDoDelivery && tutorialStep === 39 && ovNumero.length === OV_EXEMPLO.length) || (isConvenio && ((tutorialStep === 42 && convenioCodigo.length === CONVENIO_CODIGO_EXEMPLO.length) || (tutorialStep === 43 && convenioCpf.length === CPF_EXEMPLO.length))) || (isLiberacaoComReceita && tutorialStep === 47 && receitaNumero.length === RECEITA_EXEMPLO.length) || (isCancelamentoParcial && (tutorialStep === 53 || tutorialStep === 60 || tutorialStep === 61)) || (isCancelamentoTotal && (tutorialStep === 64 || tutorialStep === 66)) || (isDdg && (tutorialStep === 69 || (tutorialStep === 71 && ddgItemIndex === 0) || tutorialStep === 72 || (tutorialStep === 74 && ddgValorCents === VALOR_DDG_EXEMPLO_CENTS))) || (isEstorno && ((((tutorialStep === 80 || tutorialStep === 85) && estornoValorCents === VALOR_ESTORNO_EXEMPLO_CENTS)) || ((tutorialStep === 81 || tutorialStep === 86) && estornoId === ID_ESTORNO_EXEMPLO))) || (esperadoTroca !== null && trocaValor === esperadoTroca) || (isTrocaDeMercadoria && ((tutorialStep === 97 && trocaItemIndex === 0) || (tutorialStep === 99 && trocaItemIndex === 2) || tutorialStep === 100)) || (isReimpressaoDeComprovantes && ((tutorialStep === 104 && reimpressaoIndex === 2) || tutorialStep === 106 || (tutorialStep === 107 && reimpressaoIndex === 1) || (esperadoReimpressao !== null && reimpressaoValor === esperadoReimpressao))) || (isDetalheDaVenda && ((tutorialStep === 112 && reimpressaoIndex === 1) || (tutorialStep === 113 && reimpressaoValor === DATA_REIMPRESSAO_EXEMPLO))) || (isSaidaDoOperador && tutorialStep === 126) || (isFechamentoDeCaixa && (tutorialStep === 130 || tutorialStep === 133))}
           highlightVolta={(isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar) || (isLiberacaoManual && tutorialStep === 47 && !showAberturaGerenteMatricula && !showAberturaGerenteSenha)}
           onVoltaPress={
             isClienteCadastrado && tutorialStep === 2 && demoSemIdentificar
@@ -5181,8 +5289,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
               ? () => { setTutorialStep(145); setShowKeyboard(false); }
               : undefined
           }
-          highlightSuprimentoDinheiro={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0}
-          onSuprimentoDinheiroPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0 ? () => { setTutorialStep(23); setShowKeyboard(false); } : undefined}
+          highlightSuprimentoDinheiro={(isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0) || (isSuprimentoAdicional && tutorialStep === 2)}
+          onSuprimentoDinheiroPress={isFormasDePagamento && tutorialStep === 22 && pagamentoEtapaIndex === 0 ? () => { setTutorialStep(23); setShowKeyboard(false); }
+            // Suprimento Inicial/Complementar: vai direto para a Matrícula
+            // Gerencial (step 4), sem o modal de autorização do step 3.
+            : isSuprimentoAdicional && tutorialStep === 2 ? () => { setTutorialStep(4); setShowKeyboard(false); }
+            : undefined}
           highlightDelivery={isLocalizarPedidoDoDelivery && tutorialStep === 38}
           onDeliveryPress={isLocalizarPedidoDoDelivery && tutorialStep === 38 ? () => { setTutorialStep(39); setShowKeyboard(false); } : undefined}
           highlightConvenio={isConvenio && tutorialStep === 2}
@@ -5244,8 +5356,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               setShowKeyboard(false);
               setShowEntradaOperadorSenha(false);
               setOperadorSenha("");
-              if (isEnvioImpressaoCupom) { setTutorialStep(34); }
-              else { setShowAberturaIdentificacao(true); }
+              setShowAberturaIdentificacao(true);
             }
             else if (isFormasDePagamento && tutorialStep === 23 && valorPagamento === valorAlvoPagamento) {
               setShowKeyboard(false);
@@ -5260,22 +5371,20 @@ function PDVSimulator({ slug }: { slug?: string }) {
             }
             else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(28); setShowKeyboard(false); }
           } : undefined}
-          highlightKey1={(isPbm && tutorialStep === 138) || proximoDigitoPbm === "1" || (tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1" || proximoDigitoOv === "1" || proximoDigitoConvenio === "1" || proximoDigitoConvenioCpf === "1" || proximoDigitoReceita === "1" || (isFormasDePagamento && tutorialStep === 25) || (isEnvioImpressaoCupom && tutorialStep === 31 && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && cupomEtapaIndex === 0) || proximoDigitoEstorno === "1" || (isEstorno && tutorialStep === 78) || proximoDigitoTroca === "1" || proximoDigitoReimpressao === "1" || (isLeituraOperador && etapaLeituraX === 1)}
+          highlightKey1={(isPbm && tutorialStep === 138) || proximoDigitoPbm === "1" || (tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1" || proximoDigitoOv === "1" || proximoDigitoConvenio === "1" || proximoDigitoConvenioCpf === "1" || proximoDigitoReceita === "1" || (isFormasDePagamento && tutorialStep === 25) || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0) || proximoDigitoEstorno === "1" || (isEstorno && tutorialStep === 78) || proximoDigitoTroca === "1" || proximoDigitoReimpressao === "1" || (isLeituraOperador && etapaLeituraX === 1)}
           onKey1Press={
             tutorialStep === 5 && !isSuprimentoAdicional
               ? () => { setTutorialStep(6); setShowKeyboard(false); }
               : isFormasDePagamento && tutorialStep === 25
               ? () => setTutorialStep(26)
-              : isEnvioImpressaoCupom && tutorialStep === 31 && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && cupomEtapaIndex === 0
-              ? () => { setShowKeyboard(false); setTutorialStep(34); }
+              : isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0
+              ? () => { setShowKeyboard(false); setTutorialStep(32); }
               : undefined
           }
-          highlightKey2={proximoDigitoPbm === "2" || (tutorialStep === 5 && isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2" || proximoDigitoPagamento === "2" || proximoDigitoOv === "2" || proximoDigitoConvenio === "2" || proximoDigitoConvenioCpf === "2" || proximoDigitoReceita === "2" || (isConvenio && tutorialStep === 41) || (isEnvioImpressaoCupom && tutorialStep === 31 && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && cupomEtapaIndex === 1) || proximoDigitoEstorno === "2" || proximoDigitoTroca === "2" || proximoDigitoReimpressao === "2" || (isLeituraX && !isLeituraOperador && etapaLeituraX === 1)}
+          highlightKey2={proximoDigitoPbm === "2" || (tutorialStep === 7 && valorRetirada === 0 && isSuprimentoAdicional) || proximoDigitoCpf === "2" || proximoDigitoSkuManual === "2" || proximoDigitoPagamento === "2" || proximoDigitoOv === "2" || proximoDigitoConvenio === "2" || proximoDigitoConvenioCpf === "2" || proximoDigitoReceita === "2" || (isConvenio && tutorialStep === 41) || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex !== 0) || proximoDigitoEstorno === "2" || proximoDigitoTroca === "2" || proximoDigitoReimpressao === "2" || (isLeituraX && !isLeituraOperador && etapaLeituraX === 1)}
           onKey2Press={
-            tutorialStep === 5 && isSuprimentoAdicional
-              ? () => { setTutorialStep(6); setShowKeyboard(false); }
-              : isEnvioImpressaoCupom && tutorialStep === 31 && !showEntradaOperadorMatricula && !showEntradaOperadorSenha && cupomEtapaIndex === 1
-              ? () => { setShowKeyboard(false); setShowEntradaOperadorMatricula(true); }
+            isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex !== 0
+              ? () => { setShowKeyboard(false); setTutorialStep(34); }
               : undefined
           }
           highlightKey0={proximoDigitoPbm === "0" || (tutorialStep === 7 && valorRetirada > 0 && valorRetirada < valorAlvo) || (showEntradaOperadorMatricula && operadorMatricula.length < 6) || (showEntradaOperadorSenha && operadorSenha.length < 6) || proximoDigitoCpf === "0" || proximoDigitoPagamento === "0" || proximoDigitoOv === "0" || proximoDigitoConvenio === "0" || proximoDigitoConvenioCpf === "0" || proximoDigitoCancelamento === "0" || proximoDigitoDdg === "0" || proximoDigitoEstorno === "0" || proximoDigitoTroca === "0" || proximoDigitoReimpressao === "0"}
