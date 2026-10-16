@@ -23,7 +23,7 @@ export default function InformeOVScreen({ ovNumero, ovCompleto }: { ovNumero: st
             {ovCompleto ? (
               <>O número da OV foi informado. Pressione <span className="font-bold">[Entra]</span> para localizar o pedido.</>
             ) : (
-              <>O entregador informa o número da OV (ordem de venda) do pedido. Neste exemplo, digite <span className="font-bold">1112223330</span> no teclado virtual.</>
+              <>O entregador informa o número da OV (ordem de venda) do pedido. Neste exemplo, digite <span className="font-bold">111222333</span> no teclado virtual.</>
             )}
           </TutorialTooltip>
         </div>

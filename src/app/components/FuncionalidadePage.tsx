@@ -362,7 +362,7 @@ const CPF_EXEMPLO = "11122233300";
 
 // Número da OV (pedido) de exemplo digitado no teclado virtual no passo 39
 // do fluxo de Localizar Pedido do Delivery.
-const OV_EXEMPLO = "1112223330";
+const OV_EXEMPLO = "111222333";
 
 // Código do convênio de exemplo (Unimed Nacional) digitado no teclado
 // virtual no passo 42 do fluxo de Convênio, e a lista de convênios exibida
@@ -1776,10 +1776,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
   ];
   // Item do pedido carregado automaticamente ao localizar o OV (passo 40 do
   // fluxo de Localizar Pedido do Delivery), exatamente como no node
-  // 3978:57290 do Figma.
-  // Valores por unidade: R$ 8,50 com 10% de desconto = R$ 7,65 cada.
+  // 3978:57290 do Figma. Também usado no fluxo de Consulta de Preço.
+  // Dipirona x2: o desconto e o Preço Final já são das duas unidades
+  // (17,00 − 1,70 = 15,30).
   const itensDemoLocalizarPedidoDoDelivery = [
-    { nome: "Dipirona 500mg", ref: "30039069", cod: "646156", quantidade: 2, precoUnit: 8.5, descontoPct: "-10%", desconto: 0.85, precoFinal: 7.65 },
+    { nome: "Dipirona 500mg", ref: "30039069", cod: "646156", quantidade: 2, precoUnit: 8.5, descontoPct: "-10%", desconto: 1.7, precoFinal: 15.3 },
   ];
   // Itens carregados automaticamente após a identificação do conveniado
   // (passo 46 do fluxo de Convênio), exatamente como no node 2210:30571 do
@@ -1842,10 +1843,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
   };
   // Consulta de Preço não usa as tabelas indexadas por step (os steps 0 e 2
   // são compartilhados com outros fluxos): os totais vêm dos itens visíveis.
-  // Os valores do item são por unidade, então a soma considera a quantidade
-  // (Dipirona x2: 17,00 − 1,70 = 15,30).
+  // O Preço Unit. é por unidade (o subtotal considera a quantidade); o
+  // desconto e o Preço Final do item já são do total de unidades (Dipirona
+  // x2: 17,00 − 1,70 = 15,30).
   const somaConsultaDePreco = (campo: "precoUnit" | "precoFinal" | "desconto") =>
-    itensVisiveisRegistroDeProdutos.reduce((soma, item) => soma + item[campo] * item.quantidade, 0);
+    itensVisiveisRegistroDeProdutos.reduce((soma, item) => soma + (campo === "precoUnit" ? item.precoUnit * item.quantidade : item[campo]), 0);
   const subtotalRegistroDeProdutos = isConsultaDePreco ? somaConsultaDePreco("precoUnit") : (subtotalPorStepRegistroDeProdutos[tutorialStep] ?? totalRegistroDeProdutos);
   // Economizou informado individualmente por tela; enquanto uma tela não
   // tiver valor definido aqui, usa a soma dos descontos dos itens visíveis.
