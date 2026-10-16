@@ -42,8 +42,8 @@ export default function ObrigadoScreen() {
                 <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#fafafa]">Buscar</p>
               </button>
             </div>
-            <p className="font-['Nunito_Sans',sans-serif] text-[#727272] text-[12.8px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-              Digite o CPF do cliente
+            <p className="font-['Nunito_Sans',sans-serif] text-[#2258e6] text-[12.8px] leading-[1.2]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+              Aguardando CPF no pinpad...
             </p>
           </div>
 

@@ -30,7 +30,7 @@ export const secoesCategorias: CategoriaSecaoData[] = [
     cards: [
       {
         titulo: "Cliente Cadastrado e Não Cadastrado",
-        descricao: "Durante uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se o CPF do cliente deve constar na nota fiscal. Após selecionar as opções desejadas, o operador pode seguir com o registro dos produtos e as demais etapas da venda normalmente.",
+        descricao: "Ao iniciar uma venda, o cliente pode ser identificado para vinculá-lo à operação. Ele próprio pode digitar o seu CPF ou CNPJ no pinpad, ou o operador pode informá-los no PDV. Também é possível prosseguir sem identificar o cliente. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos.",
         slug: "cliente-cadastrado-e-nao-cadastrado"
       },
       {

@@ -96,7 +96,7 @@ const funcionalidadesContent: Record<string, FuncionalidadeContent> = {
   },
   "cliente-cadastrado-e-nao-cadastrado": {
     titulo: "Cliente Cadastrado e Não Cadastrado",
-    conteudo: "Ao iniciar uma venda, o operador pode prosseguir sem identificar o cliente ou informar seu CPF ou CNPJ para vinculá-lo à operação. Também é possível definir se a identificação do cliente deve ser informada na nota fiscal. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos.",
+    conteudo: "Ao iniciar uma venda, o cliente pode ser identificado para vinculá-lo à operação. Ele próprio pode digitar o seu CPF ou CNPJ no pinpad, ou o operador pode informá-los no PDV. Também é possível prosseguir sem identificar o cliente. Após selecionar a opção desejada, o fluxo segue com o registro dos produtos.",
     hasPDV: true
   },
   "registro-de-produtos": {
@@ -458,7 +458,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Operador reserva os steps 125 a 128 e Fechamento de Caixa (que inclui o
   // Fechamento Z) os steps 129 a 134, exibindo a tela "Entrada de Operador
   // ou Fechamento" já nas boas-vindas.
-  const proximaEtapaAposBoasVindas = isEstorno ? 76 : isTrocaDeMercadoria ? 90 : isReimpressaoDeComprovantes ? 102 : isDetalheDaVenda ? 110 : isLeituraX ? 115 : isSaidaDoOperador ? 125 : isFechamentoDeCaixa ? 129 : isEncantometro ? 135 : isPbm ? 137 : isPosVenda || isConsultasERelatorios || isEncerramentoDaOperacao ? 10 : isCancelamentoParcial ? 52 : isCancelamentoTotal ? 63 : isDdg ? 68 : isFormasDePagamento ? 21 : isEnvioImpressaoCupom ? 31 : isRegistroDeItensDePedidos ? 35 : isLocalizarPedidoDoDelivery ? 38 : pulaTelaLimiteCaixa ? 2 : 1;
+  const proximaEtapaAposBoasVindas = isEstorno ? 76 : isTrocaDeMercadoria ? 90 : isReimpressaoDeComprovantes ? 102 : isDetalheDaVenda ? 110 : isLeituraX ? 115 : isSaidaDoOperador ? 125 : isFechamentoDeCaixa ? 129 : isEncantometro ? 135 : isPbm ? 137 : isPosVenda || isConsultasERelatorios || isEncerramentoDaOperacao ? 10 : isCancelamentoParcial ? 52 : isCancelamentoTotal ? 63 : isDdg ? 68 : isFormasDePagamento ? 21 : isEnvioImpressaoCupom ? 31 : isRegistroDeItensDePedidos ? 35 : isLocalizarPedidoDoDelivery ? 38 : isClienteCadastrado ? 146 : pulaTelaLimiteCaixa ? 2 : 1;
   const valorAlvo = isSuprimentoAdicional ? 20000 : 100000;
   const [isTrainingMode, setIsTrainingMode] = useState(false);
   // Escala o PDV em tela cheia (1280×800) durante o treinamento para caber em
@@ -554,6 +554,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // identificado" (step 12), para exibir o exemplo de venda sem identificar
   // o cliente com uma tooltip e posicionamento diferentes da primeira visita.
   const [demoSemIdentificar, setDemoSemIdentificar] = useState(false);
+  // Cliente Cadastrado e Não Cadastrado: true enquanto os modais da nota
+  // fiscal (passos 11 e 13) pertencem à trajetória do CPF digitado no pinpad
+  // — ao fim deles, a tela de cliente identificado é a do pinpad (147), e
+  // não a do CPF digitado pelo operador (12).
+  const [cpfViaPinpad, setCpfViaPinpad] = useState(false);
+  const etapaClienteIdentificado = cpfViaPinpad ? 147 : 12;
   const [sku, setSku] = useState("");
   const [items, setItems] = useState<Array<{ sku: string; name: string; qty: number; price: number }>>([]);
   const [subtotal, setSubtotal] = useState(0);
@@ -845,6 +851,33 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAberturaGerenteSenha]);
 
+  // Cliente Cadastrado e Não Cadastrado - passo 148 (após a apresentação do
+  // passo 146): simula o cliente
+  // digitando o CPF no pinpad — os dígitos aparecem um a um no campo de CPF
+  // do PDV enquanto o operador aguarda; ao completar, seguem os modais da
+  // nota fiscal (passos 11 e 13) e o cliente é identificado (passo 147).
+  useEffect(() => {
+    if (!isTrainingMode || !isClienteCadastrado || tutorialStep !== 148) return;
+    let cancelled = false;
+    const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+    const run = async () => {
+      setCpf("");
+      await wait(1800);
+      for (let i = 1; i <= CPF_EXEMPLO.length; i++) {
+        if (cancelled) return;
+        setCpf(CPF_EXEMPLO.slice(0, i));
+        await wait(i === 3 || i === 6 || i === 9 ? 650 : 380);
+      }
+      await wait(1200);
+      if (cancelled) return;
+      setCpfViaPinpad(true);
+      setTutorialStep(11);
+    };
+    run();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTrainingMode, isClienteCadastrado, tutorialStep]);
+
   // Direciona a digitação do teclado virtual para o campo de CPF assim que
   // o passo 2 do fluxo de Cliente Cadastrado e Não Cadastrado é exibido,
   // sem exigir que o operador clique manualmente no input primeiro.
@@ -862,7 +895,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
   const keyboardOcultoNestaEtapa =
     !showEntradaOperadorMatricula && !showEntradaOperadorSenha && (
       tutorialStep <= 1 || tutorialStep === 4 || tutorialStep === 8 || tutorialStep === 9 || tutorialStep === 10 ||
-      (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) ||
+      (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14 || tutorialStep === 146 || tutorialStep === 147 || tutorialStep === 148)) ||
       (isRegistroDeProdutos && (tutorialStep === 2 || tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 19 || tutorialStep === 20)) ||
       (isFormasDePagamento && (tutorialStep === 24 || tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) ||
       (isEnvioImpressaoCupom && tutorialStep === 34) ||
@@ -1096,7 +1129,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
         setTutorialStep(13);
       } else if (key === "VOLTA") {
         setShowKeyboard(false);
-        setTutorialStep(12);
+        setTutorialStep(etapaClienteIdentificado);
       }
       return;
     }
@@ -1105,7 +1138,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     if (isClienteCadastrado && tutorialStep === 13) {
       if (key === "ENTRA" || key === "Enter") {
         setShowKeyboard(false);
-        setTutorialStep(12);
+        setTutorialStep(etapaClienteIdentificado);
       } else if (key === "VOLTA") {
         setShowKeyboard(false);
         setTutorialStep(11);
@@ -1126,6 +1159,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
       if (key === "ENTRA" || key === "Enter") {
         if (cpf.length === CPF_EXEMPLO.length) {
           setShowKeyboard(false);
+          setCpfViaPinpad(false);
           setTutorialStep(11);
         }
       } else if (key === "LIMPA") {
@@ -1870,6 +1904,8 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 setShowAberturaIdentificacao(false);
                 setTutorialStep(10);
               }
+              else if (isClienteCadastrado && tutorialStep === 146) { setCpf(""); setTutorialStep(148); }
+              else if (isClienteCadastrado && tutorialStep === 147) { setCpf(""); setCpfViaPinpad(false); setTutorialStep(2); setDemoSemIdentificar(false); }
               else if (isClienteCadastrado && tutorialStep === 12) { setCpf(""); setTutorialStep(2); setDemoSemIdentificar(true); }
               else if (isClienteCadastrado && tutorialStep === 14) { setTutorialStep(10); }
               else if (tutorialStep === 1) setTutorialStep(2);
@@ -2093,7 +2129,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
               </p>
             </div>
 
-            {(isClienteCadastrado && tutorialStep >= 11 && tutorialStep <= 13) || isRegistroDeProdutos || isFormasDePagamento || (isEnvioImpressaoCupom && cupomEtapaIndex !== 2) || (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 46 || tutorialStep === 144)) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || (isPbm && tutorialStep >= 142) ? (
+            {(isClienteCadastrado && ((tutorialStep >= 11 && tutorialStep <= 13) || tutorialStep === 147)) || isRegistroDeProdutos || isFormasDePagamento || (isEnvioImpressaoCupom && cupomEtapaIndex !== 2) || (isRegistroDeItensDePedidos && (tutorialStep === 37 || tutorialStep === 145)) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 46 || tutorialStep === 144)) || isLiberacaoComReceita || isLiberacaoManual || isConsultaDePreco || (isPbm && tutorialStep >= 142) ? (
               /* Cliente já identificado após o CPF informado na etapa anterior
                  (também usado como tela de fundo dos fluxos de Registro de
                  Produtos, Formas de Pagamento, Liberação de Medicamento
@@ -2151,16 +2187,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
                     <p className="font-['Geist',sans-serif] font-medium text-[14px] text-white">Com identificação</p>
                   </div>
                   <div className="relative flex gap-[8px] items-center justify-center px-[32px] py-[14px] w-[256px]">
-                    {/* Tooltip - step 2 (revisita) do fluxo de Cliente Cadastrado e Não Cadastrado, exemplo de venda sem identificar o cliente */}
-                    {tutorialStep === 2 && isClienteCadastrado && demoSemIdentificar && (
-                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
-                        <TutorialTooltip width={480}>
-                          Para seguir sem identificar o cliente, clique em{" "}
-                          <span className="font-bold">[Esc] Volta</span> no teclado virtual. Outra opção é clicar em{" "}
-                          <span className="font-bold">[Entra]</span> sem ter informado o número do CPF.
-                        </TutorialTooltip>
-                      </div>
-                    )}
                     <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#0a0a0a]">Sem Identificação</p>
                     <img alt="" className="size-[24px]" src={iconeArrowLeft} />
                   </div>
@@ -2168,15 +2194,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
 
                 <div className="flex gap-[8px] w-full">
                   <div className="relative flex-1">
-                    {/* Tooltip - step 2 (primeira visita) do fluxo de Cliente Cadastrado e Não Cadastrado */}
-                    {tutorialStep === 2 && isClienteCadastrado && !demoSemIdentificar && (
-                      <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
-                        <TutorialTooltip width={480}>
-                          Informe o CPF do cliente. Neste exemplo, insira 111.222.333-00. Digite utilizando o teclado virtual e pressione{" "}
-                          <span className="font-bold">[Entra]</span> para continuar.
-                        </TutorialTooltip>
-                      </div>
-                    )}
                     {tutorialStep === 35 && isRegistroDeItensDePedidos && (
                       <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[8px] pointer-events-none z-[45]">
                         <TutorialTooltip width={480}>
@@ -2227,6 +2244,38 @@ function PDVSimulator({ slug }: { slug?: string }) {
                       </div>
                     </div>
                   </button>
+                </div>
+                <div className="relative">
+                  <p className="font-['Nunito_Sans',sans-serif] text-[#2258e6] text-[12.8px] leading-[1.2]" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
+                    Aguardando CPF no pinpad...
+                  </p>
+                  {/* Tooltip - passo 146 do fluxo de Cliente Cadastrado e Não Cadastrado (CPF digitado pelo cliente no pinpad) */}
+                  {isTrainingMode && isClienteCadastrado && tutorialStep === 146 && (
+                    <div className="fade-in-delay absolute top-full left-0 mt-[12px] pointer-events-none z-[45]">
+                      <TutorialTooltip width={560} seta="cima">
+                        Idealmente, o próprio cliente informa o seu CPF no pinpad. Clique em <span className="font-bold">Próximo</span> para acompanhar a digitação.
+                      </TutorialTooltip>
+                    </div>
+                  )}
+                  {/* Tooltip - step 2 (revisita) do fluxo de Cliente Cadastrado e Não Cadastrado, exemplo de venda sem identificar o cliente — mesma posição das demais tooltips desta seção */}
+                  {tutorialStep === 2 && isClienteCadastrado && demoSemIdentificar && (
+                    <div className="fade-in-delay absolute top-full left-0 mt-[12px] pointer-events-none z-[45]">
+                      <TutorialTooltip width={560} seta="cima">
+                        Para seguir sem identificar o cliente, clique em{" "}
+                        <span className="font-bold">[Esc] Volta</span> no teclado virtual. Outra opção é clicar em{" "}
+                        <span className="font-bold">[Entra]</span> sem ter informado o número do CPF.
+                      </TutorialTooltip>
+                    </div>
+                  )}
+                  {/* Tooltip - step 2 (primeira visita) do fluxo de Cliente Cadastrado e Não Cadastrado, na mesma posição da tooltip do passo 146 */}
+                  {tutorialStep === 2 && isClienteCadastrado && !demoSemIdentificar && (
+                    <div className="fade-in-delay absolute top-full left-0 mt-[12px] pointer-events-none z-[45]">
+                      <TutorialTooltip width={560} seta="cima">
+                        Alternativamente, o operador pode perguntar o CPF do cliente e informá-lo no PDV. Neste exemplo, digite 111.222.333-00 no teclado virtual e pressione{" "}
+                        <span className="font-bold">[Entra]</span>.
+                      </TutorialTooltip>
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -3753,7 +3802,17 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
             <Inicio
               titulo="O cliente foi identificado"
-              descricao="Neste momento é possível iniciar o registro dos produtos, tema do nosso próximo tutorial. Mas antes disso, vamos fazer um exemplo de como iniciar uma venda sem identificar o cliente."
+              descricao="Agora vamos fazer um exemplo de iniciar uma venda sem identificar o cliente."
+            />
+          </div>
+        )}
+
+        {/* Caixa preta - passo 147: cliente identificado pelo CPF digitado no pinpad */}
+        {isClienteCadastrado && tutorialStep === 147 && (
+          <div className="fade-in-delay absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1280px] z-20">
+            <Inicio
+              titulo="O cliente foi identificado pelo pinpad"
+              descricao="Em seguida, vamos ver como o operador pode identificar o cliente pelo teclado do PDV."
             />
           </div>
         )}
@@ -4617,8 +4676,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
           )}
 
           {/* Banner Ação do Cliente - Encantômetro (passo 135): as telas são
-              operadas pelo cliente; ao operador cabe apenas orientá-lo. */}
-          {isEncantometro && tutorialStep === 135 && (
+              operadas pelo cliente; ao operador cabe apenas orientá-lo.
+              Também no passo 148 de Cliente Cadastrado e Não Cadastrado, com
+              o cliente digitando o CPF no pinpad. */}
+          {((isEncantometro && tutorialStep === 135) || (isClienteCadastrado && tutorialStep === 148)) && (
             <div className="fade-in-delay relative flex items-center gap-[24px] w-full px-[32px] py-[20px] rounded-[14px] overflow-hidden border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
               style={{ background: 'rgba(255,255,255,0.08)', backdropFilter: 'blur(12px)' }}>
               <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-white/60 rounded-l-[14px]" />
@@ -4630,7 +4691,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   Ação do Cliente
                 </p>
                 <p className="font-['Nunito_Sans',sans-serif] text-[20px] text-white/60 leading-snug" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
-                  O cliente avalia o atendimento no Encantômetro. Cabe ao operador apenas orientá-lo sobre a avaliação.
+                  {isClienteCadastrado
+                    ? "O cliente digita o seu CPF no pinpad. Cabe ao operador apenas aguardar o preenchimento."
+                    : "O cliente avalia o atendimento no Encantômetro. Cabe ao operador apenas orientá-lo sobre a avaliação."}
                 </p>
               </div>
               <div className="shrink-0 ml-auto flex items-center gap-[7px] rounded-full px-[14px] py-[7px] bg-white/10 border border-white/20">
@@ -4765,7 +4828,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           )}
 
           {/* Navegação do tutorial - plataforma de treinamentos */}
-          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${escaneamentoDestino === null && (showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) && !(isEncantometro && tutorialStep === 135) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`flex justify-between transition-opacity duration-700 ease-in-out ${escaneamentoDestino === null && (showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || showEntradaOperadorMatricula || showEntradaOperadorSenha || tutorialStep > 0) && tutorialStep !== 4 && tutorialStep !== 10 && !(isCancelamentoParcial && tutorialStep === 54) && !(isCancelamentoTotal && tutorialStep === 65) && !(isDdg && tutorialStep === 70) && !(isEstorno && [77, 82, 88].includes(tutorialStep)) && !(isTrocaDeMercadoria && tutorialStep === 92) && !(isReimpressaoDeComprovantes && tutorialStep === 103) && !(isDetalheDaVenda && tutorialStep === 111) && etapaLeituraX !== 2 && etapaLeituraX !== 3 && !(isSaidaDoOperador && tutorialStep === 127) && !(isFechamentoDeCaixa && (tutorialStep === 131 || tutorialStep === 132)) && !(isEncantometro && tutorialStep === 135) && !(isClienteCadastrado && tutorialStep === 148) ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {/* Botão Anterior */}
           <button
             data-tutorial-nav="anterior"
@@ -4782,9 +4845,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
               }
               else if (tutorialStep === 2) {
                 if (isClienteCadastrado && demoSemIdentificar) { setTutorialStep(12); setDemoSemIdentificar(false); }
+                else if (isClienteCadastrado) { setShowKeyboard(false); setCpf(CPF_EXEMPLO); setCpfViaPinpad(true); setTutorialStep(147); }
                 else setTutorialStep(1);
               }
               else if (tutorialStep === 3) { setTutorialStep(2); setShowKeyboard(false); }
+              else if (isClienteCadastrado && tutorialStep === 147) { setTutorialStep(11); setShowKeyboard(false); }
               else if (tutorialStep === 15) { setTutorialStep(2); setSku(""); }
               else if (tutorialStep === 16) { setTutorialStep(15); setSku(""); setShowKeyboard(false); }
               else if (tutorialStep === 17) { setTutorialStep(16); setSku(""); setShowKeyboard(false); }
@@ -4794,7 +4859,11 @@ function PDVSimulator({ slug }: { slug?: string }) {
               else if (tutorialStep === 14) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(true); }
               else if (tutorialStep === 13) { setTutorialStep(11); setShowKeyboard(false); }
               else if (tutorialStep === 12) { setTutorialStep(11); setShowKeyboard(false); }
-              else if (tutorialStep === 11) { setTutorialStep(2); setShowKeyboard(false); setDemoSemIdentificar(false); }
+              else if (tutorialStep === 11) {
+                setShowKeyboard(false);
+                if (isClienteCadastrado && cpfViaPinpad) { setCpf(""); setTutorialStep(146); }
+                else { setTutorialStep(2); setDemoSemIdentificar(false); }
+              }
               else if (tutorialStep === 5) setTutorialStep(3);
               else if (tutorialStep === 6) setTutorialStep(isSuprimentoAdicional ? 2 : 5);
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
@@ -4905,7 +4974,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
           <button
             data-tutorial-nav="proximo"
             onClick={handleProximo}
-            className={`flex items-center gap-[8px] px-[20px] h-[44px] rounded-[8px] transition-all ${rotuloProximo === "Concluir" ? "bg-[#2258e6] hover:bg-[#1a47b8] border border-[#2258e6] text-white" : "bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white"} ${((showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && [83, 87, 89].includes(tutorialStep)) || (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 101)) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && (tutorialStep === 141 || tutorialStep === 143)))) && !(bannerConclusaoVisivel && rotuloProximo === "Concluir") ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex items-center gap-[8px] px-[20px] h-[44px] rounded-[8px] transition-all ${rotuloProximo === "Concluir" ? "bg-[#2258e6] hover:bg-[#1a47b8] border border-[#2258e6] text-white" : "bg-white/15 hover:bg-white/25 border border-white/20 text-white/80 hover:text-white"} ${((showAberturaLogin || showAberturaAutorizacao || showAberturaIdentificacao || tutorialStep === 1 || tutorialStep === 9 || (isClienteCadastrado && (tutorialStep === 12 || tutorialStep === 14 || tutorialStep === 146 || tutorialStep === 147)) || (isRegistroDeProdutos && (tutorialStep === 15 || tutorialStep === 17 || tutorialStep === 20)) || (isFormasDePagamento && (tutorialStep === 26 || tutorialStep === 27 || tutorialStep === 28)) || (isEnvioImpressaoCupom && tutorialStep === 34) || (isLocalizarPedidoDoDelivery && tutorialStep === 40) || (isConvenio && (tutorialStep === 44 || tutorialStep === 45 || tutorialStep === 46)) || ((isLiberacaoComReceita || isLiberacaoManual) && tutorialStep === 48) || (isConsultaDePreco && tutorialStep === 51) || (isCancelamentoParcial && (tutorialStep === 56 || tutorialStep === 58 || tutorialStep === 62)) || (isCancelamentoTotal && tutorialStep === 67) || (isDdg && tutorialStep === 75) || (isEstorno && [83, 87, 89].includes(tutorialStep)) || (isTrocaDeMercadoria && (tutorialStep === 98 || tutorialStep === 101)) || (isReimpressaoDeComprovantes && tutorialStep === 109) || (isDetalheDaVenda && tutorialStep === 114) || etapaLeituraX === 4 || (isSaidaDoOperador && tutorialStep === 128) || (isFechamentoDeCaixa && tutorialStep === 134) || (isEncantometro && tutorialStep === 136) || (isPbm && (tutorialStep === 141 || tutorialStep === 143)))) && !(bannerConclusaoVisivel && rotuloProximo === "Concluir") ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           >
             <span className="font-['Nunito_Sans',sans-serif] text-[16px] font-semibold tracking-wide">
               {rotuloProximo}
