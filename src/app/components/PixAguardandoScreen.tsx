@@ -1,21 +1,10 @@
-import { useEffect, useState } from "react";
-import { X, FileSpreadsheet } from "lucide-react";
+import { X, FileSpreadsheet, LoaderCircle } from "lucide-react";
 import { PDVHeader } from "./ValorRetiradaScreen";
 import iconePix from "../../imports/FormasPagamentoIcons/pix.svg";
-import qrCodePix from "../../imports/FormasPagamentoIcons/qrcode-pix.png";
 
+// Pagamento via PIX: o QR Code é exibido no pinpad, então o PDV mostra
+// apenas o estado de carregamento "Gerando QR Code...".
 export default function PixAguardandoScreen() {
-  const [segundosRestantes, setSegundosRestantes] = useState(180);
-
-  useEffect(() => {
-    if (segundosRestantes === 0) return;
-    const timer = setTimeout(() => setSegundosRestantes((s) => s - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [segundosRestantes]);
-
-  const minutos = Math.floor(segundosRestantes / 60);
-  const segundos = segundosRestantes % 60;
-
   return (
     <div className="absolute inset-0 bg-white overflow-hidden rounded-[20px] flex flex-col">
       <PDVHeader trilha={[]} />
@@ -59,18 +48,13 @@ export default function PixAguardandoScreen() {
               </div>
             </div>
 
-            <div className="border border-[#bdbdbd] rounded-[8px] flex items-center justify-center p-[10px]">
-              <img src={qrCodePix} alt="QR Code PIX" className="size-[180px] object-cover" />
+            <div className="border border-[#ececec] rounded-[8px] flex items-center justify-center size-[200px]">
+              <LoaderCircle size={36} className="text-[#3b9edb] animate-spin" strokeWidth={2} />
             </div>
 
-            <div className="flex flex-col gap-[6px] items-center text-center w-full">
-              <p className="font-['Nunito_Sans',sans-serif] font-extrabold text-[#1a1a1a] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                Aguardando pagamento...
-              </p>
-              <p className="font-['Nunito_Sans',sans-serif] font-medium text-[#686868] text-[16px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                Expira em {minutos}:{String(segundos).padStart(2, "0")}
-              </p>
-            </div>
+            <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px] text-center" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
+              Gerando QR Code...
+            </p>
           </div>
         </div>
       </div>
