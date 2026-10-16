@@ -1,4 +1,4 @@
-import { User, ArrowLeft, Search, SquareDashed, ShoppingCart, FileSpreadsheet, Receipt, Check } from "lucide-react";
+import { UserRound, ArrowLeft, Search, LogIn, SquareDashed, ShoppingCart, FileSpreadsheet, Receipt, Check } from "lucide-react";
 import { PDVHeader } from "./ValorRetiradaScreen";
 import ItensDaVendaVazio from "./ItensDaVendaVazio";
 
@@ -16,7 +16,7 @@ export default function ObrigadoScreen() {
         <div className="flex flex-col w-[774px]">
           <div className="bg-[#f6f6f6] p-[20px] flex flex-col gap-[16px]">
             <div className="flex gap-[12px] items-center">
-              <User size={24} className="shrink-0 text-[#404040]" strokeWidth={1.8} />
+              <UserRound size={24} className="shrink-0 text-[#1FA49D]" strokeWidth={1.8} />
               <p className="font-['Nunito_Sans',sans-serif] font-bold text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
                 Identificação do Cliente
               </p>
@@ -31,15 +31,18 @@ export default function ObrigadoScreen() {
               </div>
             </div>
             <div className="flex gap-[8px] w-full">
-              <div className="flex-1 h-[48px] rounded-[8px] px-[16px] border border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)] flex items-center">
-                <p className="font-['Geist',sans-serif] text-[14px]">
-                  <span className="text-[#0a0a0a]">{"| "}</span>
-                  <span className="text-[#7c7c7c]">Digite o CPF do cliente</span>
-                </p>
-              </div>
-              <button className="bg-[#171717] opacity-50 flex gap-[8px] items-center justify-center px-[24px] h-[48px] rounded-[8px]">
+              {/* Mesmo campo (estado padrão) da tela principal do PDV; apenas
+                  ilustrativo, sem foco nem digitação. */}
+              <input
+                readOnly
+                tabIndex={-1}
+                placeholder="|Digite o CPF do cliente ou aperte [Volta] para seguir sem identificação"
+                className="flex-1 bg-white h-[48px] rounded-[8px] px-[16px] border border-[#a3a3a3] font-['Geist',sans-serif] text-[14px] text-[#787878] focus:outline-none pointer-events-none"
+              />
+              <button tabIndex={-1} className="bg-[#171717] opacity-50 flex gap-[8px] items-center justify-center px-[24px] py-[10px] h-[48px] rounded-[8px]">
                 <Search size={16} className="text-white" />
                 <p className="font-['Geist',sans-serif] font-medium text-[14px] text-[#fafafa]">Buscar</p>
+                <LogIn size={16} className="text-white" />
               </button>
             </div>
             <p className="font-['Nunito_Sans',sans-serif] text-[#2258e6] text-[12.8px] leading-[1.2]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
@@ -56,7 +59,12 @@ export default function ObrigadoScreen() {
                 Entrada de Produtos
               </p>
             </div>
-            <div className="h-[56px] w-full rounded-[8px] border border-[#e5e5e5] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]" />
+            <input
+              readOnly
+              tabIndex={-1}
+              placeholder="SKU do produto - Escaneie o código do produto ou digite"
+              className="w-full bg-white h-[56px] rounded-[8px] px-[16px] border border-[#a3a3a3] font-['Geist',sans-serif] text-[14px] text-[#0a0a0a] focus:outline-none pointer-events-none"
+            />
           </div>
 
           <div className="h-px bg-[#bdbdbd]" />
