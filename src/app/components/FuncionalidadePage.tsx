@@ -1837,7 +1837,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     37: 142.5,
     145: 142.5,
     40: 17.0,
-    46: 44.9,
+    46: 45.4,
     48: 8.13,
     143: 8.5,
   };
@@ -1873,7 +1873,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
     37: 131.1,
     145: 131.1,
     40: 15.3,
-    46: 41.22,
+    46: 41.72,
     48: 8.13,
   };
   const totalExibidoRegistroDeProdutos = isConsultaDePreco
@@ -2720,13 +2720,13 @@ function PDVSimulator({ slug }: { slug?: string }) {
         {isSangriaDeCaixa && <Frame19557 />}
       </div>
 
-      {/* Fluxo animado de Sangria (telas do gerente). Suprimento Inicial/
-          Complementar não tem a tela de seleção Sangria/Suprimento (step 5):
-          após a senha, segue direto para os motivos (step 6). */}
-      {isTrainingMode && tutorialStep >= 4 && tutorialStep <= 5 && (
+      {/* Fluxo animado de Sangria/Suprimento (telas do gerente): após a
+          senha, segue direto para os motivos (step 6), sem a antiga tela de
+          seleção Realizar Sangria / Consultar Suprimento. */}
+      {isTrainingMode && tutorialStep === 4 && (
         isSuprimentoAdicional
           ? <SangriaFlow onAuthComplete={() => setTutorialStep(6)} trilha="Suprimento de Caixa" />
-          : <SangriaFlow onReachSelection={() => setTutorialStep(5)} />
+          : <SangriaFlow onAuthComplete={() => setTutorialStep(6)} />
       )}
 
       {/* Motivos Sangria - step 6 */}
@@ -4866,8 +4866,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 if (isClienteCadastrado && cpfViaPinpad) { setCpf(""); setTutorialStep(146); }
                 else { setTutorialStep(2); setDemoSemIdentificar(false); }
               }
-              else if (tutorialStep === 5) setTutorialStep(3);
-              else if (tutorialStep === 6) setTutorialStep(isSuprimentoAdicional ? 2 : 5);
+              else if (tutorialStep === 6) setTutorialStep(isSuprimentoAdicional ? 2 : 3);
               else if (tutorialStep === 7) { setTutorialStep(6); setValorRetirada(0); }
               else if (tutorialStep === 8) setTutorialStep(7);
               else if (tutorialStep === 9) setTutorialStep(8);
@@ -5001,10 +5000,10 @@ function PDVSimulator({ slug }: { slug?: string }) {
           }
         }}
         className={`absolute bottom-[60px] left-1/2 -translate-x-1/2 px-[20px] h-[48px] bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center gap-[8px] transition-all group z-[30] ${
-          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isEnvioImpressaoCupom && !showKeyboard && (tutorialStep === 31 || tutorialStep === 32)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? 'animate-pulse-subtle' : ''
+          isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isEnvioImpressaoCupom && !showKeyboard && (tutorialStep === 31 || tutorialStep === 32)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? 'animate-pulse-subtle' : ''
         } ${keyboardOcultoNestaEtapa && !isKeyboardSplit ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
         style={{
-          ...(isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 5 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isEnvioImpressaoCupom && !showKeyboard && (tutorialStep === 31 || tutorialStep === 32)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? {
+          ...(isFirstAccess || (tutorialStep === 3 && !showKeyboard) || (tutorialStep === 6 && !showKeyboard) || (tutorialStep === 7 && !showKeyboard) || (tutorialStep === 16 && !showKeyboard) || (tutorialStep === 18 && !showKeyboard) || (isFormasDePagamento && !showKeyboard && (tutorialStep === 21 || tutorialStep === 22 || tutorialStep === 23 || tutorialStep === 25 || tutorialStep === 29 || tutorialStep === 30)) || (isEnvioImpressaoCupom && !showKeyboard && (tutorialStep === 31 || tutorialStep === 32)) || (isCancelamentoParcial && !showKeyboard && [52, 53, 55, 59, 60, 61].includes(tutorialStep)) || (isCancelamentoTotal && !showKeyboard && [63, 64, 66].includes(tutorialStep)) || (isDdg && !showKeyboard && [68, 69, 71, 72, 73, 74].includes(tutorialStep)) || (isEstorno && !showKeyboard && [76, 78, 79, 80, 81, 84, 85, 86].includes(tutorialStep)) || (isTrocaDeMercadoria && !showKeyboard && [90, 91, 93, 94, 95, 96, 97, 99, 100].includes(tutorialStep)) || (isReimpressaoDeComprovantes && !showKeyboard && [102, 104, 105, 106, 107, 108].includes(tutorialStep)) || (isDetalheDaVenda && !showKeyboard && [110, 112, 113].includes(tutorialStep)) || (!showKeyboard && (etapaLeituraX === 0 || etapaLeituraX === 1)) || (isSaidaDoOperador && !showKeyboard && [125, 126].includes(tutorialStep)) || (isFechamentoDeCaixa && !showKeyboard && [129, 130, 133].includes(tutorialStep)) || (isPbm && !showKeyboard && [137, 138, 139, 140].includes(tutorialStep)) ? {
           boxShadow: '0 0 0 0 rgba(255, 255, 255, 0.4)',
           animation: 'pulse-subtle 2s ease-in-out infinite'
         } : {}),
@@ -5161,11 +5160,6 @@ function PDVSimulator({ slug }: { slug?: string }) {
           }
           if ((tutorialStep === 3 || tutorialStep === 6) && buttonText === "ENTRA") {
             setTutorialStep(tutorialStep === 3 ? 4 : 7);
-            setShowKeyboard(false);
-            return;
-          }
-          if (tutorialStep === 5 && buttonText === "1") {
-            setTutorialStep(6);
             setShowKeyboard(false);
             return;
           }
@@ -5327,11 +5321,9 @@ function PDVSimulator({ slug }: { slug?: string }) {
             }
             else if (isFormasDePagamento && tutorialStep === 30) { setTutorialStep(28); setShowKeyboard(false); }
           } : undefined}
-          highlightKey1={(isPbm && tutorialStep === 138) || proximoDigitoPbm === "1" || (tutorialStep === 5 && !isSuprimentoAdicional) || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1" || proximoDigitoOv === "1" || proximoDigitoConvenio === "1" || proximoDigitoConvenioCpf === "1" || proximoDigitoReceita === "1" || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0) || proximoDigitoEstorno === "1" || (isEstorno && tutorialStep === 78) || proximoDigitoTroca === "1" || proximoDigitoReimpressao === "1" || (isLeituraOperador && etapaLeituraX === 1)}
+          highlightKey1={(isPbm && tutorialStep === 138) || proximoDigitoPbm === "1" || (tutorialStep === 7 && valorRetirada === 0 && !isSuprimentoAdicional) || proximoDigitoCpf === "1" || proximoDigitoSkuManual === "1" || proximoDigitoPagamento === "1" || proximoDigitoOv === "1" || proximoDigitoConvenio === "1" || proximoDigitoConvenioCpf === "1" || proximoDigitoReceita === "1" || (isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0) || proximoDigitoEstorno === "1" || (isEstorno && tutorialStep === 78) || proximoDigitoTroca === "1" || proximoDigitoReimpressao === "1" || (isLeituraOperador && etapaLeituraX === 1)}
           onKey1Press={
-            tutorialStep === 5 && !isSuprimentoAdicional
-              ? () => { setTutorialStep(6); setShowKeyboard(false); }
-              : isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0
+            isEnvioImpressaoCupom && tutorialStep === 31 && cupomEtapaIndex === 0
               ? () => { setShowKeyboard(false); setTutorialStep(32); }
               : undefined
           }

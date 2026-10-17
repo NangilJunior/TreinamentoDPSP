@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import svgH from "../../imports/Home-1/svg-o2mimlgt7x";
-import svgH3 from "../../imports/Home-3/svg-1kscj51chh";
-import { TutorialTooltip } from "./TutorialTooltip";
 
 const MATRICULA = "5732465";
 const SENHA_DOTS = 7;
 
 type EntraState = "disabled" | "active" | "pressed";
-type Screen = 1 | 2 | 3;
+type Screen = 1 | 2;
 
 const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
@@ -251,94 +249,12 @@ function SenhaScreen({ dotCount, entraState, trilha }: { dotCount: number; entra
   );
 }
 
-// ── Screen 3: Seleção ─────────────────────────────────────────────────────────
-
-function SelectionScreen() {
-  return (
-    <div className="relative h-full w-full flex flex-col">
-      <PDVHeader />
-      <style>{`
-        @keyframes fade-in-delay {
-          0% { opacity: 0; }
-          60% { opacity: 0; }
-          100% { opacity: 1; }
-        }
-        .fade-in-delay {
-          animation: fade-in-delay 1.2s ease-in-out forwards;
-        }
-      `}</style>
-      <div className="bg-white flex-1 flex items-center justify-center pb-[112px]">
-        <div className="flex gap-[18px] items-center">
-          {/* Realizar Sangria */}
-          <div className="relative">
-            {/* Tooltip */}
-            <div className="fade-in-delay absolute bottom-full left-1/2 -translate-x-1/2 mb-[6px] pointer-events-none">
-              <TutorialTooltip fitContent>
-                Para realizar a <span className="font-bold">Sangria de Caixa</span>, pressione a tecla <span className="font-bold">[1]</span> no teclado do PDV.
-              </TutorialTooltip>
-            </div>
-            <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
-              <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
-              <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
-                <p className="leading-[16px]">1</p>
-              </div>
-              <div className="flex h-full items-center justify-center shrink-0">
-                <div className="overflow-clip relative shrink-0 size-[24px]">
-                  <div className="absolute inset-[21.88%_5.21%_5.21%_5.21%]">
-                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 17.5">
-                      <path d={svgH3.p12d7c480} fill="#ED403D" />
-                      <path d={svgH3.p3f07f800} fill="#ED403D" />
-                      <path d={svgH3.pbcc5600} fill="#ED403D" />
-                      <path d={svgH3.p3777440} fill="#ED403D" />
-                      <path d={svgH3.p26f80100} fill="#ED403D" />
-                      <path d={svgH3.pde21300} fill="#ED403D" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                <p className="leading-[1.2]">Realizar Sangria</p>
-              </div>
-            </div>
-          </div>
-          {/* Consultar Suprimento */}
-          <div className="relative">
-            <div className="bg-[rgba(255,255,255,0.4)] flex gap-[16px] h-[72px] items-start px-[32px] py-[10px] relative rounded-[8px] w-[428px]">
-              <div aria-hidden className="absolute border-2 border-[#e9e9e9] inset-0 pointer-events-none rounded-[8px]" />
-              <div className="flex flex-col font-['Chivo_Mono',sans-serif] font-medium h-full justify-center text-[#878787] text-[16px] w-[10px]">
-                <p className="leading-[16px]">2</p>
-              </div>
-              <div className="flex h-full items-center justify-center shrink-0">
-                <div className="overflow-clip relative shrink-0 size-[24px]">
-                  <div className="absolute inset-[21.88%_5.21%_5.21%_5.21%]">
-                    <svg className="absolute block inset-0 size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21.5 17.5">
-                      <path d={svgH3.p12d7c480} fill="#44B0E8" />
-                      <path d={svgH3.p2f881700} fill="#44B0E8" />
-                      <path d={svgH3.p3f07f800} fill="#44B0E8" />
-                      <path d={svgH3.pbcc5600} fill="#44B0E8" />
-                      <path d={svgH3.p26f80100} fill="#44B0E8" />
-                      <path d={svgH3.pde21300} fill="#44B0E8" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-[1_0_0] flex-col font-['Nunito_Sans',sans-serif] font-medium h-full justify-center min-w-px text-[#404040] text-[20px]" style={{ fontVariationSettings: '"YTLC" 500, "wdth" 100' }}>
-                <p className="leading-[1.2]">Consultar Suprimento de Caixa</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ── Main Component ────────────────────────────────────────────────────────────
 
 // onAuthComplete: usado por fluxos que só precisam da autorização do
 // gerente (ex.: Cancelamento Parcial) — encerra a animação logo após a
 // senha, sem exibir a tela de seleção de Sangria/Suprimento.
-export default function SangriaFlow({ onReachSelection, onAuthComplete, trilha }: { onReachSelection?: () => void; onAuthComplete?: () => void; trilha?: string }) {
+export default function SangriaFlow({ onAuthComplete, trilha }: { onAuthComplete: () => void; trilha?: string }) {
   const [screen, setScreen] = useState<Screen>(1);
   const [opacity, setOpacity] = useState(0);
   const [typedText, setTypedText] = useState("");
@@ -412,15 +328,7 @@ export default function SangriaFlow({ onReachSelection, onAuthComplete, trilha }
       setOpacity(0);
       await w(400);
       if (cancelledRef.current) return;
-      if (onAuthComplete) {
-        onAuthComplete();
-        return;
-      }
-      setScreen(3);
-      onReachSelection?.();
-      await w(80);
-      if (cancelledRef.current) return;
-      setOpacity(1);
+      onAuthComplete();
     };
 
     run();
@@ -434,7 +342,6 @@ export default function SangriaFlow({ onReachSelection, onAuthComplete, trilha }
       <div className="size-full transition-opacity duration-300" style={{ opacity }}>
         {screen === 1 && <MatriculaScreen typedText={typedText} entraState={entraState} trilha={trilha} />}
         {screen === 2 && <SenhaScreen dotCount={dotCount} entraState={entraState} trilha={trilha} />}
-        {screen === 3 && <SelectionScreen />}
       </div>
     </div>
   );
