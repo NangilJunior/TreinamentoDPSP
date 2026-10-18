@@ -63,7 +63,7 @@ export const filtrarItensCancelamento = (codigo: string) =>
 
 const formatarValorBR = (valor: number) => valor.toFixed(2).replace(".", ",");
 
-export function ItemVendaCard({ item, destacado, cancelado, tooltip }: { item: ItemCancelamento; destacado?: boolean; cancelado?: boolean; tooltip?: ReactNode }) {
+export function ItemVendaCard({ item, destacado, cancelado, ddg, tooltip }: { item: ItemCancelamento; destacado?: boolean; cancelado?: boolean; ddg?: boolean; tooltip?: ReactNode }) {
   const semDesconto = item.desconto === 0;
   return (
     <div className="relative">
@@ -124,15 +124,22 @@ export function ItemVendaCard({ item, destacado, cancelado, tooltip }: { item: I
       {/* Selo "Cancelado" (node 1272:21171 do Figma) — fora do card
           esmaecido, para manter a cor cheia, com a dobra escura que dá o
           efeito de fita presa à borda direita. */}
-      {cancelado && (
-        <>
-          <div className="absolute right-[-8px] top-[-6px] bg-[#ed403d] flex items-center justify-center px-[12px] py-[4px] rounded-tl-[1px] rounded-tr-[1px] rounded-bl-[1px] w-[104px] shadow-[0px_1px_1.5px_rgba(0,0,0,0.25),0px_1px_1px_rgba(0,0,0,0.25)]">
-            <p className="font-['Geist',sans-serif] font-bold text-[12px] leading-[1.2] text-white whitespace-nowrap">Cancelado</p>
-          </div>
-          <div className="absolute right-[-8px] top-[16px] w-0 h-0 border-t-[6px] border-t-[#9e2321] border-r-[8px] border-r-transparent" />
-        </>
-      )}
+      {cancelado && <SeloItem texto="Cancelado" cor="#ed403d" corDobra="#9e2321" />}
+      {/* Selo "DDG" — mesmo formato do "Cancelado", em laranja, marcando o
+          item que recebeu o Desconto do Gerente. */}
+      {ddg && <SeloItem texto="DDG" cor="#fb9d2f" corDobra="#b64a11" />}
     </div>
+  );
+}
+
+function SeloItem({ texto, cor, corDobra }: { texto: string; cor: string; corDobra: string }) {
+  return (
+    <>
+      <div className="absolute right-[-8px] top-[-6px] flex items-center justify-center px-[12px] py-[4px] rounded-tl-[1px] rounded-tr-[1px] rounded-bl-[1px] w-[104px] shadow-[0px_1px_1.5px_rgba(0,0,0,0.25),0px_1px_1px_rgba(0,0,0,0.25)]" style={{ backgroundColor: cor }}>
+        <p className="font-['Geist',sans-serif] font-bold text-[12px] leading-[1.2] text-white whitespace-nowrap">{texto}</p>
+      </div>
+      <div className="absolute right-[-8px] top-[16px] w-0 h-0 border-t-[6px] border-r-[8px] border-r-transparent" style={{ borderTopColor: corDobra }} />
+    </>
   );
 }
 
@@ -242,6 +249,7 @@ export function CancelamentoVendaScreen({
   itens = itensVenda,
   destacadoNumero,
   canceladoNumero,
+  ddgNumero,
   tooltipCampo,
   tooltipItens,
   avisoItens,
@@ -259,6 +267,8 @@ export function CancelamentoVendaScreen({
   itens?: ItemCancelamento[];
   destacadoNumero?: number;
   canceladoNumero?: number;
+  // Item que recebeu o Desconto do Gerente, marcado com o selo "DDG".
+  ddgNumero?: number;
   tooltipCampo?: ReactNode;
   tooltipItens?: ReactNode;
   // Mensagem em azul à direita do título "Itens da Venda" (ex.: DDG,
@@ -371,7 +381,7 @@ export function CancelamentoVendaScreen({
             )}
             <div className="flex flex-col gap-[8px]">
               {itens.map((item) => (
-                <ItemVendaCard key={item.numero} item={item} destacado={item.numero === destacadoNumero} cancelado={item.numero === canceladoNumero} tooltip={tooltipItem?.numero === item.numero ? tooltipItem.conteudo : undefined} />
+                <ItemVendaCard key={item.numero} item={item} destacado={item.numero === destacadoNumero} cancelado={item.numero === canceladoNumero} ddg={item.numero === ddgNumero} tooltip={tooltipItem?.numero === item.numero ? tooltipItem.conteudo : undefined} />
               ))}
             </div>
           </div>

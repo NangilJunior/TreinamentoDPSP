@@ -25,6 +25,7 @@ const METODOS: Record<MetodoEstorno, {
   iconeFundo: string;
   subtituloId: string;
   rotuloId: string;
+  placeholderId: string;
   tituloResultado: string;
   meioPagamento: string;
   iconeMeio: ReactNode;
@@ -33,8 +34,9 @@ const METODOS: Record<MetodoEstorno, {
     titulo: "PIX",
     icone: <QrCode size={32} className="text-[#0088ae]" strokeWidth={1.8} />,
     iconeFundo: "#f2f7fb",
-    subtituloId: "NSU/EndToEnd ID impresso no comprovante do PIX",
-    rotuloId: "ID impresso no comprovante do PIX:",
+    subtituloId: "Informe o NSU impresso no comprovante da venda",
+    rotuloId: "NSU impresso no comprovante da venda:",
+    placeholderId: "Digite o NSU da transação",
     tituloResultado: "Reembolso realizado",
     meioPagamento: "PIX",
     iconeMeio: <QrCode size={24} className="text-[#707070]" strokeWidth={1.8} />,
@@ -45,6 +47,7 @@ const METODOS: Record<MetodoEstorno, {
     iconeFundo: "#fbf2f8",
     subtituloId: "NSU impresso no comprovante do Crédito",
     rotuloId: "ID impresso no comprovante do Crédito:",
+    placeholderId: "Digite o número do documento",
     tituloResultado: "Estorno realizado",
     meioPagamento: "Cartão Visa",
     iconeMeio: <CreditCard size={24} className="text-[#707070]" strokeWidth={1.8} />,
@@ -284,7 +287,7 @@ export function EstornoIdScreen({ metodo, id, tooltip }: { metodo: MetodoEstorno
             <p>R$ {formatarCentavos(VALOR_ESTORNO_EXEMPLO_CENTS)}</p>
           </div>
         </div>
-        <CampoEstorno rotulo={m.rotuloId} placeholder="Digite o número do documento" valor={id} tooltip={tooltip} />
+        <CampoEstorno rotulo={m.rotuloId} placeholder={m.placeholderId} valor={id} tooltip={tooltip} />
       </CardMetodoEstorno>
       <RodapeVoltaEntra entraAtivo={id === ID_ESTORNO_EXEMPLO} />
     </div>

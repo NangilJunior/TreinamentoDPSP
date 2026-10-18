@@ -105,7 +105,7 @@ export const secoesCategorias: CategoriaSecaoData[] = [
     cards: [
       {
         titulo: "Encantômetro",
-        descricao: "O Encantômetro permite que o cliente avalie sua experiência de atendimento após a venda, atribuindo uma nota de 1 a 5 estrelas. O operador deve apenas orientar o cliente sobre a possibilidade de realizar a avaliação, caso queira. Quando a nota indicar insatisfação, o cliente poderá selecionar uma das opções disponíveis para informar o motivo.",
+        descricao: "Antes ou durante a venda, o cliente pode avaliar sua experiência de atendimento no Encantômetro, atribuindo uma nota de 1 a 5 estrelas. O operador deve apenas orientá-lo sobre a possibilidade de realizar a avaliação, caso queira. Quando a nota indicar insatisfação, o cliente poderá selecionar uma das opções disponíveis para informar o motivo.",
         slug: "encantometro"
       }
     ]

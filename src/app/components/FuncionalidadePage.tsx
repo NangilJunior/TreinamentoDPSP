@@ -3053,6 +3053,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             <CancelamentoVendaScreen
               modo="venda"
               itensVenda={ITENS_VENDA_COM_DDG}
+              ddgNumero={1}
               tooltipItem={{
                 numero: 1,
                 conteudo: (
@@ -3513,7 +3514,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                   {estornoId === ID_ESTORNO_EXEMPLO ? (
                     <>Pressione <span className="font-bold">[Entra]</span> para confirmar e realizar o estorno.</>
                   ) : (
-                    <>Informe o ID impresso no comprovante da venda original. Neste exemplo, clique em <span className="font-bold">Exibir Teclado</span> e digite <span className="font-bold">{ID_ESTORNO_EXEMPLO}</span>.</>
+                    <>Informe o {tutorialStep === 81 ? "NSU" : "ID"} impresso no comprovante da venda original. Neste exemplo, clique em <span className="font-bold">Exibir Teclado</span> e digite <span className="font-bold">{ID_ESTORNO_EXEMPLO}</span>.</>
                   )}
                 </TutorialTooltip>
               }
