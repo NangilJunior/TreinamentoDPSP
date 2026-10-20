@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "vite build && cp dist/index.html dist/404.html",
-    "dev": "vite"
+    "dev": "vite",
+    "dev:scorm": "vite --mode scorm",
+    "build:scorm": "vite build --mode scorm && node scripts/empacotar-scorm.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router";
 import Frame19675 from "../../imports/Frame19675/Frame19675";
 import ProfileMenu from "./ProfileMenu";
 import Footer from "./Footer";
-import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
+import { type CategoriaSecaoData } from "../data/secoesCategorias";
+import { secoesVisiveis } from "../scorm";
 
 const imgCategoriaSecao = "https://www.eliteeducacao.com.br/wp-content/uploads/2025/10/Atendente-de-Farmacia-com-Operador-de-Caixa.webp";
 
@@ -278,7 +279,7 @@ export default function Dashboard() {
 
   const searchLower = searchTerm.trim().toLowerCase();
   const categoriasFiltradas = searchLower
-    ? secoesCategorias
+    ? secoesVisiveis
         .map((secao) => ({
           ...secao,
           cards: secao.cards.filter(
@@ -288,7 +289,7 @@ export default function Dashboard() {
           ),
         }))
         .filter((secao) => secao.cards.length > 0)
-    : secoesCategorias;
+    : secoesVisiveis;
 
   return (
     <div className="bg-white content-stretch flex isolate items-center relative h-screen w-full" data-name="Manutenção de Lojas">

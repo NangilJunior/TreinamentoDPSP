@@ -16,9 +16,12 @@ function figmaAssetResolver() {
   }
 }
 
-export default defineConfig({
-  // GitHub Pages serve o site em https://<user>.github.io/TreinamentoDPSP/
-  base: '/TreinamentoDPSP/',
+export default defineConfig(({ mode }) => ({
+  // GitHub Pages serve o site em https://<user>.github.io/TreinamentoDPSP/.
+  // O pacote SCORM (`--mode scorm`) usa caminhos relativos, pois o LMS serve
+  // o conteúdo em um endereço próprio.
+  base: mode === 'scorm' ? './' : '/TreinamentoDPSP/',
+  build: mode === 'scorm' ? { outDir: 'dist-scorm/conteudo' } : undefined,
   plugins: [
     figmaAssetResolver(),
     // The React and Tailwind plugins are both required for Make, even if
@@ -35,4 +38,4 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv', '**/*.mp3'],
-})
+}))

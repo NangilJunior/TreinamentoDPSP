@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { IS_SCORM } from "../scorm";
 
 export default function ProfileMenu() {
   const navigate = useNavigate();
@@ -6,6 +7,9 @@ export default function ProfileMenu() {
   const handleLogout = () => {
     navigate("/");
   };
+
+  // No pacote SCORM o acesso vem do LMS: não há conta para sair.
+  if (IS_SCORM) return null;
 
   return (
     <div className="flex gap-[8px] items-center justify-end w-full" data-name="Button DropDown Profile">

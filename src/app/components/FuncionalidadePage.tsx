@@ -50,6 +50,7 @@ import { CancelamentoVendaScreen, CancelamentoItemModal, CancelamentoMotivoScree
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { TutorialTooltip } from "./TutorialTooltip";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
+import { IS_SCORM, categoriaScorm, pertenceAoPacote, registrarTutorialAberto, registrarTutorialConcluido } from "../scorm";
 import iconeEntrar from "../../imports/AberturaCaixaLogin/icone-entrar.svg";
 import iconeIdCard from "../../imports/ClienteCadastrado/icone-id-card.svg";
 import iconeUserRoundCheck from "../../imports/ClienteCadastrado/icone-user-round-check.svg";
@@ -258,7 +259,21 @@ const segundaSugestaoFimDaTrilha = "sangria-de-caixa";
 
 const cardsTreinamentos = secoesCategorias.flatMap((secao) => secao.cards);
 
+// No pacote SCORM, as sugestões ficam restritas aos demais treinamentos da
+// categoria do pacote, a partir do seguinte ao atual.
+function getProximosTreinamentosScorm(slug?: string) {
+  const cards = categoriaScorm?.cards ?? [];
+  const indice = cards.findIndex((c) => c.slug === slug);
+  const outros = [...cards.slice(indice + 1), ...cards.slice(0, Math.max(indice, 0))];
+  return outros.slice(0, 2).flatMap((card, i) =>
+    card.slug
+      ? [{ slug: card.slug, subtitulo: i === 0 && indice + 1 < cards.length ? "Próximo Treinamento" : "Também nesta categoria", titulo: card.titulo, descricao: card.descricao ?? "", imagem: imgGestaoDoCaixa }]
+      : []
+  );
+}
+
 function getProximosTreinamentos(slug?: string) {
+  if (IS_SCORM) return getProximosTreinamentosScorm(slug);
   const indice = cardsTreinamentos.findIndex((c) => c.slug === slug);
   const proximoDaTrilha = indice >= 0 ? cardsTreinamentos[indice + 1]?.slug : undefined;
   const itens = [
@@ -526,6 +541,12 @@ function PDVSimulator({ slug }: { slug?: string }) {
   // Treinamento") já nasce nessa etapa para mostrar a mesma tela.
   const primeiraEtapa = isAberturaDeCaixa ? 0 : proximaEtapaAposBoasVindas;
   const [tutorialStep, setTutorialStep] = useState(primeiraEtapa);
+
+  // Pacote SCORM: a tela de conclusão (passo 10) marca o tutorial como
+  // concluído no LMS.
+  useEffect(() => {
+    if (tutorialStep === 10 && slug) registrarTutorialConcluido(slug);
+  }, [tutorialStep, slug]);
   // Relatórios explora em sequência a Leitura do Operador (passos 115 a 119)
   // e a Leitura do Dia (passos 121 a 124), com a mesma estrutura deslocada
   // pela base de cada rodada: [P] Leitura X (+0, só na primeira rodada),
@@ -5378,6 +5399,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
             </div>
 
             {/* Sugestões de próximos treinamentos */}
+            {getProximosTreinamentos(slug).length > 0 && (
             <div className="w-full flex flex-col gap-[20px]">
               <p className="font-['Nunito_Sans',sans-serif] font-bold text-[18px] text-white/90 text-center" style={{ fontVariationSettings: "'YTLC' 500, 'wdth' 100" }}>
                 Continue aprendendo
@@ -5416,6 +5438,7 @@ function PDVSimulator({ slug }: { slug?: string }) {
                 ))}
               </div>
             </div>
+            )}
           </div>
 
             {/* Botão Fechar - inferior centralizado, estilo plataforma */}
@@ -5491,7 +5514,8 @@ const PROXIMO_TREINAMENTO_POR_CATEGORIA: Record<string, string> = {
 
 function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSecaoData; slugAtual?: string }) {
   const navigate = useNavigate();
-  const proximoSlug = PROXIMO_TREINAMENTO_POR_CATEGORIA[categoria.titulo];
+  // No pacote SCORM a próxima categoria é outro pacote: sem o link.
+  const proximoSlug = IS_SCORM ? undefined : PROXIMO_TREINAMENTO_POR_CATEGORIA[categoria.titulo];
 
   return (
     <div className="flex flex-col">
@@ -5513,6 +5537,7 @@ function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSeca
           />
         ))}
       </div>
+      {!IS_SCORM && (<>
       <div className="border-b border-[#e5e5e5] mt-[24px] mb-[16px]" />
       <div className="flex justify-end">
         <button
@@ -5522,6 +5547,7 @@ function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSeca
           Próximos treinamentos
         </button>
       </div>
+      </>)}
     </div>
   );
 }
@@ -5574,7 +5600,11 @@ export default function FuncionalidadePage() {
     navigate("/dashboard");
   };
 
-  const content = slug ? funcionalidadesContent[slug] : null;
+  const content = slug && pertenceAoPacote(slug) ? funcionalidadesContent[slug] : null;
+
+  useEffect(() => {
+    if (content && slug) registrarTutorialAberto(slug);
+  }, [content, slug]);
 
   if (!content) {
     navigate("/dashboard");
