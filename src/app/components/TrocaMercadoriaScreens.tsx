@@ -22,7 +22,7 @@ export const CPF_CLIENTE_TROCA = "***.261.950-**";
 
 // Dados da venda original digitados pelo operador para localizá-la
 // (passos 93 a 96). A data é digitada só com os números e exibida com
-// as barras.
+// as barras. NOTA_TROCA_EXEMPLO é o NSU da venda digitado no passo 96.
 export const LOJA_TROCA_EXEMPLO = "1111";
 export const DATA_TROCA_EXEMPLO = "01092026";
 export const PDV_TROCA_EXEMPLO = "50";
@@ -143,6 +143,34 @@ export function TrocaCampoScreen({
         </div>
       </div>
       <RodapeVoltaEntra entraAtivo={completo} />
+    </div>
+  );
+}
+
+// Passo 149 — escolha de como localizar a venda original: [1] NSU da venda
+// ou [2] Número do cupom. O exemplo segue pela opção 1, já destacada.
+function OpcaoLocalizarVenda({ tecla, titulo, descricao, destacada }: { tecla: string; titulo: string; descricao: string; destacada?: boolean }) {
+  return (
+    <div className="flex-1 min-w-0 bg-white border border-[#e5e5e5] flex gap-[24px] items-center px-[24px] py-[20px] rounded-[12px] shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+      <div className={`border-2 border-[#2258e6] flex items-center justify-center rounded-[8px] shrink-0 size-[56px] ${destacada ? "bg-[#2258e6]" : "bg-white"}`}>
+        <p className={`font-['Nunito_Sans',sans-serif] font-semibold text-[24px] leading-[1.2] ${destacada ? "text-white" : "text-[#2258e6]"}`} style={fontVariation}>{tecla}</p>
+      </div>
+      <div className="flex flex-col gap-[6px] min-w-0">
+        <p className={`font-['Geist',sans-serif] font-semibold text-[16px] leading-[20px] tracking-[1px] uppercase whitespace-nowrap ${destacada ? "text-[#404040]" : "text-[#a6a6a6]"}`}>{titulo}</p>
+        <p className="font-['Nunito_Sans',sans-serif] text-[14px] leading-[1.2] text-[#747474]" style={fontVariation}>{descricao}</p>
+      </div>
+    </div>
+  );
+}
+
+export function TrocaLocalizarVendaScreen() {
+  return (
+    <div className="absolute inset-0 bg-white rounded-[20px] overflow-hidden flex flex-col">
+      <CabecalhoTroca />
+      <div className="flex gap-[24px] items-stretch p-[40px]">
+        <OpcaoLocalizarVenda tecla="1" titulo="NSU da venda" descricao={'Linha "NSU:" no rodapé do cupom fiscal'} destacada />
+        <OpcaoLocalizarVenda tecla="2" titulo="Número do cupom" descricao={'Campo "Numero" ao lado da Serie no cupom fiscal'} />
+      </div>
     </div>
   );
 }
