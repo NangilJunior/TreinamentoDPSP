@@ -50,7 +50,7 @@ import { CancelamentoVendaScreen, CancelamentoItemModal, CancelamentoMotivoScree
 import { ScaleToFit, useFitScale } from "./ScaleToFit";
 import { TutorialTooltip } from "./TutorialTooltip";
 import { secoesCategorias, type CategoriaSecaoData } from "../data/secoesCategorias";
-import { IS_SCORM, categoriaScorm, pertenceAoPacote, registrarTutorialAberto, registrarTutorialConcluido } from "../scorm";
+import { categoriaScorm, pertenceAoPacote, registrarTutorialAberto, registrarTutorialConcluido } from "../scorm";
 import iconeEntrar from "../../imports/AberturaCaixaLogin/icone-entrar.svg";
 import iconeIdCard from "../../imports/ClienteCadastrado/icone-id-card.svg";
 import iconeUserRoundCheck from "../../imports/ClienteCadastrado/icone-user-round-check.svg";
@@ -259,8 +259,8 @@ const segundaSugestaoFimDaTrilha = "sangria-de-caixa";
 
 const cardsTreinamentos = secoesCategorias.flatMap((secao) => secao.cards);
 
-// No pacote SCORM, as sugestões ficam restritas aos demais treinamentos da
-// categoria do pacote, a partir do seguinte ao atual.
+// No pacote SCORM de uma categoria, as sugestões ficam restritas aos demais
+// treinamentos dela, a partir do seguinte ao atual.
 function getProximosTreinamentosScorm(slug?: string) {
   const cards = categoriaScorm?.cards ?? [];
   const indice = cards.findIndex((c) => c.slug === slug);
@@ -273,7 +273,7 @@ function getProximosTreinamentosScorm(slug?: string) {
 }
 
 function getProximosTreinamentos(slug?: string) {
-  if (IS_SCORM) return getProximosTreinamentosScorm(slug);
+  if (categoriaScorm) return getProximosTreinamentosScorm(slug);
   const indice = cardsTreinamentos.findIndex((c) => c.slug === slug);
   const proximoDaTrilha = indice >= 0 ? cardsTreinamentos[indice + 1]?.slug : undefined;
   const itens = [
@@ -5529,8 +5529,9 @@ const PROXIMO_TREINAMENTO_POR_CATEGORIA: Record<string, string> = {
 
 function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSecaoData; slugAtual?: string }) {
   const navigate = useNavigate();
-  // No pacote SCORM a próxima categoria é outro pacote: sem o link.
-  const proximoSlug = IS_SCORM ? undefined : PROXIMO_TREINAMENTO_POR_CATEGORIA[categoria.titulo];
+  // No pacote SCORM de uma categoria, a próxima categoria é outro pacote:
+  // sem o link.
+  const proximoSlug = categoriaScorm ? undefined : PROXIMO_TREINAMENTO_POR_CATEGORIA[categoria.titulo];
 
   return (
     <div className="flex flex-col">
@@ -5552,7 +5553,7 @@ function TrilhaTreinamentos({ categoria, slugAtual }: { categoria: CategoriaSeca
           />
         ))}
       </div>
-      {!IS_SCORM && (<>
+      {!categoriaScorm && (<>
       <div className="border-b border-[#e5e5e5] mt-[24px] mb-[16px]" />
       <div className="flex justify-end">
         <button

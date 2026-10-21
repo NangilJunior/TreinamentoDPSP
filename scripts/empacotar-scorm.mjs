@@ -1,8 +1,9 @@
-// Gera um pacote SCORM 1.2 (.zip) por categoria a partir do build em
-// dist-scorm/conteudo (`vite build --mode scorm`).
+// Gera os pacotes SCORM 1.2 (.zip) a partir do build em dist-scorm/conteudo
+// (`vite build --mode scorm`): o completo, com todos os tutoriais, e um por
+// categoria.
 //
-// Uso: node scripts/empacotar-scorm.mjs [slug-da-categoria ...]
-// Sem argumentos, empacota todas as categorias de secoesCategorias.
+// Uso: node scripts/empacotar-scorm.mjs [completo | slug-da-categoria ...]
+// Sem argumentos, gera o completo e todas as categorias de secoesCategorias.
 import { cpSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -57,29 +58,31 @@ ${arquivos.map((a) => `      <file href="${escaparXml(a)}"/>`).join("\n")}
 `;
 
 const pedidas = process.argv.slice(2);
-const categorias = secoesCategorias
-  .map((secao, i) => ({ secao, slug: slugCategoria(secao.titulo), ordem: String(i + 1).padStart(2, "0") }))
-  .filter(({ slug }) => pedidas.length === 0 || pedidas.includes(slug));
+const categorias = [
+  { titulo: "Completo", slug: "completo", ordem: "00" },
+  ...secoesCategorias.map((secao, i) => ({ titulo: secao.titulo, slug: slugCategoria(secao.titulo), ordem: String(i + 1).padStart(2, "0") })),
+].filter(({ slug }) => pedidas.length === 0 || pedidas.includes(slug));
 
 const desconhecidas = pedidas.filter((p) => !categorias.some((c) => c.slug === p));
 if (desconhecidas.length > 0) {
   console.error(`Categoria(s) desconhecida(s): ${desconhecidas.join(", ")}`);
-  console.error(`Disponíveis: ${secoesCategorias.map((s) => slugCategoria(s.titulo)).join(", ")}`);
+  console.error(`Disponíveis: completo, ${secoesCategorias.map((s) => slugCategoria(s.titulo)).join(", ")}`);
   process.exit(1);
 }
 
 rmSync(temporario, { recursive: true, force: true });
 
-for (const { secao, slug, ordem } of categorias) {
+for (const { titulo: tituloPacote, slug, ordem } of categorias) {
   const pasta = join(temporario, slug);
   cpSync(conteudo, pasta, { recursive: true });
 
-  // A categoria do pacote é lida por src/app/scorm.ts.
+  // O escopo do pacote ("completo" ou a categoria) é lido por
+  // src/app/scorm.ts.
   const index = join(pasta, "index.html");
   const html = readFileSync(index, "utf8");
   writeFileSync(index, html.replace("<head>", `<head>\n    <script>window.__CATEGORIA_SCORM__ = ${JSON.stringify(slug)};</script>`));
 
-  const titulo = `Treinamento PDV - ${secao.titulo}`;
+  const titulo = `Treinamento PDV - ${tituloPacote}`;
   const arquivos = listarArquivos(pasta).map((a) => relative(pasta, a).split(sep).join("/"));
   writeFileSync(join(pasta, "imsmanifest.xml"), manifesto(slug, titulo, arquivos));
 
